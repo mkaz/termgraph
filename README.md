@@ -23,7 +23,7 @@ I figured I could do the same thing using block characters for bar charts.
 
 ### Example
 
-<img src="example.png">
+<img src="https://raw.github.com/mkaz/termgraph/master/example.png">
 
 
 
