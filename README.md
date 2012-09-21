@@ -21,6 +21,18 @@ I created some graphing using gnuplot, but X11 would never be started
 so it took awhile to view, so after seeing [command-line sparklines](https://github.com/holman/spark)
 I figured I could do the same thing using block characters for bar charts.
 
+### Example
+
+
+2007: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 183.32
+2008: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 231.23
+2009: ▇  16.43
+2010: ▇▇▇▇  50.21
+2011: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 508.97
+2012: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 212.05
+
+
+
 
 ### Usage
 
