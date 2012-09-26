@@ -19,8 +19,6 @@ sm_tick = '|'
 #labels = ['2007', '2008', '2009', '2010', '2011']
 #data = [183.32, 231.23, 16.43, 50.21, 508.97]
 
-#TODO: parameterize width
-width = 50
 
 def main():
 
@@ -47,7 +45,7 @@ def main():
         if data[i] > max:
             max = data[i]
 
-    step = max / width
+    step = max / args['width']
     # display graph
     for i in xrange(m):
         print_blocks(labels[i], data[i], step)
@@ -71,6 +69,8 @@ def print_blocks(label, count, step):
 def init():
     parser = argparse.ArgumentParser(description='draw basic graphs on terminal')
     parser.add_argument('filename', nargs=1, help='data file name (comma or space separated)')
+    parser.add_argument('--width', type=int, default=50, help='width of graph in characters default:50')
+    parser.add_argument('--verbose', action='store_true')
     args = vars(parser.parse_args())
     args['filename'] = args['filename'][0]  # returns as list, we dont want that
     return args
