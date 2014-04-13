@@ -7,6 +7,7 @@
 # Marcus Kazmierczak
 # http://mkaz.com/
 
+from __future__ import print_function
 
 import argparse
 import sys
@@ -19,6 +20,10 @@ sm_tick = '|'
 #labels = ['2007', '2008', '2009', '2010', '2011']
 #data = [183.32, 231.23, 16.43, 50.21, 508.97]
 
+try:
+    range = xrange
+except NameError:
+    pass
 
 def main():
 
@@ -29,41 +34,41 @@ def main():
         labels, data = read_data(args['filename'])
     else:
         # shouldn't happen since argparse covers empty case
-        print ">> Error: No data file specified"
+        print(">> Error: No data file specified")
         sys.exit(1)
 
     # verify data
     m = len(labels)
     if m != len(data):
-        print ">> Error: Label and data array sizes don't match"
+        print(">> Error: Label and data array sizes don't match")
         sys.exit(1)
 
     # massage data
     ## normalize for graph
     max = 0
-    for i in xrange(m):
+    for i in range(m):
         if data[i] > max:
             max = data[i]
 
     step = max / args['width']
     # display graph
-    for i in xrange(m):
+    for i in range(m):
         print_blocks(labels[i], data[i], step)
 
-    print
+    print()
 
 
 def print_blocks(label, count, step):
     #TODO: add flag to hide data labels
     blocks = int(count / step)
-    print "{}: ".format(label),
+    print("{}: ".format(label), end="")
     if count < step:
         sys.stdout.write(sm_tick)
     else:
-        for i in xrange(blocks):
+        for i in range(blocks):
             sys.stdout.write(tick)
 
-    print "{:>7.2f}".format(count)
+    print("{:>7.2f}".format(count))
 
 
 def init():
@@ -78,9 +83,9 @@ def init():
 
 def read_data(filename):
     #TODO: add verbose flag
-    print "------------------------------------"
-    print "Reading data from", filename
-    print "------------------------------------\n"
+    print("------------------------------------")
+    print("Reading data from", filename)
+    print("------------------------------------\n")
 
     labels = []
     data = []
