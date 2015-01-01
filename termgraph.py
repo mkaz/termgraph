@@ -30,12 +30,7 @@ def main():
     # determine type of graph
     
     # read data
-    if (args['filename']):
-        labels, data = read_data(args['filename'])
-    else:
-        # shouldn't happen since argparse covers empty case
-        print(">> Error: No data file specified")
-        sys.exit(1)
+    labels, data = read_data(args['filename'])
 
     # verify data
     m = len(labels)
@@ -73,24 +68,25 @@ def print_blocks(label, count, step):
 
 def init():
     parser = argparse.ArgumentParser(description='draw basic graphs on terminal')
-    parser.add_argument('filename', nargs=1, help='data file name (comma or space separated)')
+    parser.add_argument('filename', nargs='?', default="-", help='data file name (comma or space separated). Defaults to stdin.')
     parser.add_argument('--width', type=int, default=50, help='width of graph in characters default:50')
     parser.add_argument('--verbose', action='store_true')
     args = vars(parser.parse_args())
-    args['filename'] = args['filename'][0]  # returns as list, we dont want that
     return args
 
 
 def read_data(filename):
     #TODO: add verbose flag
+    stdin = filename == '-'
+
     print("------------------------------------")
-    print("Reading data from", filename)
+    print("Reading data from", ("stdin" if stdin else filename))
     print("------------------------------------\n")
 
     labels = []
     data = []
 
-    f = open(filename, "r")
+    f = sys.stdin if stdin else open(filename, "r")
     for line in f:
         line = line.strip()
         if line:
