@@ -12,25 +12,30 @@ from __future__ import print_function
 import argparse
 import sys
 
-#TODO: change tick character
+# TODO: change tick character
 tick = '▇'
 sm_tick = '|'
 
 # sample bar chart data
-#labels = ['2007', '2008', '2009', '2010', '2011']
-#data = [183.32, 231.23, 16.43, 50.21, 508.97]
+# labels = ['2007', '2008', '2009', '2010', '2011']
+# data = [183.32, 231.23, 16.43, 50.21, 508.97]
 
 try:
     range = xrange
 except NameError:
     pass
 
-def main():
 
+def main(args):
     # determine type of graph
-    
+
     # read data
     labels, data = read_data(args['filename'])
+
+    chart(labels, data)
+
+
+def chart(labels, data, args):
 
     # verify data
     m = len(labels)
@@ -39,7 +44,7 @@ def main():
         sys.exit(1)
 
     # massage data
-    ## normalize for graph
+    # normalize for graph
     max = 0
     for i in range(m):
         if data[i] > max:
@@ -48,13 +53,13 @@ def main():
     step = max / args['width']
     # display graph
     for i in range(m):
-        print_blocks(labels[i], data[i], step)
+        print_blocks(labels[i], data[i], step, args)
 
     print()
 
 
-def print_blocks(label, count, step):
-    #TODO: add flag to hide data labels
+def print_blocks(label, count, step, args):
+    # TODO: add flag to hide data labels
     blocks = int(count / step)
     print("{}: ".format(label), end="")
     if count < step:
@@ -63,20 +68,26 @@ def print_blocks(label, count, step):
         for i in range(blocks):
             sys.stdout.write(tick)
 
-    print("{:>7.2f}".format(count))
+    print(args['format'].format(count) + args['suffix'])
 
 
 def init():
     parser = argparse.ArgumentParser(description='draw basic graphs on terminal')
-    parser.add_argument('filename', nargs='?', default="-", help='data file name (comma or space separated). Defaults to stdin.')
-    parser.add_argument('--width', type=int, default=50, help='width of graph in characters default:50')
+    parser.add_argument('filename', nargs='?', default="-",
+                        help='data file name (comma or space separated). Defaults to stdin.')
+    parser.add_argument('--width', type=int, default=50,
+                        help='width of graph in characters default:50')
     parser.add_argument('--verbose', action='store_true')
+    parser.add_argument('--format', default='{:>5.0f}',
+                        help='format specifier to use.')
+    parser.add_argument('--suffix', default='',
+                        help='string to add as a suffix to all data points.')
     args = vars(parser.parse_args())
     return args
 
 
 def read_data(filename):
-    #TODO: add verbose flag
+    # TODO: add verbose flag
     stdin = filename == '-'
 
     print("------------------------------------")
@@ -105,7 +116,4 @@ def read_data(filename):
 
 if __name__ == "__main__":
     args = init()
-    main()
-
-
-
+    main(args)
