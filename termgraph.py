@@ -32,7 +32,7 @@ def main(args):
     # read data
     labels, data = read_data(args['filename'])
 
-    chart(labels, data)
+    chart(labels, data, args)
 
 
 def chart(labels, data, args):
