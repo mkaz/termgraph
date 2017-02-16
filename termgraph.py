@@ -14,7 +14,7 @@ import sys
 
 # TODO: change tick character
 tick = '▇'
-sm_tick = '|'
+sm_tick = '▏'
 
 # sample bar chart data
 # labels = ['2007', '2008', '2009', '2010', '2011']
