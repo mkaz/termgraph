@@ -45,16 +45,16 @@ def chart(labels, data, args):
 
     # massage data
     # normalize for graph
-    max = 0
+    max_value = 0
     for i in range(m):
-        if data[i] > max:
-            max = data[i]
+        if data[i] > max_value:
+            max_value = data[i]
 
     label_width = 0
     for label in labels:
         label_width = max([label_width, len(label)])
 
-    step = max / args['width']
+    step = max_value / args['width']
     # display graph
     for i in range(m):
         print_blocks(labels[i], data[i], step, args, label_width)
