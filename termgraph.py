@@ -52,7 +52,7 @@ def chart(labels, data, args):
 
     label_width = 0
     for label in labels:
-        label_width = max(label_width, len(label))
+        label_width = max([label_width, len(label)])
 
     step = max / args['width']
     # display graph
