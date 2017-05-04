@@ -271,6 +271,7 @@ def main(args):
 # Parses and returns arguments.
 def init():
     parser = argparse.ArgumentParser(description='draw basic graphs on terminal')
+    parser.add_argument('--title', help='Title of graph')
     parser.add_argument('filename', nargs='?', default="-",
                         help='data file name (comma or space separated). Defaults to stdin.')
     parser.add_argument('--width', type=int, default=50,
@@ -343,14 +344,10 @@ def read_data(args):
     data = [ [20.4, 40.5], [30.7, 100.0], ...]
     '''
     filename = args['filename']
-
-    # TODO: add verbose flag
     stdin = filename == '-'
 
-    reading_from = f'Reading data from {("stdin" if stdin else filename)}'
-    hyphen_num = len(reading_from)
-
-    print('\n'+hyphen_num*'-'+'\n'+reading_from+'\n'+hyphen_num*'-'+'\n')
+    title = args['title'] if args['title'] else f'Reading data from {("stdin" if stdin else filename)}'
+    print('\n# ' + title + '\n' )
 
     categories, labels, data, colors = ([] for i in range(4))
 
