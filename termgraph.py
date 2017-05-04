@@ -271,6 +271,8 @@ def main(args):
 # Parses and returns arguments.
 def init():
     parser = argparse.ArgumentParser(description='draw basic graphs on terminal')
+    parser.add_argument('--no-title', action='store_true',
+                        help='Does not print title. Overrides --title.')
     parser.add_argument('--title', help='Title of graph')
     parser.add_argument('filename', nargs='?', default="-",
                         help='data file name (comma or space separated). Defaults to stdin.')
@@ -346,8 +348,11 @@ def read_data(args):
     filename = args['filename']
     stdin = filename == '-'
 
-    title = args['title'] if args['title'] else f'Reading data from {("stdin" if stdin else filename)}'
-    print('\n# ' + title + '\n' )
+    if args['no_title']:
+        print('\n')
+    else:
+        title = args['title'] if args['title'] else f'Reading data from {("stdin" if stdin else filename)}'
+        print('\n# ' + title + '\n' )
 
     categories, labels, data, colors = ([] for i in range(4))
 
