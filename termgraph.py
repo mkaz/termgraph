@@ -50,18 +50,22 @@ def chart(labels, data, args):
         if data[i] > max:
             max = data[i]
 
+    label_width = 0
+    for label in labels:
+        label_width = max(label_width, len(label))
+
     step = max / args['width']
     # display graph
     for i in range(m):
-        print_blocks(labels[i], data[i], step, args)
+        print_blocks(labels[i], data[i], step, args, label_width)
 
     print()
 
 
-def print_blocks(label, count, step, args):
+def print_blocks(label, count, step, args, label_width):
     # TODO: add flag to hide data labels
     blocks = int(count / step)
-    print("{}: ".format(label), end="")
+    print("{}: {}".format(label, ' ' * label_width), end="")
     if count < step:
         sys.stdout.write(sm_tick)
     else:
