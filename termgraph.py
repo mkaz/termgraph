@@ -30,7 +30,7 @@ def main(args):
     # determine type of graph
 
     # read data
-    labels, data = read_data(args['filename'], args['title'])
+    labels, data = read_data(args['filename'], args['title'], args['no_title'])
 
     chart(labels, data, args)
 
@@ -73,6 +73,8 @@ def print_blocks(label, count, step, args):
 
 def init():
     parser = argparse.ArgumentParser(description='draw basic graphs on terminal')
+    parser.add_argument('--no-title', action='store_true',
+                        help='Does not print title. Overrides --title.')
     parser.add_argument('--title', help='Title of graph')
     parser.add_argument('filename', nargs='?', default="-",
                         help='data file name (comma or space separated). Defaults to stdin.')
@@ -87,16 +89,17 @@ def init():
     return args
 
 
-def read_data(filename, title):
+def read_data(filename, title, no_title):
     # TODO: add verbose flag
     stdin = filename == '-'
 
-    print("------------------------------------")
-    if title:
-        print(title)
-    else:
-        print("Reading data from", ("stdin" if stdin else filename))
-    print("------------------------------------\n")
+    if not no_title:
+        print("------------------------------------")
+        if title:
+            print(title)
+        else:
+            print("Reading data from", ("stdin" if stdin else filename))
+        print("------------------------------------\n")
 
     labels = []
     data = []
