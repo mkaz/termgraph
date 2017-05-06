@@ -30,7 +30,7 @@ def main(args):
     # determine type of graph
 
     # read data
-    labels, data = read_data(args['filename'])
+    labels, data = read_data(args['filename'], args['title'], args['no_title'])
 
     chart(labels, data, args)
 
@@ -45,23 +45,28 @@ def chart(labels, data, args):
 
     # massage data
     # normalize for graph
-    max = 0
+    max_value = 0
     for i in range(m):
-        if data[i] > max:
-            max = data[i]
+        if data[i] > max_value:
+            max_value = data[i]
 
-    step = max / args['width']
+    label_width = 0
+    for label in labels:
+        label_width = max([label_width, len(label)])
+
+    step = max_value / args['width']
     # display graph
     for i in range(m):
-        print_blocks(labels[i], data[i], step, args)
+        print_blocks(labels[i], data[i], step, args, label_width)
 
     print()
 
 
-def print_blocks(label, count, step, args):
+def print_blocks(label, count, step, args, label_width):
     # TODO: add flag to hide data labels
     blocks = int(count / step)
-    print("{}: ".format(label), end="")
+    white_space = ' ' * (label_width - len(label))
+    print("{}: {}".format(label, white_space), end="")
     if count < step:
         sys.stdout.write(sm_tick)
     else:
@@ -73,6 +78,9 @@ def print_blocks(label, count, step, args):
 
 def init():
     parser = argparse.ArgumentParser(description='draw basic graphs on terminal')
+    parser.add_argument('--no-title', action='store_true',
+                        help='Does not print title. Overrides --title.')
+    parser.add_argument('--title', help='Title of graph')
     parser.add_argument('filename', nargs='?', default="-",
                         help='data file name (comma or space separated). Defaults to stdin.')
     parser.add_argument('--width', type=int, default=50,
@@ -86,13 +94,17 @@ def init():
     return args
 
 
-def read_data(filename):
+def read_data(filename, title, no_title):
     # TODO: add verbose flag
     stdin = filename == '-'
 
-    print("------------------------------------")
-    print("Reading data from", ("stdin" if stdin else filename))
-    print("------------------------------------\n")
+    if not no_title:
+        print("------------------------------------")
+        if title:
+            print(title)
+        else:
+            print("Reading data from", ("stdin" if stdin else filename))
+        print("------------------------------------\n")
 
     labels = []
     data = []
