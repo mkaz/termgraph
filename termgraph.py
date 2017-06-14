@@ -12,9 +12,9 @@ from __future__ import print_function
 import argparse
 import sys
 
-# TODO: change TICK character
-TICK = '▇'
-SM_TICK = '|'
+# TODO: change tick character
+tick = '▇'
+sm_tick = '▏'
 
 # sample bar chart data
 # labels = ['2007', '2008', '2009', '2010', '2011']
