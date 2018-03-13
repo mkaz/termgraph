@@ -1,18 +1,22 @@
 termgraph.py
 =============
 
-A python command-line tool which draws basic graphs in the terminal
+A python command-line tool which draws basic graphs in the terminal.
 
 
 ### Author 
 Marcus Kazmierczak, [http://mkaz.com/](http://mkaz.com/)
 
 
-### Example
+### Examples
 
 `$ python termgraph.py ex1.dat`
-<img src="https://raw.github.com/mkaz/termgraph/master/example.png">
 
+![](docs/img/example.png)
+
+`$ python termgraph.py ex2.dat --color green`
+
+![](docs/img/example2.png)
 
 
 ### Background
@@ -38,18 +42,22 @@ I figured I could do the same thing using block characters for bar charts.
 ### TODO
 I may or may not ever get around to these TODOs but a few ideas to take it further
 
-* Add switch for vertical bar charts
-* Add options and flags for width
-* Add options for different colors
-* Stacked Bar Charts
-* Multiple series (side-by-side)
+- [ ] Add switch for vertical bar charts
+- [ ] Add options and flags for width
+- [x] Add options for different colors
+- [ ] Stacked Bar Charts
+- [ ] Multiple series (side-by-side)
 
 
 #### Release Info
 
+* Ver 0.3 - Dic 27, 2017
+  - Color option added
+
 * Ver 0.2 - Sep 22, 2012 
   - Add width parameter 
 
-* Ver 0.1 - Sep 21, 2012 - Initial Horizontal Graphs
+* Ver 0.1 - Sep 21, 2012 
+  - Initial Horizontal Graphs
 
 

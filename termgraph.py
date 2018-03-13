@@ -12,9 +12,16 @@ from __future__ import print_function
 import argparse
 import sys
 
-# TODO: change tick character
-tick = '▇'
-sm_tick = '▏'
+# ANSI escape SGR Parameters color codes
+available_colors = {
+    'red': 91,
+    'blue': 94,
+    'green': 92,
+    'magenta': 95,
+    'yellow': 93,
+    'black': 90,
+    'cyan': 96
+}
 
 # sample bar chart data
 # labels = ['2007', '2008', '2009', '2010', '2011']
@@ -60,9 +67,9 @@ def horiontal_rows(labels, data, normal_dat, args):
         value = data[i]
         num_blocks = normal_dat[i]
         tail = ' {}{}'.format(args['format'].format(value), args['suffix'])
-        yield (label, value, int(num_blocks), val_min, tail)
+        yield (label, value, int(num_blocks), val_min, tail, args['color'])
 
-def print_row(label, value, num_blocks, val_min, tail):
+def print_row(label, value, num_blocks, val_min, tail, color):
     """A method to print a row for a horizontal graphs.
 
     i.e:
@@ -70,7 +77,16 @@ def print_row(label, value, num_blocks, val_min, tail):
     2: ▇▇▇ 3
     3: ▇▇▇▇ 4
     """
+
+    # TODO: change TICK character
+    TICK = '▇'
+    SM_TICK = '▏'
+
+    color_used = available_colors.get(color, None)
+ 
     print(label, end="")
+    if color_used:
+        sys.stdout.write(f'\033[{color_used}m') # Start to write colorized.
     if num_blocks < 1 and (value > val_min or value > 0):
         # Print something if it's not the smallest
         # and the normal value is less than one.
@@ -79,6 +95,7 @@ def print_row(label, value, num_blocks, val_min, tail):
         for i in range(num_blocks):
             sys.stdout.write(TICK)
     print(tail)
+    sys.stdout.write('\033[0m') # Back to original.
 
 def chart(labels, data, args):
     # Normalize data, handle negatives.
@@ -89,9 +106,10 @@ def chart(labels, data, args):
         # Print the row
         print_row(*row)
 
-def main(args):
-    # determine type of graph
 
+def main(args):
+
+    # determine type of graph
     # read data
     labels, data = read_data(args['filename'])
 
@@ -102,7 +120,7 @@ def main(args):
     for row in horiontal_rows(labels, data, normal_dat, args):
         # Print the row
         print_row(*row)
-
+    print()
 
 def init():
     parser = argparse.ArgumentParser(description='draw basic graphs on terminal')
@@ -117,6 +135,7 @@ def init():
                         help='string to add as a suffix to all data points.')
     parser.add_argument('--ignore-labels', action='store_true',
                         help='Do not print the label column')
+    parser.add_argument('--color', choices=available_colors, help='graph bar color')
     args = vars(parser.parse_args())
     return args
 
@@ -134,9 +153,10 @@ def read_data(filename):
     # TODO: add verbose flag
     stdin = filename == '-'
 
-    print("------------------------------------")
-    print("Reading data from", ("stdin" if stdin else filename))
-    print("------------------------------------\n")
+    reading_from = f'Readin data from {("stdin" if stdin else filename)}'
+    hyphen_num = len(reading_from)
+
+    print('\n'+hyphen_num*'-'+'\n'+reading_from+'\n'+hyphen_num*'-'+'\n')
 
     labels = []
     data = []
