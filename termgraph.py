@@ -261,7 +261,7 @@ def chart(len_categories, colors, data, args, labels):
 def main(args):
     # Determine type of graph
     # Read data
-    categories, labels, data, colors = read_data(args['filename'])
+    categories, labels, data, colors = read_data(args)
     # Find the number of categories from the first data row
     # (user may have not inserted categories' names).
     len_categories = len(data[0])
@@ -331,7 +331,7 @@ def print_categories(categories, colors):
     print('\n\n')
 
 # Reads data from a file or stdin and returns them.
-def read_data(filename):
+def read_data(args):
     '''
     Filename includes (categories), labels and data.
     We append categories and labels to lists.
@@ -342,6 +342,8 @@ def read_data(filename):
     categories = ['boys', 'girls']
     data = [ [20.4, 40.5], [30.7, 100.0], ...]
     '''
+    filename = args['filename']
+
     # TODO: add verbose flag
     stdin = filename == '-'
 
