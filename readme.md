@@ -7,6 +7,7 @@ Graph types supported:
 - Bar Graphs
 - Color charts
 - Multi-variable
+- Stacked charts
 - Horizontal or Vertical
 
 
@@ -19,6 +20,10 @@ Graph types supported:
 `$ python termgraph.py data/ex4.dat --color {blue,red} --no-title`
 
 <img src="docs/img/example2.png" width="655" alt="Multi variable bar chart with colors" />
+
+`python3 termgraph.py data/ex7.dat --color {yellow,magenta} --stacked --title "Stacked Data"`
+
+<img src="docs/img/example2.png" width="686" alt="Multi variable stacked bar chart with colors" />
 
 
 ### Install
