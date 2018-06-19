@@ -32,6 +32,23 @@ try:
 except NameError:
     pass
 
+# Parses and returns arguments.
+def initArgs():
+    parser = argparse.ArgumentParser( description='draw basic graphs on terminal' )
+    parser.add_argument( 'filename', nargs='?', default="-", help='data file name (comma or space separated). Defaults to stdin.' )
+    parser.add_argument( '--title', help='Title of graph' )
+    parser.add_argument( '--no-title', action='store_true', help='Does not print title. Overrides --title.' )
+    parser.add_argument( '--width', type=int, default=50, help='width of graph in characters default:50' )
+    parser.add_argument( '--format', default='{:<5.2f}', help='format specifier to use.' )
+    parser.add_argument( '--suffix', default='', help='string to add as a suffix to all data points.' )
+    parser.add_argument( '--no-labels', action='store_true', help='Do not print the label column' )
+    parser.add_argument( '--color', nargs='*', choices=available_colors, help='Graph bar color( s )' )
+    parser.add_argument( '--vertical', action= 'store_true', help='Vertical graph' )
+    parser.add_argument( '--stacked', action='store_true', help='Stacked bar graph' )
+    parser.add_argument( '--different-scale', action='store_true', help='Categories have different scales.' )
+    args = vars( parser.parse_args() )
+    return args
+
 # Returns the min/max value of a list of lists (i.e. list=[ [], [], ..., [] ]).
 def findMinMax( data, find ):
     if find == 'min':
@@ -80,7 +97,7 @@ def horiontal_rows( labels, data, normal_dat, args, colors ):
     val_min = findMinMax( data, 'min' )
 
     for i in range( len( labels ) ):
-        if args['ignore_labels']:
+        if args['no_labels']:
             # Hide the labels.
             label = ''
         else:
@@ -132,7 +149,7 @@ def stacked_graph( labels, data, normal_data, len_categories, args, colors ):
     val_min = findMinMax( data, 'min' )
 
     for i in range( len( labels ) ):
-        if args['ignore_labels']:
+        if args['no_labels']:
             # Hide the labels.
             label = ''
         else:
@@ -197,7 +214,7 @@ def print_vertical( vertical_rows, labels, color, args ):
     # Print Values
     for l in zip_longest( *value_list, fillvalue=' ' ):
         print( "  ".join( l ) )
-    if args['ignore_labels'] == False:
+    if args['no_labels'] == False:
         print( "-" * len( j ) + "Labels" + "-" * len( j ) )
         # Print Labels
         for k in zip_longest( *labels,fillvalue='' ):
@@ -262,24 +279,6 @@ def main( args ):
     len_categories = len( data[0] )
     # Normalize data and print the graph.
     chart( len_categories, colors, data, args, labels )
-
-# Parses and returns arguments.
-def init():
-    parser = argparse.ArgumentParser( description='draw basic graphs on terminal' )
-    parser.add_argument( '--no-title', action='store_true', help='Does not print title. Overrides --title.' )
-    parser.add_argument( '--title', help='Title of graph' )
-    parser.add_argument( 'filename', nargs='?', default="-", help='data file name (comma or space separated). Defaults to stdin.' )
-    parser.add_argument( '--width', type=int, default=50, help='width of graph in characters default:50' )
-    parser.add_argument( '--verbose', action='store_true' )
-    parser.add_argument( '--format', default='{:<5.2f}', help='format specifier to use.' )
-    parser.add_argument( '--suffix', default='', help='string to add as a suffix to all data points.' )
-    parser.add_argument( '--ignore_labels', action='store_true', help='Do not print the label column' )
-    parser.add_argument( '--color', nargs='*', choices=available_colors, help='Graph bar color( s )' )
-    parser.add_argument( '--vertical', action= 'store_true', help='Vertical graph' )
-    parser.add_argument( '--stacked', action='store_true', help='Stacked bar graph' )
-    parser.add_argument( '--different_scale', action='store_true', help='Categories have different scales.' )
-    args = vars( parser.parse_args() )
-    return args
 
 # Checks that all data were inserted correctly and returns colors.
 def check_data( labels, data, len_categories, args ):
@@ -374,5 +373,5 @@ def read_data( args ):
 
 
 if __name__ == "__main__":
-    args = init()
+    args = initArgs()
     main( args )
