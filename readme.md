@@ -28,6 +28,38 @@ termgraph.py data/ex1.dat
 2014: ▏ 1.00
 ```
 
+An example using emoji as custom tick:
+
+```
+termgraph.py data/ex1.dat --custom-tick "🏃" --width 20 --title "Running Data"
+
+# Running Data
+
+2007: 🏃🏃🏃🏃🏃🏃🏃 183.32
+2008: 🏃🏃🏃🏃🏃🏃🏃🏃🏃 231.23
+2009:  16.43
+2010: 🏃 50.21
+2011: 🏃🏃🏃🏃🏃🏃🏃🏃🏃🏃🏃🏃🏃🏃🏃🏃🏃🏃🏃🏃 508.97
+2012: 🏃🏃🏃🏃🏃🏃🏃🏃 212.05
+2014:  1.00
+
+```
+
+
+An example using stdin and emoji:
+
+```
+echo "Label,3,9,1" | termgraph.py --custom-tick "😀" --no-title --no-label
+
+
+😀😀😀 3.00
+😀😀😀😀😀😀😀😀😀 9.00
+😀 1.00
+
+```
+
+Most results can be copied and pasted wherever you like, since they use standard block characters. However the color charts will not show, since they use terminal escape codes for color. A couple images to show color examples:
+
 ```
 termgraph.py data/ex4.dat --color {blue,red} --no-title
 ```
@@ -40,25 +72,6 @@ termgraph.py data/ex7.dat --color {yellow,magenta} --stacked --title "Stacked Da
 
 <img src="docs/img/example3.png" width="686" alt="Multi variable stacked bar chart with colors" />
 
-```
-termgraph.py data/ex1.dat --custom-tick "🏃" --width 20
-```
-
-<img src="docs/img/example4.png" width="556" alt="Emoji!" />
-
-
-The above examples use images to show the colors, however you can easily just copy and paste the results.
-Here's an example using stdin and emoji.
-
-```
-echo "Label,3,9,1" | termgraph.py --custom-tick "😀" --no-title --no-label
-
-
-😀😀😀 3.00
-😀😀😀😀😀😀😀😀😀 9.00
-😀 1.00
-
-```
 
 
 ### Install
