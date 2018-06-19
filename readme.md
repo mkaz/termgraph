@@ -9,36 +9,81 @@ Graph types supported:
 - Multi-variable
 - Stacked charts
 - Horizontal or Vertical
+- Emoji!
 
 
 ### Examples
 
-`$ python termgraph.py data/ex1.dat`
+```
+termgraph.py data/ex1.dat
+```
 
 <img src="docs/img/example.png" width="665" alt="Single variable bar chart"/>
 
-`$ python termgraph.py data/ex4.dat --color {blue,red} --no-title`
+```
+termgraph.py data/ex4.dat --color {blue,red} --no-title
+```
 
 <img src="docs/img/example2.png" width="655" alt="Multi variable bar chart with colors" />
 
-`python3 termgraph.py data/ex7.dat --color {yellow,magenta} --stacked --title "Stacked Data"`
+```
+termgraph.py data/ex7.dat --color {yellow,magenta} --stacked --title "Stacked Data"
+```
 
 <img src="docs/img/example3.png" width="686" alt="Multi variable stacked bar chart with colors" />
 
-`python3 termgraph.py data/ex1.dat --custom-tick "🏃" --width 20`
+```
+termgraph.py data/ex1.dat --custom-tick "🏃" --width 20
+```
 
 <img src="docs/img/example4.png" width="556" alt="Emoji!" />
 
+
 ### Install
 
+* Works best with python3
 * pip3 install colorama
+* Download script, set executable and put in path
 
 ### Usage
 
 * Create data file with two columns either comma or space separated.
   The first column is your labels, the second column is a numeric data
 
-* python termgraph.py [datafile]
+* termgraph.py [datafile]
+
+* Help: termgraph -h
+
+```
+usage: termgraph.py [-h] [--title TITLE] [--no-title] [--width WIDTH]
+                    [--format FORMAT] [--suffix SUFFIX] [--no-labels]
+                    [--color [{red,blue,green,magenta,yellow,black,cyan} [{red,blue,green,magenta,yellow,black,cyan} ...]]]
+                    [--vertical] [--stacked] [--different-scale]
+                    [--custom-tick CUSTOM_TICK]
+                    [filename]
+
+draw basic graphs on terminal
+
+positional arguments:
+  filename              data file name (comma or space separated). Defaults to
+                        stdin.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --title TITLE         Title of graph
+  --no-title            Does not print title. Overrides --title.
+  --width WIDTH         width of graph in characters default:50
+  --format FORMAT       format specifier to use.
+  --suffix SUFFIX       string to add as a suffix to all data points.
+  --no-labels           Do not print the label column
+  --color [{red,blue,green,magenta,yellow,black,cyan} [{red,blue,green,magenta,yellow,black,cyan} ...]]
+                        Graph bar color( s )
+  --vertical            Vertical graph
+  --stacked             Stacked bar graph
+  --different-scale     Categories have different scales.
+  --custom-tick CUSTOM_TICK
+                        Custom tick mark, emoji approved
+```
 
 
 ### Background
