@@ -23,8 +23,11 @@ Graph types supported:
 
 `python3 termgraph.py data/ex7.dat --color {yellow,magenta} --stacked --title "Stacked Data"`
 
-<img src="docs/img/example2.png" width="686" alt="Multi variable stacked bar chart with colors" />
+<img src="docs/img/example3.png" width="686" alt="Multi variable stacked bar chart with colors" />
 
+`python3 termgraph.py data/ex1.dat --custom-tick "🏃" --width 20`
+
+<img src="docs/img/example4.png" width="556" alt="Emoji!" />
 
 ### Install
 

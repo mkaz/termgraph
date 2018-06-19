@@ -46,7 +46,14 @@ def initArgs():
     parser.add_argument( '--vertical', action= 'store_true', help='Vertical graph' )
     parser.add_argument( '--stacked', action='store_true', help='Stacked bar graph' )
     parser.add_argument( '--different-scale', action='store_true', help='Categories have different scales.' )
+    parser.add_argument( '--custom-tick', default='', help='Custom tick mark, emoji approved' )
     args = vars( parser.parse_args() )
+
+    if args['custom_tick'] != '':
+        global TICK, SM_TICK
+        TICK = args['custom_tick']
+        SM_TICK = ''
+
     return args
 
 # Returns the min/max value of a list of lists (i.e. list=[ [], [], ..., [] ]).
