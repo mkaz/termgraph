@@ -10,26 +10,18 @@ Marcus Kazmierczak, [http://mkaz.com/](http://mkaz.com/)
 
 ### Examples
 
-`$ python termgraph.py ex1.dat`
+`$ python termgraph.py data/ex1.dat`
 
 ![](docs/img/example.png)
 
-`$ python termgraph.py ex2.dat --color green`
+`$ python termgraph.py data/ex2.dat --color green`
 
 ![](docs/img/example2.png)
 
 
-### Background
+### Install
 
-I wanted a quick way to visualize some data which is stored in a simple text file.
-I initiall created some scripts in R which generated graphs but tended to be a two
-step process of creating the graph and then opening the generated graph.
-
-I did some graphing using gnuplot, but X11 would never be started so it took time to start.
-So after seeing [command-line sparklines](https://github.com/holman/spark)
-I figured I could do the same thing using block characters for bar charts.
-
-
+* pip3 install colorama
 
 ### Usage
 
@@ -39,26 +31,19 @@ I figured I could do the same thing using block characters for bar charts.
 * python termgraph.py [datafile]
 
 
-### TODO
-I may or may not ever get around to these TODOs but a few ideas to take it further
+### Background
 
-- [ ] Add switch for vertical bar charts
-- [ ] Add options and flags for width
-- [x] Add options for different colors
-- [ ] Stacked Bar Charts
-- [ ] Multiple series (side-by-side)
+I wanted a quick way to visualize data stored in a simple text file. I initially created some scripts in R that generated graphs but this was a two step process of creating the graph and then opening the generated graph.
 
+After seeing [command-line sparklines](https://github.com/holman/spark) I figured I could do the same thing using block characters for bar charts.
 
-#### Release Info
+### Contribute
 
-* Ver 0.3 - Dic 27, 2017
-  - Color option added
+For feature requests or bug reports, use [Github
+Issues](https://github.com/mkaz/termgraph/issues).
 
-* Ver 0.2 - Sep 22, 2012
-  - Add width parameter
-
-* Ver 0.1 - Sep 21, 2012
-  - Initial Horizontal Graphs
+Thanks to all the additional
+[Contributors](https://github.com/mkaz/termgraph/graphs/contributors).
 
 
 ### License
