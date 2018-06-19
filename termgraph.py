@@ -4,9 +4,6 @@
 # termgraph.py - draw basic graphs on terminal
 # https://github.com/mkaz/termgraph
 
-# Marcus Kazmierczak
-# http://mkaz.com/
-
 from __future__ import print_function
 from colorama import init
 from itertools import *
