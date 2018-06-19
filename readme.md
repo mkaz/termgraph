@@ -1,22 +1,24 @@
-termgraph.py
-=============
+# termgraph.py
 
 A python command-line tool which draws basic graphs in the terminal.
 
+Graph types supported:
 
-### Author
-Marcus Kazmierczak, [http://mkaz.com/](http://mkaz.com/)
+- Bar Graphs
+- Color charts
+- Multi-variable
+- Horizontal or Vertical
 
 
 ### Examples
 
 `$ python termgraph.py data/ex1.dat`
 
-![](docs/img/example.png)
+<img src="docs/img/example.png" width="665" alt="Single variable bar chart"/>
 
-`$ python termgraph.py data/ex2.dat --color green`
+`$ python termgraph.py data/ex4.dat --color {blue,red} --no-title`
 
-![](docs/img/example2.png)
+<img src="docs/img/example2.png" width="655" alt="Multi variable bar chart with colors" />
 
 
 ### Install
