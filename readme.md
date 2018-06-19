@@ -16,9 +16,17 @@ Graph types supported:
 
 ```
 termgraph.py data/ex1.dat
-```
 
-<img src="docs/img/example.png" width="665" alt="Single variable bar chart"/>
+# Reading data from data/ex1.dat
+
+2007: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 183.32
+2008: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 231.23
+2009: ▇ 16.43
+2010: ▇▇▇▇ 50.21
+2011: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 508.97
+2012: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 212.05
+2014: ▏ 1.00
+```
 
 ```
 termgraph.py data/ex4.dat --color {blue,red} --no-title
