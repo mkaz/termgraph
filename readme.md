@@ -39,6 +39,20 @@ termgraph.py data/ex1.dat --custom-tick "🏃" --width 20
 <img src="docs/img/example4.png" width="556" alt="Emoji!" />
 
 
+The above examples use images to show the colors, however you can easily just copy and paste the results.
+Here's an example using stdin and emoji.
+
+```
+echo "Label,3,9,1" | termgraph.py --custom-tick "😀" --no-title --no-label
+
+
+😀😀😀 3.00
+😀😀😀😀😀😀😀😀😀 9.00
+😀 1.00
+
+```
+
+
 ### Install
 
 * Works best with python3
