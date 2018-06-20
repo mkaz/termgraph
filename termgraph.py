@@ -51,6 +51,7 @@ def initArgs():
     parser.add_argument( '--stacked', action='store_true', help='Stacked bar graph' )
     parser.add_argument( '--different-scale', action='store_true', help='Categories have different scales.' )
     parser.add_argument( '--calendar', action='store_true', help='Calendar Heatmap chart' )
+    parser.add_argument( '--start-dt', help='Start date for Calendar chart' )
     parser.add_argument( '--custom-tick', default='', help='Custom tick mark, emoji approved' )
     parser.add_argument( '--delim', default='', help='Custom delimiter, default , or space' )
     parser.add_argument( '--verbose', action='store_true', help='Verbose output, helpful for debugging' )
@@ -409,11 +410,14 @@ def calendar_heatmap( data, labels, args ):
     # Sat  Sat
     # Sun  Sun
 
-    # TODO get start date from arg['start-dt']
-    # else: use 1 year ago today
-    st = datetime.now()
+    # check if start day set, otherwise use one year ago
     # modify start date to be a Monday, subtract weekday() from day
-    st_day = datetime(year=st.year-1, month=st.month, day=st.day-st.weekday()+1)
+    if args['start_dt']:
+        st_day = datetime.strptime(args['start_dt'], '%Y-%m-%d')
+        st_day = datetime(year=st_day.year, month=st_day.month, day=st_day.day-st_day.weekday()+1)
+    else:
+        st = datetime.now()
+        st_day = datetime(year=st.year-1, month=st.month, day=st.day-st.weekday()+1)
 
     # top legend for months
     sys.stdout.write( "     " )
