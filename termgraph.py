@@ -42,7 +42,6 @@ def initArgs():
     parser = argparse.ArgumentParser( description='draw basic graphs on terminal' )
     parser.add_argument( 'filename', nargs='?', default="-", help='data file name (comma or space separated). Defaults to stdin.' )
     parser.add_argument( '--title', help='Title of graph' )
-    parser.add_argument( '--no-title', action='store_true', help='Does not print title. Overrides --title.' )
     parser.add_argument( '--width', type=int, default=50, help='width of graph in characters default:50' )
     parser.add_argument( '--format', default='{:<5.2f}', help='format specifier to use.' )
     parser.add_argument( '--suffix', default='', help='string to add as a suffix to all data points.' )
@@ -50,10 +49,11 @@ def initArgs():
     parser.add_argument( '--color', nargs='*', choices=available_colors, help='Graph bar color( s )' )
     parser.add_argument( '--vertical', action= 'store_true', help='Vertical graph' )
     parser.add_argument( '--stacked', action='store_true', help='Stacked bar graph' )
-    parser.add_argument( '--calendar', action='store_true', help='Calendar Heatmap chart' )
     parser.add_argument( '--different-scale', action='store_true', help='Categories have different scales.' )
+    parser.add_argument( '--calendar', action='store_true', help='Calendar Heatmap chart' )
     parser.add_argument( '--custom-tick', default='', help='Custom tick mark, emoji approved' )
     parser.add_argument( '--delim', default='', help='Custom delimiter, default , or space' )
+    parser.add_argument( '--verbose', action='store_true', help='Verbose output, helpful for debugging' )
     args = vars( parser.parse_args() )
 
     if args['custom_tick'] != '':
@@ -343,11 +343,12 @@ def read_data( args ):
     filename = args['filename']
     stdin = filename == '-'
 
-    if args['no_title']:
-        print( '\n' )
-    else:
-        title = args['title'] if args['title'] else f'Reading data from {( "stdin" if stdin else filename )}'
-        print( '\n# ' + title + '\n'  )
+    if args['verbose']:
+        print( f'>> Reading data from {( "stdin" if stdin else filename )}' )
+
+    print('')
+    if args['title']:
+        print( '# ' + args['title'] + '\n'  )
 
     categories, labels, data, colors = ( [] for i in range(4) )
 
@@ -414,19 +415,17 @@ def calendar_heatmap( data, labels, args ):
     # modify start date to be a Monday, subtract weekday() from day
     st_day = datetime(year=st.year-1, month=st.month, day=st.day-st.weekday()+1)
 
-    # get day of week, start Monday
+    # top legend for months
     sys.stdout.write( "     " )
     for mo in range( 13 ):
-        mo_dt = st_day + timedelta( days=mo*30 )
+        mo_dt = datetime(year=st_day.year, month=st_day.month, day=1) + timedelta( days=mo*31 )
         sys.stdout.write( mo_dt.strftime( "%b" ) + " " )
     sys.stdout.write( '\n' )
 
     for day in range( 7 ):
         sys.stdout.write( dow[ day ] + ': ' )
         for week in range( 53 ):
-            # start date + day + week*7
-            days_adj = day + week*7
-            d = st_day + timedelta( days=days_adj )
+            d = st_day + timedelta( days=day + week*7 )
             dstr = d.strftime( "%Y-%m-%d" )
 
             if dstr in dtdict:
