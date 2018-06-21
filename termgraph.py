@@ -401,24 +401,17 @@ def calendar_heatmap( data, labels, args ):
     TICK_3 = "▓"
     TICK_4 = "█"
 
-    # W1   W2
-    # M    M
-    # Tu   Tu
-    # We   We
-    # Thu  Thu
-    # Fri  Fri
-    # Sat  Sat
-    # Sun  Sun
-
     # check if start day set, otherwise use one year ago
-    # modify start date to be a Monday, subtract weekday() from day
     if args['start_dt']:
         st_day = datetime.strptime(args['start_dt'], '%Y-%m-%d')
-        st_day = datetime(year=st_day.year, month=st_day.month, day=st_day.day-st_day.weekday()+1)
     else:
         st = datetime.now()
-        st_day = datetime(year=st.year-1, month=st.month, day=st.day-st.weekday()+1)
+        st_day = datetime(year=st.year-1, month=st.month, day=st.day)
 
+    # modify start date to be a Monday, subtract weekday() from day
+    st_day = st_day - timedelta( st_day.weekday() )
+
+    # TODO: legend doesn't line up properly for all start dates/data
     # top legend for months
     sys.stdout.write( "     " )
     for mo in range( 13 ):
