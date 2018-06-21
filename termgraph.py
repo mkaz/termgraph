@@ -401,6 +401,9 @@ def calendar_heatmap( data, labels, args ):
     TICK_3 = "▓"
     TICK_4 = "█"
 
+    if args['custom_tick']:
+        TICK_1 = TICK_2 = TICK_3 = TICK_4 = args['custom_tick']
+
     # check if start day set, otherwise use one year ago
     if args['start_dt']:
         st_day = datetime.strptime(args['start_dt'], '%Y-%m-%d')
@@ -417,6 +420,8 @@ def calendar_heatmap( data, labels, args ):
     for mo in range( 13 ):
         mo_dt = datetime(year=st_day.year, month=st_day.month, day=1) + timedelta( days=mo*31 )
         sys.stdout.write( mo_dt.strftime( "%b" ) + " " )
+        if args['custom_tick']: #assume custom tick is emoji which is one wider
+            sys.stdout.write(" ")
     sys.stdout.write( '\n' )
 
     for day in range( 7 ):
