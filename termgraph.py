@@ -7,6 +7,9 @@
 from __future__ import print_function
 from colorama import init
 from itertools import *
+from datetime import datetime
+from datetime import timedelta
+import random
 
 import argparse
 import sys
@@ -24,6 +27,8 @@ available_colors = {
     'cyan': 96
 }
 
+dow = [ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ]
+DELIM = ','
 TICK = '▇'
 SM_TICK = '▏'
 
@@ -37,7 +42,6 @@ def initArgs():
     parser = argparse.ArgumentParser( description='draw basic graphs on terminal' )
     parser.add_argument( 'filename', nargs='?', default="-", help='data file name (comma or space separated). Defaults to stdin.' )
     parser.add_argument( '--title', help='Title of graph' )
-    parser.add_argument( '--no-title', action='store_true', help='Does not print title. Overrides --title.' )
     parser.add_argument( '--width', type=int, default=50, help='width of graph in characters default:50' )
     parser.add_argument( '--format', default='{:<5.2f}', help='format specifier to use.' )
     parser.add_argument( '--suffix', default='', help='string to add as a suffix to all data points.' )
@@ -46,7 +50,11 @@ def initArgs():
     parser.add_argument( '--vertical', action= 'store_true', help='Vertical graph' )
     parser.add_argument( '--stacked', action='store_true', help='Stacked bar graph' )
     parser.add_argument( '--different-scale', action='store_true', help='Categories have different scales.' )
+    parser.add_argument( '--calendar', action='store_true', help='Calendar Heatmap chart' )
+    parser.add_argument( '--start-dt', help='Start date for Calendar chart' )
     parser.add_argument( '--custom-tick', default='', help='Custom tick mark, emoji approved' )
+    parser.add_argument( '--delim', default='', help='Custom delimiter, default , or space' )
+    parser.add_argument( '--verbose', action='store_true', help='Verbose output, helpful for debugging' )
     args = vars( parser.parse_args() )
 
     if args['custom_tick'] != '':
@@ -54,28 +62,32 @@ def initArgs():
         TICK = args['custom_tick']
         SM_TICK = ''
 
+    if args['delim'] != '':
+        global DELIM
+        DELIM = args['delim']
+
     return args
 
-# Returns the min/max value of a list of lists (i.e. list=[ [], [], ..., [] ]).
-def findMinMax( data, find ):
-    if find == 'min':
-        dat = min( data[0] )
-        for i in range( 1, len( data ) ):
-            if min( data[i] ) < dat:
-                dat = min( data[i] )
-    elif find == 'max':
-        dat = max( data[0] )
-        for i in range( 1, len( data ) ):
-            if max( data[i] ) > dat:
-                dat = max( data[i] )
+
+# Main function
+def main( args ):
+    categories, labels, data, colors = read_data( args )
+    if args['calendar']:
+        calendar_heatmap( data, labels, args )
     else:
-        print( ">> Error: 'find' variable should only be 'min' or 'max'" )
-        sys.exit( 1 )
-    return dat
+        chart( colors, data, args, labels )
+
+# Return minimum value in list of list
+def findMin( a ):
+    return min( [b[-1] for b in a] )
+
+# Return maximum value in list of list
+def findMax( a ):
+    return max( [b[-1] for b in a] )
 
 # Normalizes data and returns them.
 def normalize( data, width ):
-    min_dat = findMinMax( data, 'min' )
+    min_dat = findMin( data )
     # We offset by the mininum if there's a negative.
     off_data = []
     if min_dat < 0:
@@ -84,8 +96,8 @@ def normalize( data, width ):
             off_data.append( [_d + min_dat for _d in dat] )
     else:
         off_data = data
-    min_dat = findMinMax( off_data, 'min' )
-    max_dat = findMinMax( off_data, 'max' )
+    min_dat = findMin( off_data )
+    max_dat = findMax( off_data )
 
     if max_dat < width:
         # Don't need to normalize if the max value
@@ -101,7 +113,7 @@ def normalize( data, width ):
 # Prepares the horizontal graph.
 # Each row is printed through print_row function.
 def horiontal_rows( labels, data, normal_dat, args, colors ):
-    val_min = findMinMax( data, 'min' )
+    val_min = findMin( data )
 
     for i in range( len( labels ) ):
         if args['no_labels']:
@@ -148,12 +160,13 @@ def print_row(value, num_blocks, val_min, color):
     else:
         for i in range( num_blocks ):
             sys.stdout.write( TICK )
-    sys.stdout.write( '\033[0m' ) # Back to original.
+    if color:
+        sys.stdout.write( '\033[0m' ) # Back to original.
 
 # Prepares the horizontal Stacked graph.
 # Each row is printed through print_row function.
 def stacked_graph( labels, data, normal_data, len_categories, args, colors ):
-    val_min = findMinMax( data, 'min' )
+    val_min = findMin( data )
 
     for i in range( len( labels ) ):
         if args['no_labels']:
@@ -228,7 +241,8 @@ def print_vertical( vertical_rows, labels, color, args ):
             print( "  ".join( k ) )
 
 # Handles the normalization of data and the print of the graph.
-def chart( len_categories, colors, data, args, labels ):
+def chart( colors, data, args, labels ):
+    len_categories = len( data[0] )
     if len_categories > 1:
         # Stacked graph
         if args['stacked']:
@@ -276,19 +290,9 @@ def chart( len_categories, colors, data, args, labels ):
                 print_vertical( vertic, labels, color, args )
             print()
 
-# Main function
-def main( args ):
-    # Determine type of graph
-    # Read data
-    categories, labels, data, colors = read_data( args )
-    # Find the number of categories from the first data row
-    # (user may have not inserted categories' names).
-    len_categories = len( data[0] )
-    # Normalize data and print the graph.
-    chart( len_categories, colors, data, args, labels )
-
 # Checks that all data were inserted correctly and returns colors.
-def check_data( labels, data, len_categories, args ):
+def check_data( labels, data, args ):
+    len_categories = len( data[0] )
     # Check that there are data for all labels.
     if len( labels ) != len( data ):
         print(">> Error: Label and data array sizes don't match")
@@ -340,11 +344,12 @@ def read_data( args ):
     filename = args['filename']
     stdin = filename == '-'
 
-    if args['no_title']:
-        print( '\n' )
-    else:
-        title = args['title'] if args['title'] else f'Reading data from {( "stdin" if stdin else filename )}'
-        print( '\n# ' + title + '\n'  )
+    if args['verbose']:
+        print( f'>> Reading data from {( "stdin" if stdin else filename )}' )
+
+    print('')
+    if args['title']:
+        print( '# ' + args['title'] + '\n'  )
 
     categories, labels, data, colors = ( [] for i in range(4) )
 
@@ -353,8 +358,8 @@ def read_data( args ):
         line = line.strip()
         if line:
             if not line.startswith( '#' ):
-                if line.find( "," ) > 0:
-                    cols = line.split( ',' )
+                if line.find( DELIM ) > 0:
+                    cols = line.split( DELIM )
                 else:
                     cols = line.split()
                 # Line contains categories.
@@ -369,14 +374,75 @@ def read_data( args ):
                         data_points.append( float( cols[i].strip() ) )
                     data.append( data_points )
     f.close()
-    len_categories = len( data[0] )
+
     # Check that all data are valid. (i.e. There are no missing values.)
-    colors = check_data( labels, data, len_categories, args )
+    colors = check_data( labels, data, args )
     if categories:
         # Print categories' names above the graph.
         print_categories( categories, colors )
 
     return categories, labels, data, colors
+
+def calendar_heatmap( data, labels, args ):
+    if args['color']:
+        colornum = available_colors.get( args['color'][0] )
+    else:
+        colornum = available_colors.get( 'blue' )
+
+    dtdict = {}
+    for i in range( len( labels ) ):
+       dtdict[ labels[i] ] = data[i][0]
+
+    # get max value
+    maxval = float( max( data )[0] )
+
+    TICK_1 = "░"
+    TICK_2 = "▒"
+    TICK_3 = "▓"
+    TICK_4 = "█"
+
+    # check if start day set, otherwise use one year ago
+    if args['start_dt']:
+        st_day = datetime.strptime(args['start_dt'], '%Y-%m-%d')
+    else:
+        st = datetime.now()
+        st_day = datetime(year=st.year-1, month=st.month, day=st.day)
+
+    # modify start date to be a Monday, subtract weekday() from day
+    st_day = st_day - timedelta( st_day.weekday() )
+
+    # TODO: legend doesn't line up properly for all start dates/data
+    # top legend for months
+    sys.stdout.write( "     " )
+    for mo in range( 13 ):
+        mo_dt = datetime(year=st_day.year, month=st_day.month, day=1) + timedelta( days=mo*31 )
+        sys.stdout.write( mo_dt.strftime( "%b" ) + " " )
+    sys.stdout.write( '\n' )
+
+    for day in range( 7 ):
+        sys.stdout.write( dow[ day ] + ': ' )
+        for week in range( 53 ):
+            d = st_day + timedelta( days=day + week*7 )
+            dstr = d.strftime( "%Y-%m-%d" )
+
+            if dstr in dtdict:
+                if dtdict[dstr] > maxval * 0.75:
+                    T = TICK_4
+                elif dtdict[dstr] > maxval * 0.50:
+                    T = TICK_3
+                elif dtdict[dstr] > maxval * 0.25:
+                    T = TICK_2
+                else:
+                    T = TICK_1
+            else:
+                T = ' '
+
+            if colornum:
+                sys.stdout.write( f'\033[{colornum}m' )
+            sys.stdout.write( T )
+            if colornum:
+                sys.stdout.write( '\033[0m' )
+        sys.stdout.write( '\n' );
 
 
 if __name__ == "__main__":

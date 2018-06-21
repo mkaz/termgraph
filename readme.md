@@ -73,6 +73,15 @@ termgraph.py data/ex7.dat --color {yellow,magenta} --stacked --title "Stacked Da
 <img src="docs/img/example3.png" width="686" alt="Multi variable stacked bar chart with colors" />
 
 
+Calendar Heatmap, expects first column to be date in yyyy-mm-dd
+
+```
+termgraph.py --calendar --start-dt 2017-07-01 data/cal.dat
+```
+
+<img src="docs/img/calheatmap.png" width="596" alt="Calendar Heatmap" />
+
+
 
 ### Install
 
@@ -87,14 +96,16 @@ termgraph.py data/ex7.dat --color {yellow,magenta} --stacked --title "Stacked Da
 
 * termgraph.py [datafile]
 
-* Help: termgraph -h
+* Help: termgraph.py -h
 
 ```
-usage: termgraph.py [-h] [--title TITLE] [--no-title] [--width WIDTH]
-                    [--format FORMAT] [--suffix SUFFIX] [--no-labels]
+
+usage: termgraph.py [-h] [--title TITLE] [--width WIDTH] [--format FORMAT]
+                    [--suffix SUFFIX] [--no-labels]
                     [--color [{red,blue,green,magenta,yellow,black,cyan} [{red,blue,green,magenta,yellow,black,cyan} ...]]]
-                    [--vertical] [--stacked] [--different-scale]
-                    [--custom-tick CUSTOM_TICK]
+                    [--vertical] [--stacked] [--different-scale] [--calendar]
+                    [--start-dt START_DT] [--custom-tick CUSTOM_TICK]
+                    [--delim DELIM] [--verbose]
                     [filename]
 
 draw basic graphs on terminal
@@ -106,7 +117,6 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   --title TITLE         Title of graph
-  --no-title            Does not print title. Overrides --title.
   --width WIDTH         width of graph in characters default:50
   --format FORMAT       format specifier to use.
   --suffix SUFFIX       string to add as a suffix to all data points.
@@ -116,8 +126,12 @@ optional arguments:
   --vertical            Vertical graph
   --stacked             Stacked bar graph
   --different-scale     Categories have different scales.
+  --calendar            Calendar Heatmap chart
+  --start-dt START_DT   Start date for Calendar chart
   --custom-tick CUSTOM_TICK
                         Custom tick mark, emoji approved
+  --delim DELIM         Custom delimiter, default , or space
+  --verbose             Verbose output, helpful for debugging
 ```
 
 
