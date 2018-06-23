@@ -85,6 +85,14 @@ def findMin( a ):
 def findMax( a ):
     return max( [b[-1] for b in a] )
 
+# Return maximum length for lebels
+def findMaxLabelLength( a ):
+    s = 0
+    for i in range( len( a ) ):
+        if ( len( a[i] ) > s ):
+            s = len( a[i] )
+    return s
+
 # Normalizes data and returns them.
 def normalize( data, width ):
     min_dat = findMin( data )
@@ -120,7 +128,7 @@ def horiontal_rows( labels, data, normal_dat, args, colors ):
             # Hide the labels.
             label = ''
         else:
-            label = "{}: ".format( labels[i] )
+            label = "{:<{x}}: ".format( labels[i], x=findMaxLabelLength( labels ) )
 
         values = data[i]
         num_blocks = normal_dat[i]
