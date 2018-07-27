@@ -96,7 +96,7 @@ def findMaxLabelLength( a ):
 # Normalizes data and returns them.
 def normalize( data, width ):
     min_dat = findMin( data )
-    # We offset by the mininum if there's a negative.
+    # We offset by the minimum if there's a negative.
     off_data = []
     if min_dat < 0:
         min_dat = abs( min_dat )
