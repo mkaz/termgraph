@@ -457,7 +457,7 @@ def calendar_heatmap( data, labels, args ):
             sys.stdout.write( T )
             if colornum:
                 sys.stdout.write( '\033[0m' )
-        sys.stdout.write( '\n' );
+        sys.stdout.write( '\n' )
 
 
 if __name__ == "__main__":
