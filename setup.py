@@ -21,6 +21,7 @@ setup(
     entry_points={'console_scripts': ['termgraph=termgraph.termgraph:main']},
     version='0.1.0',
     author="mkaz",
+    author_email="marcus@mkaz.com",
     url='https://github.com/mkaz/termgraph',
     download_url='https://pypi.python.org/pypi/termgraph/',
     license='MIT',
