@@ -3,3 +3,4 @@ venv/
 .vscode/
 dist/
 build/
+termgraph.egg-info/
