@@ -1,4 +1,4 @@
-# termgraph.py
+# Termgraph
 
 A python command-line tool which draws basic graphs in the terminal.
 
@@ -15,7 +15,7 @@ Graph types supported:
 ### Examples
 
 ```
-termgraph.py data/ex1.dat
+termgraph data/ex1.dat
 
 # Reading data from data/ex1.dat
 
@@ -31,7 +31,7 @@ termgraph.py data/ex1.dat
 An example using emoji as custom tick:
 
 ```
-termgraph.py data/ex1.dat --custom-tick "🏃" --width 20 --title "Running Data"
+termgraph data/ex1.dat --custom-tick "🏃" --width 20 --title "Running Data"
 
 # Running Data
 
@@ -49,7 +49,7 @@ termgraph.py data/ex1.dat --custom-tick "🏃" --width 20 --title "Running Data"
 An example using stdin and emoji:
 
 ```
-echo "Label,3,9,1" | termgraph.py --custom-tick "😀" --no-title --no-label
+echo "Label,3,9,1" | termgraph --custom-tick "😀" --no-title --no-label
 
 
 😀😀😀 3.00
@@ -61,13 +61,13 @@ echo "Label,3,9,1" | termgraph.py --custom-tick "😀" --no-title --no-label
 Most results can be copied and pasted wherever you like, since they use standard block characters. However the color charts will not show, since they use terminal escape codes for color. A couple images to show color examples:
 
 ```
-termgraph.py data/ex4.dat --color {blue,red} --no-title
+termgraph data/ex4.dat --color {blue,red} --no-title
 ```
 
 <img src="docs/img/example2.png" width="655" alt="Multi variable bar chart with colors" />
 
 ```
-termgraph.py data/ex7.dat --color {yellow,magenta} --stacked --title "Stacked Data"
+termgraph data/ex7.dat --color {yellow,magenta} --stacked --title "Stacked Data"
 ```
 
 <img src="docs/img/example3.png" width="686" alt="Multi variable stacked bar chart with colors" />
@@ -76,7 +76,7 @@ termgraph.py data/ex7.dat --color {yellow,magenta} --stacked --title "Stacked Da
 Calendar Heatmap, expects first column to be date in yyyy-mm-dd
 
 ```
-termgraph.py --calendar --start-dt 2017-07-01 data/cal.dat
+termgraph --calendar --start-dt 2017-07-01 data/cal.dat
 ```
 
 <img src="docs/img/calheatmap.png" width="596" alt="Calendar Heatmap" />
@@ -85,22 +85,26 @@ termgraph.py --calendar --start-dt 2017-07-01 data/cal.dat
 
 ### Install
 
-* Works best with python3
-* pip3 install colorama
-* Download script, set executable and put in path
+Works best with Python3, you can install from [PyPI project](https://pypi.org/project/termgraph/)
+
+```
+pip3 install termgraph
+```
+
+Note: Be sure your PATH includes the pypi install directory, for me it is `~/.local/bin/`
 
 ### Usage
 
 * Create data file with two columns either comma or space separated.
   The first column is your labels, the second column is a numeric data
 
-* termgraph.py [datafile]
+* termgraph [datafile]
 
-* Help: termgraph.py -h
+* Help: termgraph -h
 
 ```
 
-usage: termgraph.py [-h] [--title TITLE] [--width WIDTH] [--format FORMAT]
+usage: termgraph [-h] [--title TITLE] [--width WIDTH] [--format FORMAT]
                     [--suffix SUFFIX] [--no-labels]
                     [--color [{red,blue,green,magenta,yellow,black,cyan} [{red,blue,green,magenta,yellow,black,cyan} ...]]]
                     [--vertical] [--stacked] [--different-scale] [--calendar]
@@ -143,20 +147,12 @@ After seeing [command-line sparklines](https://github.com/holman/spark) I figure
 
 ### Contribute
 
-For feature requests or bug reports, use [Github
-Issues](https://github.com/mkaz/termgraph/issues).
+For feature requests or bug reports, use [Github Issues](https://github.com/mkaz/termgraph/issues).
 
-Thanks to all the additional
-[Contributors](https://github.com/mkaz/termgraph/graphs/contributors).
+Thanks to all the additional [Contributors](https://github.com/mkaz/termgraph/graphs/contributors).
 
 
 ### License
 
-Copyright 2012-2018 Marcus Kazmierczak
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+MIT License, see [LICENSE.txt](LICENSE.txt)
 
