@@ -70,7 +70,9 @@ def initArgs():
 
 
 # Main function
-def main( args ):
+def main():
+    args = initArgs()
+
     categories, labels, data, colors = read_data( args )
     if args['calendar']:
         calendar_heatmap( data, labels, args )
@@ -459,5 +461,4 @@ def calendar_heatmap( data, labels, args ):
 
 
 if __name__ == "__main__":
-    args = initArgs()
-    main( args )
+    main()
