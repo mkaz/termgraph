@@ -14,6 +14,8 @@ import random
 import argparse
 import sys
 
+VERSION='0.1.1'
+
 init()
 
 # ANSI escape SGR Parameters color codes
@@ -55,6 +57,7 @@ def initArgs():
     parser.add_argument( '--custom-tick', default='', help='Custom tick mark, emoji approved' )
     parser.add_argument( '--delim', default='', help='Custom delimiter, default , or space' )
     parser.add_argument( '--verbose', action='store_true', help='Verbose output, helpful for debugging' )
+    parser.add_argument( '--version', action='store_true', help='Display version and exit' )
     args = vars( parser.parse_args() )
 
     if args['custom_tick'] != '':
@@ -72,6 +75,10 @@ def initArgs():
 # Main function
 def main():
     args = initArgs()
+
+    if args['version']:
+        print('termgraph v{}'.format( VERSION ))
+        sys.exit()
 
     categories, labels, data, colors = read_data( args )
     if args['calendar']:
