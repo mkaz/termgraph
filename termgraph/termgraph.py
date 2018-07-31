@@ -372,7 +372,7 @@ def read_data( args ):
 
     f = sys.stdin if stdin else open( filename, "r" )
     for line in f:
-        line = line.strip()
+        line = line.replace("\"", "").replace("\'", "").strip()
         if line:
             if not line.startswith( '#' ):
                 if line.find( DELIM ) > 0:
