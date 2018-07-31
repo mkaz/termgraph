@@ -49,7 +49,7 @@ termgraph data/ex1.dat --custom-tick "🏃" --width 20 --title "Running Data"
 An example using stdin and emoji:
 
 ```
-echo "Label,3,9,1" | termgraph --custom-tick "😀" --no-title --no-label
+echo "Label,3,9,1" | termgraph --custom-tick "😀" --no-label
 
 
 😀😀😀 3.00
@@ -61,7 +61,7 @@ echo "Label,3,9,1" | termgraph --custom-tick "😀" --no-title --no-label
 Most results can be copied and pasted wherever you like, since they use standard block characters. However the color charts will not show, since they use terminal escape codes for color. A couple images to show color examples:
 
 ```
-termgraph data/ex4.dat --color {blue,red} --no-title
+termgraph data/ex4.dat --color {blue,red}
 ```
 
 <img src="https://user-images.githubusercontent.com/45363/43405623-1a2cc4d4-93cf-11e8-8c96-b7134d8986a2.png" width="655" alt="Multi variable bar chart with colors" />
