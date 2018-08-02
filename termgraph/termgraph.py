@@ -175,7 +175,7 @@ def print_row(value, num_blocks, val_min, color):
         # and the normal value is less than one.
         sys.stdout.write( SM_TICK )
     else:
-        for i in range( num_blocks ):
+        for _ in range( num_blocks ):
             sys.stdout.write( TICK )
     if color:
         sys.stdout.write( '\033[0m' ) # Back to original.
@@ -204,7 +204,7 @@ value_list, zipped_list, vertical_list, maxi = [], [], [], 0
 
 # Prepares the vertical graph.
 # The whole graph is printed through the print_vertical function.
-def vertically( value, num_blocks, val_min, color ):
+def vertically( value, num_blocks, val_min, color, args ):
     global maxi, value_list
 
     value_list.append( str( value ) )
