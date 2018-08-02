@@ -204,7 +204,7 @@ value_list, zipped_list, vertical_list, maxi = [], [], [], 0
 
 # Prepares the vertical graph.
 # The whole graph is printed through the print_vertical function.
-def vertically( value, num_blocks, val_min, color, args ):
+def vertically( value, num_blocks, val_min, color ):
     global maxi, value_list
 
     value_list.append( str( value ) )
