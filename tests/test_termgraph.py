@@ -1,35 +1,35 @@
 import unittest
 from unittest.mock import patch
 from io import StringIO
-from .termgraph import *
+from termgraph import termgraph as tg
 
 class TermgraphTest(unittest.TestCase):
     def test_main(self):
         pass
 
     def test_findMin_returns_lowest_value(self):
-        minimum = findMin([[183.32], [231.23], [16.43], [50.21],
-                           [508.97], [212.05], [1.0]])
+        minimum = tg.findMin([[183.32], [231.23], [16.43], [50.21],
+                              [508.97], [212.05], [1.0]])
         assert minimum == 1.0
 
     def test_findMax_returns_highest_value(self):
-        maximum = findMax([[183.32], [231.23], [16.43], [50.21],
-                           [508.97], [212.05], [1.0]])
+        maximum = tg.findMax([[183.32], [231.23], [16.43], [50.21],
+                              [508.97], [212.05], [1.0]])
         assert maximum == 508.97
 
     def test_findMaxLabelLength_returns_correct_length(self):
-        length = findMaxLabelLength(['2007', '2008', '2009', '2010', '2011',
-                                     '2012', '2014'])
+        length = tg.findMaxLabelLength(['2007', '2008', '2009', '2010', '2011',
+                                        '2012', '2014'])
         assert length == 4
-        length = findMaxLabelLength(['aaaaaaaa', 'bbb', 'cccccccccccccc', 'z'])
+        length = tg.findMaxLabelLength(['aaaaaaaa', 'bbb', 'cccccccccccccc', 'z'])
         assert length == 14
 
     def test_normalize_returns_correct_results(self):
         expected = [[17.94594168946985], [22.661771364450654],
                     [1.5187904797527412], [4.843789987597693], [50.0],
                     [20.77386459830305], [0.0]]
-        results = normalize([[183.32], [231.23], [16.43], [50.21], [508.97],
-                             [212.05], [1.0]], 50)
+        results = tg.normalize([[183.32], [231.23], [16.43], [50.21], [508.97],
+                                [212.05], [1.0]], 50)
         assert results == expected
 
     def test_horizontal_rows_yields_correct_values(self):
@@ -49,7 +49,7 @@ class TermgraphTest(unittest.TestCase):
         colors = []
         
         rows = []
-        for row in horiontal_rows(labels, data, normal_dat, args, colors):
+        for row in tg.horiontal_rows(labels, data, normal_dat, args, colors):
             rows.append(row)
         assert rows == [(183.32, 17, 1.0, None), (231.23, 22, 1.0, None),
                         (16.43, 1, 1.0, None), (50.21, 4, 1.0, None),
@@ -58,7 +58,7 @@ class TermgraphTest(unittest.TestCase):
 
     def test_print_row_prints_correct_block_count(self):
         with patch('sys.stdout', new=StringIO()) as output:
-            print_row('2007: 183.32', 17, 1.0, None)
+            tg.print_row('2007: 183.32', 17, 1.0, None)
             output = output.getvalue().strip()
             assert output == '▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇'
 
@@ -108,6 +108,6 @@ class TermgraphTest(unittest.TestCase):
                     'different_scale': False, 'calendar': True,
                     'start_dt': '2017-07-01', 'custom_tick': '',
                     'delim': '', 'verbose': False, 'version': False}
-            calendar_heatmap(data, labels, args)
+            tg.calendar_heatmap(data, labels, args)
             output = output.getvalue().strip()
             assert output == 'Jun Jul Aug Sep Oct Nov Dec Jan Feb Mar Apr May Jun \nMon: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nTue: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nWed: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\nThu: \x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▓\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nFri: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nSat: \x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m░\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▓\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m█\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nSun: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m'
