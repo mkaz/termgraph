@@ -4,6 +4,9 @@ from io import StringIO
 from termgraph import termgraph as tg
 
 class TermgraphTest(unittest.TestCase):
+    def test_initArgs(self):
+        tg.initArgs()
+    
     def test_main(self):
         pass
 
@@ -32,6 +35,19 @@ class TermgraphTest(unittest.TestCase):
                                 [212.05], [1.0]], 50)
         assert results == expected
 
+    def test_normalize_with_negative_datapoint_returns_correct_results(self):
+        expected = [[18.625354066709058], [23.241227816636798],
+                    [2.546389964737846], [5.8009133475923464], [50.0],
+                    [21.393336801741913], [0.0]]
+        results = tg.normalize([[183.32], [231.23], [16.43], [50.21], [508.97],
+                                [212.05], [-10.0]], 50)
+        assert results == expected
+
+    def test_normalize_with_larger_width_does_not_normalize(self):
+        expected = [[183.32], [231.23], [16.43], [50.21], [508.97], [212.05], [1.0]]
+        results = tg.normalize(expected, 20000)
+        assert results == expected
+
     def test_horizontal_rows_yields_correct_values(self):
         labels = ['2007', '2008', '2009', '2010', '2011',
                   '2012', '2014']
@@ -55,6 +71,72 @@ class TermgraphTest(unittest.TestCase):
                         (16.43, 1, 1.0, None), (50.21, 4, 1.0, None),
                         (508.97, 50, 1.0, None), (212.05, 20, 1.0, None),
                         (1.0, 0, 1.0, None)]
+    
+    def test_horizontal_rows_no_labels_yields_no_labels(self):
+        with patch('sys.stdout', new=StringIO()) as output:
+            labels = ['2007', '2008', '2009', '2010', '2011',
+                      '2012', '2014']
+            data = [[183.32], [231.23], [16.43], [50.21], [508.97],
+                    [212.05], [1.0]]
+            normal_dat = [[17.94594168946985], [22.661771364450654],
+                          [1.5187904797527412], [4.843789987597693],
+                          [50.0], [20.77386459830305], [0.0]]
+            args = {'filename': 'data/ex1.dat', 'title': None,
+                    'width': 50, 'format': '{:<5.2f}', 'suffix': '',
+                    'no_labels': True, 'color': None, 'vertical': False,
+                    'stacked': False, 'different_scale': False,
+                    'calendar': False, 'start_dt': None, 'custom_tick': '',
+                    'delim': '', 'verbose': False, 'version': False}
+            colors = []
+            
+            rows = []
+            for row in tg.horiontal_rows(labels, data, normal_dat, args, colors):
+                rows.append(row)
+            assert rows == [(183.32, 17, 1.0, None), (231.23, 22, 1.0, None),
+                            (16.43, 1, 1.0, None), (50.21, 4, 1.0, None),
+                            (508.97, 50, 1.0, None), (212.05, 20, 1.0, None),
+                            (1.0, 0, 1.0, None)]
+            output = output.getvalue().strip()
+            assert output == '183.32\n 231.23\n 16.43\n 50.21\n 508.97\n 212.05\n 1.00'
+
+    def test_horizontal_rows_multiple_series_only_has_label_at_beginning(self):
+        with patch('sys.stdout', new=StringIO()) as output:
+            labels = ['2007', '2008', '2009', '2010', '2011',
+                      '2012', '2014']
+            data = [[183.32, 190.52, 90.0], [231.23, 50.0, 80.6],
+                    [16.43, 53.1, 76.54], [50.21, 7.0, 0.0], [508.97, 10.45, 7.0],
+                    [212.05, 20.2, -4.4], [30.0, 9.0, 9.8]]
+            normal_dat = [[99.4279661016949, 103.2415254237288, 49.99999999999999],
+                          [124.80402542372879, 28.813559322033893, 45.02118644067796],
+                          [11.032838983050844, 30.455508474576266, 42.87076271186441],
+                          [28.924788135593214, 6.038135593220338, 2.330508474576271],
+                          [271.9120762711864, 7.865466101694914, 6.038135593220338],
+                          [114.64512711864406, 13.02966101694915, 0.0],
+                          [18.220338983050844, 7.097457627118644, 7.521186440677965]]
+            args = {'filename': 'data/ex5.dat', 'title': None, 'width': 50,
+                    'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                    'color': None, 'vertical': False, 'stacked': False,
+                    'different_scale': False, 'calendar': False, 'start_dt': None,
+                    'custom_tick': '', 'delim': '', 'verbose': False,
+                    'version': False}
+            colors = [None, None, None]
+            
+            rows = []
+            for row in tg.horiontal_rows(labels, data, normal_dat, args, colors):
+                rows.append(row)
+            assert rows == [(183.32, 99, -4.4, None), (190.52, 103, -4.4, None),
+                            (90.0, 49, -4.4, None), (231.23, 124, -4.4, None),
+                            (50.0, 28, -4.4, None), (80.6, 45, -4.4, None),
+                            (16.43, 11, -4.4, None), (53.1, 30, -4.4, None),
+                            (76.54, 42, -4.4, None), (50.21, 28, -4.4, None),
+                            (7.0, 6, -4.4, None), (0.0, 2, -4.4, None),
+                            (508.97, 271, -4.4, None), (10.45, 7, -4.4, None),
+                            (7.0, 6, -4.4, None), (212.05, 114, -4.4, None),
+                            (20.2, 13, -4.4, None), (-4.4, 0, -4.4, None),
+                            (30.0, 18, -4.4, None), (9.0, 7, -4.4, None),
+                            (9.8, 7, -4.4, None)]
+            output = output.getvalue().strip()
+            assert output == '2007:  183.32\n       190.52\n       90.00\n2008:  231.23\n       50.00\n       80.60\n2009:  16.43\n       53.10\n       76.54\n2010:  50.21\n       7.00 \n       0.00 \n2011:  508.97\n       10.45\n       7.00 \n2012:  212.05\n       20.20\n       -4.40\n2014:  30.00\n       9.00 \n       9.80'
 
     def test_print_row_prints_correct_block_count(self):
         with patch('sys.stdout', new=StringIO()) as output:
