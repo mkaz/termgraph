@@ -62,26 +62,93 @@ class TermgraphTest(unittest.TestCase):
             output = output.getvalue().strip()
             assert output == '▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇'
 
-    def test_stacked_graph(self):
-        pass
+    def test_stacked_graph_prints_correct_graph(self):
+        with patch('sys.stdout', new=StringIO()) as output:
+            labels = ['2007', '2008', '2009', '2010', '2011', '2012', '2014']
+            data = [[183.32, 190.52], [231.23, 5.0], [16.43, 53.1], [50.21, 7.0],
+                    [508.97, 10.45], [212.05, 20.2], [30.0, 20.0]]
+            normal_data = [[48.059508408796894, 50.0], [60.971862871927556, 0.0],
+                           [3.080530401034929, 12.963561880120743],
+                           [12.184670116429496, 0.5390254420008624],
+                           [135.82632600258734, 1.4688443294523499],
+                           [55.802608883139285, 4.096593359206555],
+                           [6.737818025010781, 4.042690815006468]]
+            len_categories = 2
+            args = {'filename': 'data/ex4.dat', 'title': None, 'width': 50,
+                    'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                    'color': None, 'vertical': False, 'stacked': True,
+                    'different_scale': False, 'calendar': False,
+                    'start_dt': None, 'custom_tick': '', 'delim': '',
+                    'verbose': False, 'version': False}
+            colors = [91, 94]
+            tg.stacked_graph(labels, data, normal_data, len_categories, args,
+                             colors)
+            output = output.getvalue().strip()
+            assert output == '2007: [91m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇[0m[94m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇[0m 373.84\n2008: [91m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇[0m[94m▏[0m 236.23\n2009: [91m▇▇▇[0m[94m▇▇▇▇▇▇▇▇▇▇▇▇[0m 69.53\n2010: [91m▇▇▇▇▇▇▇▇▇▇▇▇[0m[94m▏[0m 57.21\n2011: [91m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇[0m[94m▇[0m 519.42\n2012: [91m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇[0m[94m▇▇▇▇[0m 232.25\n2014: [91m▇▇▇▇▇▇[0m[94m▇▇▇▇[0m 50.00'
 
-    def test_vertically(self):
-        pass
+    def test_vertically_returns_correct_result(self):
+        value = 2.0
+        num_blocks = 2
+        val_min = 2.0
+        color = None
+        result = tg.vertically(value, num_blocks, val_min, color)
+        assert result == [('▇',), ('▇',)]
 
     def test_print_vertical(self):
         pass
 
-    def test_chart(self):
-        pass
+    def test_chart_prints_correct_chart(self):
+        with patch('sys.stdout', new=StringIO()) as output:
+            colors = []
+            data = [[183.32], [231.23], [16.43], [50.21], [508.97],
+                    [212.05], [1.0]]
+            args = {'filename': 'data/ex1.dat', 'title': None, 'width': 50,
+                    'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                    'color': None, 'vertical': False, 'stacked': False,
+                    'different_scale': False, 'calendar': False,
+                    'start_dt': None, 'custom_tick': '', 'delim': '',
+                    'verbose': False, 'version': False}
+            labels = ['2007', '2008', '2009', '2010', '2011', '2012', '2014']
+            tg.chart(colors, data, args, labels)
+            output = output.getvalue().strip()
+            assert output == '2007: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 183.32\n2008: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 231.23\n2009: ▇ 16.43\n2010: ▇▇▇▇ 50.21\n2011: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 508.97\n2012: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 212.05\n2014: ▏ 1.00'
 
-    def test_check_data(self):
-        pass
+    def test_check_data_returns_correct_result(self):
+        labels = ['2007', '2008', '2009', '2010', '2011', '2012', '2014']
+        data = [[183.32], [231.23], [16.43], [50.21], [508.97],
+                [212.05], [1.0]]
+        args = {'filename': 'data/ex1.dat', 'title': None, 'width': 50,
+                'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                'color': None, 'vertical': False, 'stacked': False,
+                'different_scale': False, 'calendar': False,
+                'start_dt': None, 'custom_tick': '', 'delim': '',
+                'verbose': False, 'version': False}
+        result = tg.check_data(labels, data, args)
+        assert result == []
 
-    def test_print_categories(self):
-        pass
+    def test_print_categories_prints_correct_categories(self):
+        with patch('sys.stdout', new=StringIO()) as output:
+            categories = ['Boys', 'Girls']
+            colors = [91, 94]
+            tg.print_categories(categories, colors)
+            output = output.getvalue().strip()
+            assert output == "\x1b[91m▇ Boys  \x1b[0m\x1b[94m▇ Girls  \x1b[0m"
 
-    def test_read_data(self):
-        pass
+    def test_read_data_returns_correct_results(self):
+        args = {'filename': 'data/ex4.dat', 'title': None, 'width': 50,
+                'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                'color': None, 'vertical': False, 'stacked': False,
+                'different_scale': False, 'calendar': False, 'start_dt': None,
+                'custom_tick': '', 'delim': '', 'verbose': False,
+                'version': False}
+        categories, labels, data, colors = tg.read_data(args)
+        assert categories == ['Boys', 'Girls']
+        assert labels == ['2007', '2008', '2009', '2010',
+                          '2011', '2012', '2014']
+        assert data == [[183.32, 190.52], [231.23, 5.0], [16.43, 53.1],
+                        [50.21, 7.0], [508.97, 10.45], [212.05, 20.2],
+                        [30.0, 20.0]]
+        assert colors == []
 
     def test_calendar_heatmap_prints_correct_heatmap(self):
         with patch('sys.stdout', new=StringIO()) as output:
