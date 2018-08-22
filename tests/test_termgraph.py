@@ -232,6 +232,18 @@ class TermgraphTest(unittest.TestCase):
                         [30.0, 20.0]]
         assert colors == []
 
+    def test_read_data_verbose(self):
+        with patch('sys.stdout', new=StringIO()) as output:
+            args = {'filename': 'data/ex1.dat', 'title': None, 'width': 50,
+                    'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                    'color': None, 'vertical': False, 'stacked': False,
+                    'different_scale': False, 'calendar': False, 'start_dt': None,
+                    'custom_tick': '', 'delim': '', 'verbose': True,
+                    'version': False}
+            tg.read_data(args)
+            output = output.getvalue().strip()
+            assert output == '>> Reading data from data/ex1.dat'
+
     def test_calendar_heatmap_prints_correct_heatmap(self):
         with patch('sys.stdout', new=StringIO()) as output:
             data = [[4.52], [4.81], [5.05], [2.0], [5.65], [5.15], [3.75],
