@@ -219,6 +219,54 @@ class TermgraphTest(unittest.TestCase):
             output = output.getvalue().strip()
             assert output == '2007: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 183.32\n2008: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 231.23\n2009: ▇ 16.43\n2010: ▇▇▇▇ 50.21\n2011: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 508.97\n2012: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 212.05\n2014: ▏ 1.00'
 
+    def test_chart_multiple_series_prints_correctly(self):
+        with patch('sys.stdout', new=StringIO()) as output:
+            colors = [91, 94]
+            data = [[183.32, 190.52], [231.23, 5.0], [16.43, 53.1], [50.21, 7.0],
+                    [508.97, 10.45], [212.05, 20.2], [30.0, 20.0]]
+            args = {'filename': 'data/ex4.dat', 'title': None, 'width': 50,
+                    'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                    'color': None, 'vertical': False, 'stacked': False,
+                    'different_scale': False, 'calendar': False,
+                    'start_dt': None, 'custom_tick': '', 'delim': '',
+                    'verbose': False, 'version': False}
+            labels = ['2007', '2008', '2009', '2010', '2011', '2012', '2014']
+            tg.chart(colors, data, args, labels)
+            output = output.getvalue().strip()
+            assert output == '2007: \x1b[91m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m 183.32\n      \x1b[94m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m 190.52\n2008: \x1b[91m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m 231.23\n      \x1b[94m▏\x1b[0m 5.00 \n2009: \x1b[91m▇▇▇\x1b[0m 16.43\n      \x1b[94m▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m 53.10\n2010: \x1b[91m▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m 50.21\n      \x1b[94m▏\x1b[0m 7.00 \n2011: \x1b[91m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m 508.97\n      \x1b[94m▇\x1b[0m 10.45\n2012: \x1b[91m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m 212.05\n      \x1b[94m▇▇▇▇\x1b[0m 20.20\n2014: \x1b[91m▇▇▇▇▇▇\x1b[0m 30.00\n      \x1b[94m▇▇▇▇\x1b[0m 20.00'
+
+    def test_chart_multiple_series_no_colors_prints_correctly(self):
+        with patch('sys.stdout', new=StringIO()) as output:
+            colors = []
+            data = [[183.32, 190.52], [231.23, 5.0], [16.43, 53.1], [50.21, 7.0],
+                    [508.97, 10.45], [212.05, 20.2], [30.0, 20.0]]
+            args = {'filename': 'data/ex4.dat', 'title': None, 'width': 50,
+                    'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                    'color': None, 'vertical': False, 'stacked': False,
+                    'different_scale': False, 'calendar': False,
+                    'start_dt': None, 'custom_tick': '', 'delim': '',
+                    'verbose': False, 'version': False}
+            labels = ['2007', '2008', '2009', '2010', '2011', '2012', '2014']
+            tg.chart(colors, data, args, labels)
+            output = output.getvalue().strip()
+            assert output == '2007: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 183.32\n      ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 190.52\n2008: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 231.23\n      ▏ 5.00 \n2009: ▇▇▇ 16.43\n      ▇▇▇▇▇▇▇▇▇▇▇▇ 53.10\n2010: ▇▇▇▇▇▇▇▇▇▇▇▇ 50.21\n      ▏ 7.00 \n2011: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 508.97\n      ▇ 10.45\n2012: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 212.05\n      ▇▇▇▇ 20.20\n2014: ▇▇▇▇▇▇ 30.00\n      ▇▇▇▇ 20.00'
+
+    def test_chart_multiple_series_different_scale_prints_correctly(self):
+        with patch('sys.stdout', new=StringIO()) as output:
+            colors = [91, 94]
+            data = [[183.32, 190.52], [231.23, 5.0], [16.43, 53.1], [50.21, 7.0],
+                    [508.97, 10.45], [212.05, 20.2], [30.0, 20.0]]
+            args = {'filename': 'data/ex4.dat', 'title': None, 'width': 50,
+                    'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                    'color': None, 'vertical': False, 'stacked': False,
+                    'different_scale': True, 'calendar': False,
+                    'start_dt': None, 'custom_tick': '', 'delim': '',
+                    'verbose': False, 'version': False}
+            labels = ['2007', '2008', '2009', '2010', '2011', '2012', '2014']
+            tg.chart(colors, data, args, labels)
+            output = output.getvalue().strip()
+            assert output == '2007: \x1b[91m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m 183.32\n2008: \x1b[91m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m 231.23\n2009: \x1b[91m▏\x1b[0m 16.43\n2010: \x1b[91m▇▇▇\x1b[0m 50.21\n2011: \x1b[91m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m 508.97\n2012: \x1b[91m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m 212.05\n2014: \x1b[91m▇\x1b[0m 30.00\n\n2007: \x1b[94m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m 190.52\n2008: \x1b[94m▏\x1b[0m 5.00 \n2009: \x1b[94m▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m 53.10\n2010: \x1b[94m▏\x1b[0m 7.00 \n2011: \x1b[94m▇\x1b[0m 10.45\n2012: \x1b[94m▇▇▇▇\x1b[0m 20.20\n2014: \x1b[94m▇▇▇▇\x1b[0m 20.00'
+
     def test_chart_stacked_prints_correctly(self):
         with patch('sys.stdout', new=StringIO()) as output:
             colors = [91, 94]
@@ -248,6 +296,92 @@ class TermgraphTest(unittest.TestCase):
         result = tg.check_data(labels, data, args)
         assert result == []
 
+    def test_check_data_with_color_returns_correct_result(self):
+        labels = ['2007', '2008', '2009', '2010', '2011', '2012', '2014']
+        data = [[183.32], [231.23], [16.43], [50.21], [508.97],
+                [212.05], [1.0]]
+        args = {'filename': 'data/ex1.dat', 'title': None, 'width': 50,
+                'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                'color': ['red'], 'vertical': False, 'stacked': False,
+                'different_scale': False, 'calendar': False,
+                'start_dt': None, 'custom_tick': '', 'delim': '',
+                'verbose': False, 'version': False}
+        result = tg.check_data(labels, data, args)
+        assert result == [91]
+
+    def test_check_data_stacked_with_no_color_returns_correct_result(self):
+        labels = ['2007', '2008', '2009', '2010', '2011', '2012', '2014']
+        data = [[183.32, 190.52], [231.23, 5.0], [16.43, 53.1], [50.21, 7.0],
+                [508.97, 10.45], [212.05, 20.2], [30.0, 20.0]]
+        args = {'filename': 'data/ex4.dat', 'title': None, 'width': 50,
+                'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                'color': None, 'vertical': False, 'stacked': True,
+                'different_scale': False, 'calendar': False,
+                'start_dt': None, 'custom_tick': '', 'delim': '',
+                'verbose': False, 'version': False}
+        result = tg.check_data(labels, data, args)
+        assert result == [91, 94]
+
+    def test_check_data_vertical_multiple_series_same_scale_exits_with_one(self):
+        labels = ['2007', '2008', '2009', '2010', '2011', '2012', '2014']
+        data = [[183.32, 190.52], [231.23, 5.0], [16.43, 53.1], [50.21, 7.0],
+                [508.97, 10.45], [212.05, 20.2], [30.0, 20.0]]
+        args = {'filename': 'data/ex4.dat', 'title': None, 'width': 50,
+                'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                'color': None, 'vertical': True, 'stacked': False,
+                'different_scale': False, 'calendar': False,
+                'start_dt': None, 'custom_tick': '', 'delim': '',
+                'verbose': False, 'version': False}
+        with self.assertRaises(SystemExit) as cm:
+            tg.check_data(labels, data, args)
+
+        self.assertEqual(cm.exception.code, 1)
+
+    def test_check_data_mismatching_color_and_category_count_exits_with_one(self):
+        labels = ['2007', '2008', '2009', '2010', '2011', '2012', '2014']
+        data = [[183.32], [231.23], [16.43], [50.21], [508.97],
+                [212.05], [1.0]]
+        args = {'filename': 'data/ex1.dat', 'title': None, 'width': 50,
+                'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                'color': ['red', 'blue'], 'vertical': False, 'stacked': False,
+                'different_scale': False, 'calendar': False,
+                'start_dt': None, 'custom_tick': '', 'delim': '',
+                'verbose': False, 'version': False}
+        with self.assertRaises(SystemExit) as cm:
+            tg.check_data(labels, data, args)
+
+        self.assertEqual(cm.exception.code, 1)
+
+    def test_check_data_mismatching_data_and_labels_count_exits_with_one(self):
+        labels = ['2007', '2008', '2009', '2010', '2011', '2012', '2014']
+        data = [[183.32], [231.23], [16.43], [50.21], [508.97],
+                [212.05]]
+        args = {'filename': 'data/ex1.dat', 'title': None, 'width': 50,
+                'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                'color': None, 'vertical': False, 'stacked': False,
+                'different_scale': False, 'calendar': False,
+                'start_dt': None, 'custom_tick': '', 'delim': '',
+                'verbose': False, 'version': False}
+        with self.assertRaises(SystemExit) as cm:
+            tg.check_data(labels, data, args)
+
+        self.assertEqual(cm.exception.code, 1)
+
+    def test_check_data_missing_data_for_categories_count_exits_with_one(self):
+        labels = ['2007', '2008', '2009', '2010', '2011', '2012', '2014']
+        data = [[183.32, 190.52], [231.23, 5.0], [16.43, 53.1], [50.21, 7.0],
+                [508.97, 10.45], [212.05], [30.0, 20.0]]
+        args = {'filename': 'data/ex4.dat', 'title': None, 'width': 50,
+                'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                'color': None, 'vertical': False, 'stacked': False,
+                'different_scale': False, 'calendar': False,
+                'start_dt': None, 'custom_tick': '', 'delim': '',
+                'verbose': False, 'version': False}
+        with self.assertRaises(SystemExit) as cm:
+            tg.check_data(labels, data, args)
+
+        self.assertEqual(cm.exception.code, 1)
+
     def test_print_categories_prints_correct_categories(self):
         with patch('sys.stdout', new=StringIO()) as output:
             categories = ['Boys', 'Girls']
@@ -271,6 +405,18 @@ class TermgraphTest(unittest.TestCase):
                         [50.21, 7.0], [508.97, 10.45], [212.05, 20.2],
                         [30.0, 20.0]]
         assert colors == []
+
+    def test_read_data_with_title_prints_title(self):
+        with patch('sys.stdout', new=StringIO()) as output:
+            args = {'filename': 'data/ex4.dat', 'title': 'spaghetti', 'width': 50,
+                    'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                    'color': None, 'vertical': False, 'stacked': False,
+                    'different_scale': False, 'calendar': False, 'start_dt': None,
+                    'custom_tick': '', 'delim': '', 'verbose': False,
+                    'version': False}
+            tg.read_data(args)
+            output = output.getvalue().strip()
+            assert output == '# spaghetti\n\n▇ Boys  \x1b[0m▇ Girls  \x1b[0m'
 
     def test_read_data_verbose(self):
         with patch('sys.stdout', new=StringIO()) as output:
@@ -312,3 +458,93 @@ class TermgraphTest(unittest.TestCase):
             tg.calendar_heatmap(data, labels, args)
             output = output.getvalue().strip()
             assert output == 'Jun Jul Aug Sep Oct Nov Dec Jan Feb Mar Apr May Jun \nMon: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nTue: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nWed: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\nThu: \x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▓\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nFri: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nSat: \x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m░\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▓\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m█\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nSun: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m'
+
+    def test_calendar_heatmap_color_prints_correctly(self):
+        with patch('sys.stdout', new=StringIO()) as output:
+            data = [[4.52], [4.81], [5.05], [2.0], [5.65], [5.15], [3.75],
+                    [3.72], [5.04], [4.6], [4.77], [5.44], [4.3], [4.84],
+                    [6.31], [4.31], [4.15], [5.19], [3.65], [4.01], [7.19],
+                    [4.21], [4.58], [8.09], [4.04], [4.29], [4.69], [4.31],
+                    [5.05], [13.1], [3.6], [4.7], [3.77], [3.8], [3.54],
+                    [3.42], [3.31], [3.55], [3.43], [3.79], [4.26]]
+            labels = ['2017-07-01', '2017-07-06', '2017-07-08', '2017-07-15',
+                      '2017-07-17', '2017-07-19', '2017-07-21', '2017-08-02',
+                      '2017-08-03', '2017-08-05', '2017-08-08', '2017-08-10',
+                      '2017-08-18', '2017-08-24', '2017-08-27', '2017-08-31',
+                      '2017-09-06', '2017-09-08', '2017-09-10', '2017-09-13',
+                      '2017-09-16', '2017-09-21', '2017-09-25', '2017-09-28',
+                      '2017-10-02', '2017-10-09', '2017-10-13', '2017-10-18',
+                      '2017-10-22', '2017-10-28', '2017-11-01', '2017-11-10',
+                      '2018-02-06', '2018-03-05', '2018-03-07', '2018-05-16',
+                      '2018-05-21', '2018-06-11', '2018-06-13', '2018-06-16',
+                      '2018-06-20']
+            args = {'filename': 'data/cal.dat', 'title': None, 'width': 50,
+                    'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                    'color': ['red'], 'vertical': False, 'stacked': False,
+                    'different_scale': False, 'calendar': True,
+                    'start_dt': '2017-07-01', 'custom_tick': '',
+                    'delim': '', 'verbose': False, 'version': False}
+            tg.calendar_heatmap(data, labels, args)
+            output = output.getvalue().strip()
+            assert output == 'Jun Jul Aug Sep Oct Nov Dec Jan Feb Mar Apr May Jun \nMon: \x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m▒\x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\nTue: \x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\nWed: \x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\nThu: \x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m▓\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\nFri: \x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\nSat: \x1b[91m▒\x1b[0m\x1b[91m▒\x1b[0m\x1b[91m░\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▓\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m█\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\nSun: \x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m▒\x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m\x1b[91m \x1b[0m'
+
+    def test_calendar_heatmap_custom_tick_prints_correctly(self):
+        with patch('sys.stdout', new=StringIO()) as output:
+            data = [[4.52], [4.81], [5.05], [2.0], [5.65], [5.15], [3.75],
+                    [3.72], [5.04], [4.6], [4.77], [5.44], [4.3], [4.84],
+                    [6.31], [4.31], [4.15], [5.19], [3.65], [4.01], [7.19],
+                    [4.21], [4.58], [8.09], [4.04], [4.29], [4.69], [4.31],
+                    [5.05], [13.1], [3.6], [4.7], [3.77], [3.8], [3.54],
+                    [3.42], [3.31], [3.55], [3.43], [3.79], [4.26]]
+            labels = ['2017-07-01', '2017-07-06', '2017-07-08', '2017-07-15',
+                      '2017-07-17', '2017-07-19', '2017-07-21', '2017-08-02',
+                      '2017-08-03', '2017-08-05', '2017-08-08', '2017-08-10',
+                      '2017-08-18', '2017-08-24', '2017-08-27', '2017-08-31',
+                      '2017-09-06', '2017-09-08', '2017-09-10', '2017-09-13',
+                      '2017-09-16', '2017-09-21', '2017-09-25', '2017-09-28',
+                      '2017-10-02', '2017-10-09', '2017-10-13', '2017-10-18',
+                      '2017-10-22', '2017-10-28', '2017-11-01', '2017-11-10',
+                      '2018-02-06', '2018-03-05', '2018-03-07', '2018-05-16',
+                      '2018-05-21', '2018-06-11', '2018-06-13', '2018-06-16',
+                      '2018-06-20']
+            args = {'filename': 'data/cal.dat', 'title': None, 'width': 50,
+                    'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                    'color': None, 'vertical': False, 'stacked': False,
+                    'different_scale': False, 'calendar': True,
+                    'start_dt': '2017-07-01', 'custom_tick': '😮',
+                    'delim': '', 'verbose': False, 'version': False}
+            tg.calendar_heatmap(data, labels, args)
+            output = output.getvalue().strip()
+            assert output == 'Jun  Jul  Aug  Sep  Oct  Nov  Dec  Jan  Feb  Mar  Apr  May  Jun  \nMon: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m😮\x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nTue: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nWed: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\nThu: \x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nFri: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nSat: \x1b[94m😮\x1b[0m\x1b[94m😮\x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nSun: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m😮\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m'
+
+    def test_calendar_heatmap_without_start_date_prints_correctly(self):
+        with patch('sys.stdout', new=StringIO()) as output:
+            data = [[4.52], [4.81], [5.05], [2.0], [5.65], [5.15], [3.75],
+                    [3.72], [5.04], [4.6], [4.77], [5.44], [4.3], [4.84],
+                    [6.31], [4.31], [4.15], [5.19], [3.65], [4.01], [7.19],
+                    [4.21], [4.58], [8.09], [4.04], [4.29], [4.69], [4.31],
+                    [5.05], [13.1], [3.6], [4.7], [3.77], [3.8], [3.54],
+                    [3.42], [3.31], [3.55], [3.43], [3.79], [4.26]]
+            labels = ['2017-07-01', '2017-07-06', '2017-07-08', '2017-07-15',
+                      '2017-07-17', '2017-07-19', '2017-07-21', '2017-08-02',
+                      '2017-08-03', '2017-08-05', '2017-08-08', '2017-08-10',
+                      '2017-08-18', '2017-08-24', '2017-08-27', '2017-08-31',
+                      '2017-09-06', '2017-09-08', '2017-09-10', '2017-09-13',
+                      '2017-09-16', '2017-09-21', '2017-09-25', '2017-09-28',
+                      '2017-10-02', '2017-10-09', '2017-10-13', '2017-10-18',
+                      '2017-10-22', '2017-10-28', '2017-11-01', '2017-11-10',
+                      '2018-02-06', '2018-03-05', '2018-03-07', '2018-05-16',
+                      '2018-05-21', '2018-06-11', '2018-06-13', '2018-06-16',
+                      '2018-06-20']
+            args = {'filename': 'data/cal.dat', 'title': None, 'width': 50,
+                    'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                    'color': None, 'vertical': False, 'stacked': False,
+                    'different_scale': False, 'calendar': True,
+                    'start_dt': None, 'custom_tick': '',
+                    'delim': '', 'verbose': False, 'version': False}
+            tg.calendar_heatmap(data, labels, args)
+            output = output.getvalue().strip()
+            #file = open('/tmp/file.txt', 'w')
+            #file.write(repr(output))
+            #file.close()
+            assert output == 'Aug Sep Oct Nov Dec Jan Feb Mar Apr May Jun Jul Aug \nMon: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nTue: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nWed: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nThu: \x1b[94m▒\x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m▓\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nFri: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nSat: \x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▓\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m█\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\nSun: \x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m▒\x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m\x1b[94m \x1b[0m'
