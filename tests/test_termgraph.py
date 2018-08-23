@@ -6,7 +6,7 @@ from termgraph import termgraph as tg
 class TermgraphTest(unittest.TestCase):
     def test_initArgs(self):
         tg.initArgs()
-    
+
     def test_main(self):
         pass
 
@@ -63,7 +63,7 @@ class TermgraphTest(unittest.TestCase):
                 'calendar': False, 'start_dt': None, 'custom_tick': '',
                 'delim': '', 'verbose': False, 'version': False}
         colors = []
-        
+
         rows = []
         for row in tg.horiontal_rows(labels, data, normal_dat, args, colors):
             rows.append(row)
@@ -88,7 +88,7 @@ class TermgraphTest(unittest.TestCase):
                     'calendar': False, 'start_dt': None, 'custom_tick': '',
                     'delim': '', 'verbose': False, 'version': False}
             colors = []
-            
+
             rows = []
             for row in tg.horiontal_rows(labels, data, normal_dat, args, colors):
                 rows.append(row)
@@ -120,7 +120,7 @@ class TermgraphTest(unittest.TestCase):
                     'custom_tick': '', 'delim': '', 'verbose': False,
                     'version': False}
             colors = [None, None, None]
-            
+
             rows = []
             for row in tg.horiontal_rows(labels, data, normal_dat, args, colors):
                 rows.append(row)
