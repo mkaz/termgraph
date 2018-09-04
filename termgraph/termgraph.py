@@ -121,10 +121,13 @@ def normalize( data, width ):
         # is less than the width we allow.
         return off_data
 
-    norm_factor = width / float( max_dat - min_dat )
+    # max_dat / width is the value for a single tick. norm_factor is the inverse of this value
+    # If you divide a number to the value of single tick, you will find how many ticks it does
+    # contain basically.
+    norm_factor = width / float(max_dat)
     normal_dat = []
     for dat in off_data:
-        normal_dat.append( [ ( _v - min_dat ) * norm_factor for _v in dat ] )
+        normal_dat.append( [ _v * norm_factor for _v in dat ] )
     return normal_dat
 
 # Prepares the horizontal graph.
