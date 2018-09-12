@@ -343,7 +343,8 @@ def print_categories( categories, colors ):
         if colors:
             sys.stdout.write( f'\033[{colors[i]}m' ) # Start to write colorized.
         sys.stdout.write( TICK + ' ' + categories[i] + '  ' )
-        sys.stdout.write( '\033[0m' ) # Back to original.
+        if colors:
+            sys.stdout.write( '\033[0m' ) # Back to original.
     print( '\n\n' )
 
 # Reads data from a file or stdin and returns them.
