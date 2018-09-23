@@ -14,7 +14,7 @@ import random
 import argparse
 import sys
 
-VERSION='0.1.3'
+VERSION='0.1.4'
 
 init()
 
