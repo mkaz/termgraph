@@ -204,7 +204,7 @@ value_list, zipped_list, vertical_list, maxi = [], [], [], 0
 
 # Prepares the vertical graph.
 # The whole graph is printed through the print_vertical function.
-def vertically( value, num_blocks, val_min, color ):
+def vertically( value, num_blocks, val_min, color, args ):
     global maxi, value_list
 
     value_list.append( str( value ) )
@@ -283,7 +283,7 @@ def chart( colors, data, args, labels ):
                         if not args['vertical']:
                             print_row( *row )
                         else:
-                            vertic = vertically( *row )
+                            vertic = vertically( *row, args=args )
                     # Vertical graph
                     if args['vertical']:
                         print_vertical( vertic, labels, colors[i], args )
@@ -298,7 +298,7 @@ def chart( colors, data, args, labels ):
                 if not args['vertical']:
                     print_row( *row )
                 else:
-                    vertic = vertically( *row )
+                    vertic = vertically( *row, args=args )
             if args['vertical'] and len_categories == 1:
                 if colors:
                     color = colors[0]
@@ -343,7 +343,8 @@ def print_categories( categories, colors ):
         if colors:
             sys.stdout.write( f'\033[{colors[i]}m' ) # Start to write colorized.
         sys.stdout.write( TICK + ' ' + categories[i] + '  ' )
-        sys.stdout.write( '\033[0m' ) # Back to original.
+        if colors:
+            sys.stdout.write( '\033[0m' ) # Back to original.
     print( '\n\n' )
 
 # Reads data from a file or stdin and returns them.
