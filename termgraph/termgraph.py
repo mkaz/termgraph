@@ -38,7 +38,7 @@ except NameError:
     pass
 
 # Parses and returns arguments.
-def initArgs():
+def init_args():
     parser = argparse.ArgumentParser(description='draw basic graphs on terminal')
     parser.add_argument(
         'filename',
@@ -136,7 +136,7 @@ def initArgs():
 
 # Main function
 def main():
-    args = initArgs()
+    args = init_args()
 
     if args['version']:
         print('termgraph v{}'.format(VERSION))
@@ -149,15 +149,15 @@ def main():
         chart(colors, data, args, labels)
 
 # Return minimum value in list of list
-def findMin(a):
+def find_min(a):
     return min([b[-1] for b in a])
 
 # Return maximum value in list of list
-def findMax(a):
+def find_max(a):
     return max([b[-1] for b in a])
 
 # Return maximum length for lebels
-def findMaxLabelLength(a):
+def find_max_label_length(a):
     s = 0
     for i in range(len(a)):
         if len(a[i]) > s:
@@ -166,7 +166,7 @@ def findMaxLabelLength(a):
 
 # Normalizes data and returns them.
 def normalize(data, width):
-    min_dat = findMin(data)
+    min_dat = find_min(data)
     # We offset by the minimum if there's a negative.
     off_data = []
     if min_dat < 0:
@@ -175,8 +175,8 @@ def normalize(data, width):
             off_data.append([_d + min_dat for _d in dat])
     else:
         off_data = data
-    min_dat = findMin(off_data)
-    max_dat = findMax(off_data)
+    min_dat = find_min(off_data)
+    max_dat = find_max(off_data)
 
     if max_dat < width:
         # Don't need to normalize if the max value
@@ -195,14 +195,14 @@ def normalize(data, width):
 # Prepares the horizontal graph.
 # Each row is printed through print_row function.
 def horiz_rows(labels, data, normal_dat, args, colors):
-    val_min = findMin(data)
+    val_min = find_min(data)
 
     for i in range(len(labels)):
         if args['no_labels']:
             # Hide the labels.
             label = ''
         else:
-            label = "{:<{x}}: ".format(labels[i], x=findMaxLabelLength(labels))
+            label = "{:<{x}}: ".format(labels[i], x=find_max_label_length(labels))
 
         values = data[i]
         num_blocks = normal_dat[i]
@@ -248,7 +248,7 @@ def print_row(value, num_blocks, val_min, color):
 # Prepares the horizontal Stacked graph.
 # Each row is printed through print_row function.
 def stacked_graph(labels, data, normal_data, len_categories, args, colors):
-    val_min = findMin(data)
+    val_min = find_min(data)
 
     for i in range(len(labels)):
         if args['no_labels']:
