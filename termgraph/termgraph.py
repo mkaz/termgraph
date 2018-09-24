@@ -4,15 +4,14 @@
 # termgraph.py - draw basic graphs on terminal
 # https://github.com/mkaz/termgraph
 
-from __future__ import print_function
-from colorama import init
-from itertools import *
-from datetime import datetime
-from datetime import timedelta
-import random
-
 import argparse
 import sys
+import random
+from datetime import datetime, timedelta
+from itertools import *
+from __future__ import print_function
+from colorama import init
+
 
 VERSION = '0.1.4'
 
