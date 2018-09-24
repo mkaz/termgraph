@@ -474,12 +474,12 @@ def calendar_heatmap(data, labels, args):
     else:
         colornum = AVAILABLE_COLORS.get('blue')
 
-    dtdict = {}
+    dt_dict = {}
     for i in range(len(labels)):
-        dtdict[labels[i]] = data[i][0]
+        dt_dict[labels[i]] = data[i][0]
 
     # get max value
-    maxval = float(max(data)[0])
+    max_val = float(max(data)[0])
 
     tick_1 = "░"
     tick_2 = "▒"
@@ -491,20 +491,20 @@ def calendar_heatmap(data, labels, args):
 
     # check if start day set, otherwise use one year ago
     if args['start_dt']:
-        st_day = datetime.strptime(args['start_dt'], '%Y-%m-%d')
+        start_dt = datetime.strptime(args['start_dt'], '%Y-%m-%d')
     else:
-        st = datetime.now()
-        st_day = datetime(year=st.year-1, month=st.month, day=st.day)
+        start = datetime.now()
+        start_dt = datetime(year=start.year-1, month=start.month, day=start.day)
 
     # modify start date to be a Monday, subtract weekday() from day
-    st_day = st_day - timedelta(st_day.weekday())
+    start_dt = start_dt - timedelta(start_dt.weekday())
 
     # TODO: legend doesn't line up properly for all start dates/data
     # top legend for months
     sys.stdout.write("     ")
-    for mo in range(13):
-        mo_dt = datetime(year=st_day.year, month=st_day.month, day=1) + timedelta(days=mo*31)
-        sys.stdout.write(mo_dt.strftime("%b") + " ")
+    for month in range(13):
+        month_dt = datetime(year=start_dt.year, month=start_dt.month, day=1) + timedelta(days=month*31)
+        sys.stdout.write(month_dt.strftime("%b") + " ")
         if args['custom_tick']: #assume custom tick is emoji which is one wider
             sys.stdout.write(" ")
     sys.stdout.write('\n')
@@ -512,24 +512,24 @@ def calendar_heatmap(data, labels, args):
     for day in range(7):
         sys.stdout.write(DAYS[day] + ': ')
         for week in range(53):
-            d = st_day + timedelta(days=day + week*7)
-            dstr = d.strftime("%Y-%m-%d")
+            day_ = start_dt + timedelta(days=day + week*7)
+            day_str = day_.strftime("%Y-%m-%d")
 
-            if dstr in dtdict:
-                if dtdict[dstr] > maxval * 0.75:
-                    T = tick_4
-                elif dtdict[dstr] > maxval * 0.50:
-                    T = tick_3
-                elif dtdict[dstr] > maxval * 0.25:
-                    T = tick_2
+            if day_str in dt_dict:
+                if dt_dict[day_str] > max_val * 0.75:
+                    tick = tick_4
+                elif dt_dict[day_str] > max_val * 0.50:
+                    tick = tick_3
+                elif dt_dict[day_str] > max_val * 0.25:
+                    tick = tick_2
                 else:
-                    T = tick_1
+                    tick = tick_1
             else:
-                T = ' '
+                tick = ' '
 
             if colornum:
                 sys.stdout.write(f'\033[{colornum}m')
-            sys.stdout.write(T)
+            sys.stdout.write(tick)
             if colornum:
                 sys.stdout.write('\033[0m')
         sys.stdout.write('\n')
