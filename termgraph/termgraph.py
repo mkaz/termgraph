@@ -9,8 +9,7 @@ import argparse
 import sys
 import random
 from datetime import datetime, timedelta
-from itertools import *
-from __future__ import print_function
+from itertools import zip_longest
 from colorama import init
 
 
