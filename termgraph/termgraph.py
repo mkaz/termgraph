@@ -14,7 +14,7 @@ import random
 import argparse
 import sys
 
-VERSION='0.1.3'
+VERSION='0.1.4'
 
 init()
 
@@ -121,10 +121,13 @@ def normalize( data, width ):
         # is less than the width we allow.
         return off_data
 
-    norm_factor = width / float( max_dat - min_dat )
+    # max_dat / width is the value for a single tick. norm_factor is the inverse of this value
+    # If you divide a number to the value of single tick, you will find how many ticks it does
+    # contain basically.
+    norm_factor = width / float(max_dat)
     normal_dat = []
     for dat in off_data:
-        normal_dat.append( [ ( _v - min_dat ) * norm_factor for _v in dat ] )
+        normal_dat.append( [ _v * norm_factor for _v in dat ] )
     return normal_dat
 
 # Prepares the horizontal graph.
@@ -204,7 +207,7 @@ value_list, zipped_list, vertical_list, maxi = [], [], [], 0
 
 # Prepares the vertical graph.
 # The whole graph is printed through the print_vertical function.
-def vertically( value, num_blocks, val_min, color ):
+def vertically( value, num_blocks, val_min, color, args ):
     global maxi, value_list
 
     value_list.append( str( value ) )
@@ -283,7 +286,7 @@ def chart( colors, data, args, labels ):
                         if not args['vertical']:
                             print_row( *row )
                         else:
-                            vertic = vertically( *row )
+                            vertic = vertically( *row, args=args )
                     # Vertical graph
                     if args['vertical']:
                         print_vertical( vertic, labels, colors[i], args )
@@ -298,7 +301,7 @@ def chart( colors, data, args, labels ):
                 if not args['vertical']:
                     print_row( *row )
                 else:
-                    vertic = vertically( *row )
+                    vertic = vertically( *row, args=args )
             if args['vertical'] and len_categories == 1:
                 if colors:
                     color = colors[0]
@@ -343,7 +346,8 @@ def print_categories( categories, colors ):
         if colors:
             sys.stdout.write( f'\033[{colors[i]}m' ) # Start to write colorized.
         sys.stdout.write( TICK + ' ' + categories[i] + '  ' )
-        sys.stdout.write( '\033[0m' ) # Back to original.
+        if colors:
+            sys.stdout.write( '\033[0m' ) # Back to original.
     print( '\n\n' )
 
 # Reads data from a file or stdin and returns them.
