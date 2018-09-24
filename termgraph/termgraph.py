@@ -4,6 +4,7 @@
 # termgraph.py - draw basic graphs on terminal
 # https://github.com/mkaz/termgraph
 
+from __future__ import print_function
 import argparse
 import sys
 import random
