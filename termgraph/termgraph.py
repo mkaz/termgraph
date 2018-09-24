@@ -481,13 +481,13 @@ def calendar_heatmap(data, labels, args):
     # get max value
     maxval = float(max(data)[0])
 
-    TICK_1 = "░"
-    TICK_2 = "▒"
-    TICK_3 = "▓"
-    TICK_4 = "█"
+    tick_1 = "░"
+    tick_2 = "▒"
+    tick_3 = "▓"
+    tick_4 = "█"
 
     if args['custom_tick']:
-        TICK_1 = TICK_2 = TICK_3 = TICK_4 = args['custom_tick']
+        tick_1 = tick_2 = tick_3 = tick_4 = args['custom_tick']
 
     # check if start day set, otherwise use one year ago
     if args['start_dt']:
@@ -517,13 +517,13 @@ def calendar_heatmap(data, labels, args):
 
             if dstr in dtdict:
                 if dtdict[dstr] > maxval * 0.75:
-                    T = TICK_4
+                    T = tick_4
                 elif dtdict[dstr] > maxval * 0.50:
-                    T = TICK_3
+                    T = tick_3
                 elif dtdict[dstr] > maxval * 0.25:
-                    T = TICK_2
+                    T = tick_2
                 else:
-                    T = TICK_1
+                    T = tick_1
             else:
                 T = ' '
 
