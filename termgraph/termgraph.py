@@ -37,8 +37,8 @@ try:
 except NameError:
     pass
 
-# Parses and returns arguments.
 def init_args():
+    """Parse and return the arguments."""
     parser = argparse.ArgumentParser(
         description='draw basic graphs on terminal')
     parser.add_argument(
@@ -135,8 +135,8 @@ def init_args():
     return args
 
 
-# Main function
 def main():
+    """Main function."""
     args = init_args()
 
     if args['version']:
@@ -149,24 +149,24 @@ def main():
     else:
         chart(colors, data, args, labels)
 
-# Return minimum value in list of list
 def find_min(list_):
+    """Return the minimum value in sublist of list."""
     return min([sublist[-1] for sublist in list_])
 
-# Return maximum value in list of list
 def find_max(list_):
+    """Return the maximum value in sublist of list."""
     return max([sublist[-1] for sublist in list_])
 
-# Return maximum length for lebels
 def find_max_label_length(labels):
+    """Return the maximum length for the labels."""
     length = 0
     for i in range(len(labels)):
         if len(labels[i]) > length:
             length = len(labels[i])
     return length
 
-# Normalizes data and returns them.
 def normalize(data, width):
+    """Normalize the data and return it."""
     min_dat = find_min(data)
     # We offset by the minimum if there's a negative.
     off_data = []
@@ -194,9 +194,9 @@ def normalize(data, width):
         normal_dat.append([_v * norm_factor for _v in dat])
     return normal_dat
 
-# Prepares the horizontal graph.
-# Each row is printed through print_row function.
 def horiz_rows(labels, data, normal_dat, args, colors):
+    """Prepare the horizontal graph.
+       Each row is printed through the print_row function."""
     val_min = find_min(data)
 
     for i in range(len(labels)):
@@ -249,9 +249,9 @@ def print_row(value, num_blocks, val_min, color):
     if color:
         sys.stdout.write('\033[0m') # Back to original.
 
-# Prepares the horizontal Stacked graph.
-# Each row is printed through print_row function.
 def stacked_graph(labels, data, normal_data, len_categories, args, colors):
+    """Prepare the horizontal stacked graph.
+       Each row is printed through the print_row function."""
     val_min = find_min(data)
 
     for i in range(len(labels)):
@@ -272,9 +272,9 @@ def stacked_graph(labels, data, normal_data, len_categories, args, colors):
 
 value_list, zipped_list, vertical_list, maxi = [], [], [], 0
 
-# Prepares the vertical graph.
-# The whole graph is printed through the print_vertical function.
 def vertically(value, num_blocks, val_min, color, args):
+    """Prepare the vertical graph.
+       The whole graph is printed through the print_vertical function."""
     global maxi, value_list
 
     value_list.append(str(value))
@@ -307,9 +307,8 @@ def vertically(value, num_blocks, val_min, color, args):
     # Return a list of rows which will be used to print the result vertically.
     return result_list
 
-# Prints the whole vertical graph.
 def print_vertical(vertical_rows, labels, color, args):
-
+    """Print the whole vertical graph."""
     if color:
         sys.stdout.write(f'\033[{color}m') # Start to write colorized.
 
@@ -327,8 +326,8 @@ def print_vertical(vertical_rows, labels, color, args):
         for k in zip_longest(*labels, fillvalue=''):
             print("  ".join(k))
 
-# Handles the normalization of data and the print of the graph.
 def chart(colors, data, args, labels):
+    """Handle the normalization of data and the printing of the graph."""
     len_categories = len(data[0])
     if len_categories > 1:
         # Stacked graph
@@ -381,8 +380,8 @@ def chart(colors, data, args, labels):
             print_vertical(vertic, labels, color, args)
         print()
 
-# Checks that all data were inserted correctly and returns colors.
 def check_data(labels, data, args):
+    """Check that all data were inserted correctly. Return the colors."""
     len_categories = len(data[0])
     # Check that there are data for all labels.
     if len(labels) != len(data):
@@ -412,8 +411,9 @@ def check_data(labels, data, args):
         colors = [v for v in list(AVAILABLE_COLORS.values())[:len_categories]]
     return colors
 
-# Prints a tick and the category's name for each category above the graph.
 def print_categories(categories, colors):
+    """Print a tick and the category's name for each category above
+       the graph."""
     for i in range(len(categories)):
         if colors:
             sys.stdout.write(f'\033[{colors[i]}m') # Start to write colorized.
@@ -422,18 +422,17 @@ def print_categories(categories, colors):
             sys.stdout.write('\033[0m') # Back to original.
     print('\n\n')
 
-# Reads data from a file or stdin and returns them.
 def read_data(args):
-    '''
-    Filename includes (categories), labels and data.
-    We append categories and labels to lists.
-    Data are inserted to a list of lists due to the categories.
+    """Read data from a file or stdin and returns it.
 
-    i.e.
-    labels = ['2001', '2002', '2003', ...]
-    categories = ['boys', 'girls']
-    data = [ [20.4, 40.5], [30.7, 100.0], ...]
-    '''
+       Filename includes (categories), labels and data.
+       We append categories and labels to lists.
+       Data are inserted to a list of lists due to the categories.
+
+       i.e.
+       labels = ['2001', '2002', '2003', ...]
+       categories = ['boys', 'girls']
+       data = [ [20.4, 40.5], [30.7, 100.0], ...]"""
     filename = args['filename']
     stdin = filename == '-'
 
@@ -477,6 +476,7 @@ def read_data(args):
     return categories, labels, data, colors
 
 def calendar_heatmap(data, labels, args):
+    """Print a calendar heatmap."""
     if args['color']:
         colornum = AVAILABLE_COLORS.get(args['color'][0])
     else:
