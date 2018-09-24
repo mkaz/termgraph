@@ -27,7 +27,7 @@ AVAILABLE_COLORS = {
     'cyan': 96
 }
 
-dow = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 DELIM = ','
 TICK = '▇'
 SM_TICK = '▏'
@@ -510,7 +510,7 @@ def calendar_heatmap(data, labels, args):
     sys.stdout.write('\n')
 
     for day in range(7):
-        sys.stdout.write(dow[day] + ': ')
+        sys.stdout.write(DAYS[day] + ': ')
         for week in range(53):
             d = st_day + timedelta(days=day + week*7)
             dstr = d.strftime("%Y-%m-%d")
