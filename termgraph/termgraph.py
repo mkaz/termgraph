@@ -39,7 +39,8 @@ except NameError:
 
 # Parses and returns arguments.
 def init_args():
-    parser = argparse.ArgumentParser(description='draw basic graphs on terminal')
+    parser = argparse.ArgumentParser(
+        description='draw basic graphs on terminal')
     parser.add_argument(
         'filename',
         nargs='?',
@@ -183,9 +184,10 @@ def normalize(data, width):
         # is less than the width we allow.
         return off_data
 
-    # max_dat / width is the value for a single tick. norm_factor is the inverse of this value
-    # If you divide a number to the value of single tick, you will find how many ticks it does
-    # contain basically.
+    # max_dat / width is the value for a single tick. norm_factor is the
+    # inverse of this value
+    # If you divide a number to the value of single tick, you will find how
+    # many ticks it does contain basically.
     norm_factor = width / float(max_dat)
     normal_dat = []
     for dat in off_data:
@@ -202,7 +204,8 @@ def horiz_rows(labels, data, normal_dat, args, colors):
             # Hide the labels.
             label = ''
         else:
-            label = "{:<{x}}: ".format(labels[i], x=find_max_label_length(labels))
+            label = "{:<{x}}: ".format(labels[i],
+                                       x=find_max_label_length(labels))
 
         values = data[i]
         num_blocks = normal_dat[i]
@@ -213,7 +216,8 @@ def horiz_rows(labels, data, normal_dat, args, colors):
             if j > 0:
                 len_label = len(label)
                 label = ' ' * len_label
-            tail = ' {}{}'.format(args['format'].format(values[j]), args['suffix'])
+            tail = ' {}{}'.format(args['format'].format(values[j]),
+                                  args['suffix'])
             if colors:
                 color = colors[j]
             else:
@@ -262,7 +266,8 @@ def stacked_graph(labels, data, normal_data, len_categories, args, colors):
 
         for j in range(len(values)):
             print_row(values[j], int(num_blocks[j]), val_min, colors[j])
-        tail = ' {}{}'.format(args['format'].format(sum(values)), args['suffix'])
+        tail = ' {}{}'.format(args['format'].format(sum(values)),
+                              args['suffix'])
         print(tail)
 
 value_list, zipped_list, vertical_list, maxi = [], [], [], 0
@@ -329,7 +334,8 @@ def chart(colors, data, args, labels):
         # Stacked graph
         if args['stacked']:
             normal_dat = normalize(data, args['width'])
-            stacked_graph(labels, data, normal_dat, len_categories, args, colors)
+            stacked_graph(labels, data, normal_dat, len_categories,
+                          args, colors)
             return
 
         if not colors:
@@ -344,7 +350,8 @@ def chart(colors, data, args, labels):
                 # Normalize data, handle negatives.
                 normal_cat_data = normalize(cat_data, args['width'])
                 # Generate data for a row.
-                for row in horiz_rows(labels, cat_data, normal_cat_data, args, [colors[i]]):
+                for row in horiz_rows(labels, cat_data, normal_cat_data,
+                                      args, [colors[i]]):
                     # Print the row
                     if not args['vertical']:
                         print_row(*row)
@@ -396,7 +403,8 @@ def check_data(labels, data, args):
             colors.append(AVAILABLE_COLORS.get(c))
     # Vertical graph for multiple series of same scale is not supported yet.
     if args['vertical'] and len_categories > 1 and not args['different_scale']:
-        print(">> Error: Vertical graph for multiple series of same scale is not supported yet.")
+        print(">> Error: Vertical graph for multiple series of same "
+              "scale is not supported yet.")
         sys.exit(1)
     # If user hasn't inserted colors, pick the first n colors
     # from the dict (n = number of categories).
@@ -494,7 +502,8 @@ def calendar_heatmap(data, labels, args):
         start_dt = datetime.strptime(args['start_dt'], '%Y-%m-%d')
     else:
         start = datetime.now()
-        start_dt = datetime(year=start.year-1, month=start.month, day=start.day)
+        start_dt = datetime(year=start.year-1, month=start.month,
+                            day=start.day)
 
     # modify start date to be a Monday, subtract weekday() from day
     start_dt = start_dt - timedelta(start_dt.weekday())
@@ -503,7 +512,8 @@ def calendar_heatmap(data, labels, args):
     # top legend for months
     sys.stdout.write("     ")
     for month in range(13):
-        month_dt = datetime(year=start_dt.year, month=start_dt.month, day=1) + timedelta(days=month*31)
+        month_dt = datetime(year=start_dt.year, month=start_dt.month, day=1) +\
+                   timedelta(days=month*31)
         sys.stdout.write(month_dt.strftime("%b") + " ")
         if args['custom_tick']: #assume custom tick is emoji which is one wider
             sys.stdout.write(" ")
