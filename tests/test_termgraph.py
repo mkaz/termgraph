@@ -422,7 +422,7 @@ class TermgraphTest(unittest.TestCase):
                     'version': False}
             tg.read_data(args)
             output = output.getvalue().strip()
-            assert output == '# spaghetti\n\n▇ Boys  \x1b[0m▇ Girls  \x1b[0m'
+            assert output == '# spaghetti\n\n▇ Boys  ▇ Girls'
 
     def test_read_data_verbose(self):
         with patch('sys.stdout', new=StringIO()) as output:
