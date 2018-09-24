@@ -149,20 +149,20 @@ def main():
         chart(colors, data, args, labels)
 
 # Return minimum value in list of list
-def find_min(a):
-    return min([b[-1] for b in a])
+def find_min(list_):
+    return min([sublist[-1] for sublist in list_])
 
 # Return maximum value in list of list
-def find_max(a):
-    return max([b[-1] for b in a])
+def find_max(list_):
+    return max([sublist[-1] for sublist in list_])
 
 # Return maximum length for lebels
-def find_max_label_length(a):
-    s = 0
-    for i in range(len(a)):
-        if len(a[i]) > s:
-            s = len(a[i])
-    return s
+def find_max_label_length(labels):
+    length = 0
+    for i in range(len(labels)):
+        if len(labels[i]) > length:
+            length = len(labels[i])
+    return length
 
 # Normalizes data and returns them.
 def normalize(data, width):
