@@ -193,11 +193,17 @@ class TermgraphTest(unittest.TestCase):
             assert output == '\x1b[91m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m\x1b[94m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m 373.84\n\x1b[91m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m\x1b[94m▏\x1b[0m 236.23\n\x1b[91m▇▇▇\x1b[0m\x1b[94m▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m 69.53\n\x1b[91m▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m\x1b[94m▏\x1b[0m 57.21\n\x1b[91m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m\x1b[94m▇\x1b[0m 519.42\n\x1b[91m▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇\x1b[0m\x1b[94m▇▇▇▇\x1b[0m 232.25\n\x1b[91m▇▇▇▇▇▇\x1b[0m\x1b[94m▇▇▇▇\x1b[0m 50.00'
 
     def test_vertically_returns_correct_result(self):
+        args = {'filename': 'data/ex2.dat', 'title': None, 'width': 50,
+                'format': '{:<5.2f}', 'suffix': '', 'no_labels': False,
+                'color': None, 'vertical': True, 'stacked': False,
+                'different_scale': False, 'calendar': False, 'start_dt': None,
+                'custom_tick': '', 'delim': '', 'verbose': False,
+                'version': False}
         value = 2.0
         num_blocks = 2
         val_min = 2.0
         color = None
-        result = tg.vertically(value, num_blocks, val_min, color)
+        result = tg.vertically(value, num_blocks, val_min, color, args)
         assert result == [('▇',), ('▇',)]
 
     def test_print_vertical(self):
