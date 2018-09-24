@@ -398,8 +398,8 @@ def check_data(labels, data, args):
         if len(args['color']) != len_categories:
             print(">> Error: Color and category array sizes don't match")
             sys.exit(1)
-        for c in args['color']:
-            colors.append(AVAILABLE_COLORS.get(c))
+        for color in args['color']:
+            colors.append(AVAILABLE_COLORS.get(color))
     # Vertical graph for multiple series of same scale is not supported yet.
     if args['vertical'] and len_categories > 1 and not args['different_scale']:
         print(">> Error: Vertical graph for multiple series of same "
