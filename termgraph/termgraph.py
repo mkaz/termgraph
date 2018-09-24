@@ -42,22 +42,86 @@ except NameError:
 # Parses and returns arguments.
 def initArgs():
     parser = argparse.ArgumentParser(description='draw basic graphs on terminal')
-    parser.add_argument('filename', nargs='?', default="-", help='data file name (comma or space separated). Defaults to stdin.')
-    parser.add_argument('--title', help='Title of graph')
-    parser.add_argument('--width', type=int, default=50, help='width of graph in characters default:50')
-    parser.add_argument('--format', default='{:<5.2f}', help='format specifier to use.')
-    parser.add_argument('--suffix', default='', help='string to add as a suffix to all data points.')
-    parser.add_argument('--no-labels', action='store_true', help='Do not print the label column')
-    parser.add_argument('--color', nargs='*', choices=available_colors, help='Graph bar color( s )')
-    parser.add_argument('--vertical', action= 'store_true', help='Vertical graph')
-    parser.add_argument('--stacked', action='store_true', help='Stacked bar graph')
-    parser.add_argument('--different-scale', action='store_true', help='Categories have different scales.')
-    parser.add_argument('--calendar', action='store_true', help='Calendar Heatmap chart')
-    parser.add_argument('--start-dt', help='Start date for Calendar chart')
-    parser.add_argument('--custom-tick', default='', help='Custom tick mark, emoji approved')
-    parser.add_argument('--delim', default='', help='Custom delimiter, default , or space')
-    parser.add_argument('--verbose', action='store_true', help='Verbose output, helpful for debugging')
-    parser.add_argument('--version', action='store_true', help='Display version and exit')
+    parser.add_argument(
+        'filename',
+        nargs='?',
+        default="-",
+        help='data file name (comma or space separated). Defaults to stdin.')
+    parser.add_argument(
+        '--title',
+        help='Title of graph'
+    )
+    parser.add_argument(
+        '--width',
+        type=int,
+        default=50,
+        help='width of graph in characters default:50'
+    )
+    parser.add_argument(
+        '--format',
+        default='{:<5.2f}',
+        help='format specifier to use.'
+    )
+    parser.add_argument(
+        '--suffix',
+        default='',
+        help='string to add as a suffix to all data points.'
+    )
+    parser.add_argument(
+        '--no-labels',
+        action='store_true',
+        help='Do not print the label column'
+    )
+    parser.add_argument(
+        '--color',
+        nargs='*',
+        choices=available_colors,
+        help='Graph bar color( s )'
+    )
+    parser.add_argument(
+        '--vertical',
+        action='store_true',
+        help='Vertical graph'
+    )
+    parser.add_argument(
+        '--stacked',
+        action='store_true',
+        help='Stacked bar graph'
+    )
+    parser.add_argument(
+        '--different-scale',
+        action='store_true',
+        help='Categories have different scales.'
+    )
+    parser.add_argument(
+        '--calendar',
+        action='store_true',
+        help='Calendar Heatmap chart'
+    )
+    parser.add_argument(
+        '--start-dt',
+        help='Start date for Calendar chart'
+    )
+    parser.add_argument(
+        '--custom-tick',
+        default='',
+        help='Custom tick mark, emoji approved'
+    )
+    parser.add_argument(
+        '--delim',
+        default='',
+        help='Custom delimiter, default , or space'
+    )
+    parser.add_argument(
+        '--verbose',
+        action='store_true',
+        help='Verbose output, helpful for debugging'
+    )
+    parser.add_argument(
+        '--version',
+        action='store_true',
+        help='Display version and exit'
+    )
     args = vars(parser.parse_args())
 
     if args['custom_tick'] != '':
@@ -132,7 +196,7 @@ def normalize(data, width):
 
 # Prepares the horizontal graph.
 # Each row is printed through print_row function.
-def horiontal_rows(labels, data, normal_dat, args, colors):
+def horiz_rows(labels, data, normal_dat, args, colors):
     val_min = findMin(data)
 
     for i in range(len(labels)):
@@ -268,47 +332,49 @@ def chart(colors, data, args, labels):
         if args['stacked']:
             normal_dat = normalize(data, args['width'])
             stacked_graph(labels, data, normal_dat, len_categories, args, colors)
-        else:
-            if not colors:
-                colors = [None] * len_categories
-            # Multiple series graph with different scales
-            # Normalization per category
-            if args['different_scale']:
-                for i in range(len_categories):
-                    category_data = []
-                    for dat in data:
-                        category_data.append([dat[i]])
-                    # Normalize data, handle negatives.
-                    normal_category_data = normalize(category_data, args['width'])
-                    # Generate data for a row.
-                    for row in horiontal_rows(labels, category_data, normal_category_data, args, [colors[i]]):
-                        # Print the row
-                        if not args['vertical']:
-                            print_row(*row)
-                        else:
-                            vertic = vertically(*row, args=args)
-                    # Vertical graph
-                    if args['vertical']:
-                        print_vertical(vertic, labels, colors[i], args)
-                    print()
-                    value_list.clear(), zipped_list.clear(), vertical_list.clear()
+            return
+
+        if not colors:
+            colors = [None] * len_categories
+        # Multiple series graph with different scales
+        # Normalization per category
+        if args['different_scale']:
+            for i in range(len_categories):
+                cat_data = []
+                for dat in data:
+                    cat_data.append([dat[i]])
+                # Normalize data, handle negatives.
+                normal_cat_data = normalize(cat_data, args['width'])
+                # Generate data for a row.
+                for row in horiz_rows(labels, cat_data, normal_cat_data, args, [colors[i]]):
+                    # Print the row
+                    if not args['vertical']:
+                        print_row(*row)
+                    else:
+                        vertic = vertically(*row, args=args)
+                # Vertical graph
+                if args['vertical']:
+                    print_vertical(vertic, labels, colors[i], args)
+                print()
+                value_list.clear(), zipped_list.clear(), vertical_list.clear()
+                return
+
     # One category/Multiple series graph with same scale
     # All-together normalization
-    if len_categories == 1 or not args['different_scale']:
-        if not args['stacked']:
-            normal_dat = normalize(data, args['width'])
-            for row in horiontal_rows(labels, data, normal_dat, args, colors):
-                if not args['vertical']:
-                    print_row(*row)
-                else:
-                    vertic = vertically(*row, args=args)
-            if args['vertical'] and len_categories == 1:
-                if colors:
-                    color = colors[0]
-                else:
-                    color = None
-                print_vertical(vertic, labels, color, args)
-            print()
+    if not args['stacked']:
+        normal_dat = normalize(data, args['width'])
+        for row in horiz_rows(labels, data, normal_dat, args, colors):
+            if not args['vertical']:
+                print_row(*row)
+            else:
+                vertic = vertically(*row, args=args)
+        if args['vertical'] and len_categories == 1:
+            if colors:
+                color = colors[0]
+            else:
+                color = None
+            print_vertical(vertic, labels, color, args)
+        print()
 
 # Checks that all data were inserted correctly and returns colors.
 def check_data(labels, data, args):
