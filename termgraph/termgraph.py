@@ -163,6 +163,7 @@ def find_max_label_length(labels):
     for i in range(len(labels)):
         if len(labels[i]) > length:
             length = len(labels[i])
+
     return length
 
 def normalize(data, width):
@@ -192,6 +193,7 @@ def normalize(data, width):
     normal_dat = []
     for dat in off_data:
         normal_dat.append([_v * norm_factor for _v in dat])
+
     return normal_dat
 
 def horiz_rows(labels, data, normal_dat, args, colors):
@@ -222,9 +224,12 @@ def horiz_rows(labels, data, normal_dat, args, colors):
                 color = colors[j]
             else:
                 color = None
+
             if not args['vertical']:
                 print(label, end="")
+
             yield(values[j], int(num_blocks[j]), val_min, color)
+
             if not args['vertical']:
                 print(tail)
 
@@ -239,6 +244,7 @@ def print_row(value, num_blocks, val_min, color):
     """
     if color:
         sys.stdout.write(f'\033[{color}m') # Start to write colorized.
+
     if num_blocks < 1 and (value > val_min or value > 0):
         # Print something if it's not the smallest
         # and the normal value is less than one.
@@ -246,6 +252,7 @@ def print_row(value, num_blocks, val_min, color):
     else:
         for _ in range(num_blocks):
             sys.stdout.write(TICK)
+
     if color:
         sys.stdout.write('\033[0m') # Back to original.
 
@@ -260,12 +267,14 @@ def stacked_graph(labels, data, normal_data, len_categories, args, colors):
             label = ''
         else:
             label = "{}: ".format(labels[i])
+
         print(label, end="")
         values = data[i]
         num_blocks = normal_data[i]
 
         for j in range(len(values)):
             print_row(values[j], int(num_blocks[j]), val_min, colors[j])
+
         tail = ' {}{}'.format(args['format'].format(sum(values)),
                               args['suffix'])
         print(tail)
@@ -278,6 +287,7 @@ def vertically(value, num_blocks, val_min, color, args):
     global maxi, value_list
 
     value_list.append(str(value))
+
     # In case the number of blocks at the end of the normalization is less
     # than the default number, use the maxi variable to escape.
     if maxi < num_blocks:
@@ -287,11 +297,13 @@ def vertically(value, num_blocks, val_min, color, args):
         vertical_list.append((TICK * num_blocks))
     else:
         vertical_list.append(SM_TICK)
+
     # Zip_longest method in order to turn them vertically.
     for row in zip_longest(*vertical_list, fillvalue='  '):
         zipped_list.append(row)
 
     counter, result_list = 0, []
+
     # Combined with the maxi variable, escapes the appending method at
     # the correct point or the default one (width).
     for i in reversed(zipped_list):
@@ -304,6 +316,7 @@ def vertically(value, num_blocks, val_min, color, args):
         else:
             if counter == maxi:
                 break
+
     # Return a list of rows which will be used to print the result vertically.
     return result_list
 
@@ -314,12 +327,14 @@ def print_vertical(vertical_rows, labels, color, args):
 
     for row in vertical_rows:
         print(*row)
+
     sys.stdout.write('\033[0m') # End of printing colored
 
     print("-" * len(row) + "Values" + "-" * len(row))
     # Print Values
     for value in zip_longest(*value_list, fillvalue=' '):
         print("  ".join(value))
+
     if args['no_labels'] == False:
         print("-" * len(row) + "Labels" + "-" * len(row))
         # Print Labels
@@ -339,6 +354,7 @@ def chart(colors, data, args, labels):
 
         if not colors:
             colors = [None] * len_categories
+
         # Multiple series graph with different scales
         # Normalization per category
         if args['different_scale']:
@@ -346,8 +362,10 @@ def chart(colors, data, args, labels):
                 cat_data = []
                 for dat in data:
                     cat_data.append([dat[i]])
+
                 # Normalize data, handle negatives.
                 normal_cat_data = normalize(cat_data, args['width'])
+
                 # Generate data for a row.
                 for row in horiz_rows(labels, cat_data, normal_cat_data,
                                       args, [colors[i]]):
@@ -356,9 +374,11 @@ def chart(colors, data, args, labels):
                         print_row(*row)
                     else:
                         vertic = vertically(*row, args=args)
+
                 # Vertical graph
                 if args['vertical']:
                     print_vertical(vertic, labels, colors[i], args)
+
                 print()
                 value_list.clear(), zipped_list.clear(), vertical_list.clear()
                 return
@@ -372,43 +392,54 @@ def chart(colors, data, args, labels):
                 print_row(*row)
             else:
                 vertic = vertically(*row, args=args)
+
         if args['vertical'] and len_categories == 1:
             if colors:
                 color = colors[0]
             else:
                 color = None
+
             print_vertical(vertic, labels, color, args)
+
         print()
 
 def check_data(labels, data, args):
     """Check that all data were inserted correctly. Return the colors."""
     len_categories = len(data[0])
+
     # Check that there are data for all labels.
     if len(labels) != len(data):
         print(">> Error: Label and data array sizes don't match")
         sys.exit(1)
+
     # Check that there are data for all categories per label.
     for dat in data:
         if len(dat) != len_categories:
             print(">> Error: There are missing values")
             sys.exit(1)
+
     colors = []
+
     # If user inserts colors, they should be as many as the categories.
     if args['color'] is not None:
         if len(args['color']) != len_categories:
             print(">> Error: Color and category array sizes don't match")
             sys.exit(1)
+
         for color in args['color']:
             colors.append(AVAILABLE_COLORS.get(color))
+
     # Vertical graph for multiple series of same scale is not supported yet.
     if args['vertical'] and len_categories > 1 and not args['different_scale']:
         print(">> Error: Vertical graph for multiple series of same "
               "scale is not supported yet.")
         sys.exit(1)
+
     # If user hasn't inserted colors, pick the first n colors
     # from the dict (n = number of categories).
     if args['stacked'] and not colors:
         colors = [v for v in list(AVAILABLE_COLORS.values())[:len_categories]]
+
     return colors
 
 def print_categories(categories, colors):
@@ -417,9 +448,11 @@ def print_categories(categories, colors):
     for i in range(len(categories)):
         if colors:
             sys.stdout.write(f'\033[{colors[i]}m') # Start to write colorized.
+
         sys.stdout.write(TICK + ' ' + categories[i] + '  ')
         if colors:
             sys.stdout.write('\033[0m') # Back to original.
+
     print('\n\n')
 
 def read_data(args):
@@ -454,16 +487,19 @@ def read_data(args):
                     cols = line.split(DELIM)
                 else:
                     cols = line.split()
+
                 # Line contains categories.
                 if line.startswith('@'):
                     cols[0] = cols[0].replace("@ ", "")
                     categories = cols
+
                 # Line contains label and values.
                 else:
                     labels.append(cols[0].strip())
                     data_points = []
                     for i in range(1, len(cols)):
                         data_points.append(float(cols[i].strip()))
+
                     data.append(data_points)
     f.close()
 
@@ -517,6 +553,7 @@ def calendar_heatmap(data, labels, args):
         sys.stdout.write(month_dt.strftime("%b") + " ")
         if args['custom_tick']: #assume custom tick is emoji which is one wider
             sys.stdout.write(" ")
+
     sys.stdout.write('\n')
 
     for day in range(7):
@@ -539,9 +576,11 @@ def calendar_heatmap(data, labels, args):
 
             if colornum:
                 sys.stdout.write(f'\033[{colornum}m')
+
             sys.stdout.write(tick)
             if colornum:
                 sys.stdout.write('\033[0m')
+
         sys.stdout.write('\n')
 
 
