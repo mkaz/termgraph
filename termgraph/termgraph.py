@@ -312,19 +312,19 @@ def print_vertical(vertical_rows, labels, color, args):
     if color:
         sys.stdout.write(f'\033[{color}m') # Start to write colorized.
 
-    for j in vertical_rows:
-        print(*j)
+    for row in vertical_rows:
+        print(*row)
     sys.stdout.write('\033[0m') # End of printing colored
 
-    print("-" * len(j) + "Values" + "-" * len(j))
+    print("-" * len(row) + "Values" + "-" * len(row))
     # Print Values
-    for l in zip_longest(*value_list, fillvalue=' '):
-        print("  ".join(l))
+    for value in zip_longest(*value_list, fillvalue=' '):
+        print("  ".join(value))
     if args['no_labels'] == False:
-        print("-" * len(j) + "Labels" + "-" * len(j))
+        print("-" * len(row) + "Labels" + "-" * len(row))
         # Print Labels
-        for k in zip_longest(*labels, fillvalue=''):
-            print("  ".join(k))
+        for label in zip_longest(*labels, fillvalue=''):
+            print("  ".join(label))
 
 def chart(colors, data, args, labels):
     """Handle the normalization of data and the printing of the graph."""
