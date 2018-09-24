@@ -17,7 +17,7 @@ VERSION = '0.1.4'
 init()
 
 # ANSI escape SGR Parameters color codes
-available_colors = {
+AVAILABLE_COLORS = {
     'red': 91,
     'blue': 94,
     'green': 92,
@@ -73,7 +73,7 @@ def initArgs():
     parser.add_argument(
         '--color',
         nargs='*',
-        choices=available_colors,
+        choices=AVAILABLE_COLORS,
         help='Graph bar color( s )'
     )
     parser.add_argument(
@@ -393,7 +393,7 @@ def check_data(labels, data, args):
             print(">> Error: Color and category array sizes don't match")
             sys.exit(1)
         for c in args['color']:
-            colors.append(available_colors.get(c))
+            colors.append(AVAILABLE_COLORS.get(c))
     # Vertical graph for multiple series of same scale is not supported yet.
     if args['vertical'] and len_categories > 1 and not args['different_scale']:
         print(">> Error: Vertical graph for multiple series of same scale is not supported yet.")
@@ -401,7 +401,7 @@ def check_data(labels, data, args):
     # If user hasn't inserted colors, pick the first n colors
     # from the dict (n = number of categories).
     if args['stacked'] and not colors:
-        colors = [v for v in list(available_colors.values())[:len_categories]]
+        colors = [v for v in list(AVAILABLE_COLORS.values())[:len_categories]]
     return colors
 
 # Prints a tick and the category's name for each category above the graph.
@@ -470,9 +470,9 @@ def read_data(args):
 
 def calendar_heatmap(data, labels, args):
     if args['color']:
-        colornum = available_colors.get(args['color'][0])
+        colornum = AVAILABLE_COLORS.get(args['color'][0])
     else:
-        colornum = available_colors.get('blue')
+        colornum = AVAILABLE_COLORS.get('blue')
 
     dtdict = {}
     for i in range(len(labels)):
