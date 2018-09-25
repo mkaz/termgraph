@@ -6,3 +6,5 @@ htmlcov/
 dist/
 build/
 termgraph.egg-info/
+.coverage
+htmlcov/
