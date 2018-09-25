@@ -4,27 +4,27 @@ from io import StringIO
 from termgraph import termgraph as tg
 
 class TermgraphTest(unittest.TestCase):
-    def test_initArgs(self):
-        tg.initArgs()
+    def test_init_args(self):
+        tg.init_args()
 
     def test_main(self):
         pass
 
-    def test_findMin_returns_lowest_value(self):
-        minimum = tg.findMin([[183.32], [231.23], [16.43], [50.21],
+    def test_find_min_returns_lowest_value(self):
+        minimum = tg.find_min([[183.32], [231.23], [16.43], [50.21],
                               [508.97], [212.05], [1.0]])
         assert minimum == 1.0
 
-    def test_findMax_returns_highest_value(self):
-        maximum = tg.findMax([[183.32], [231.23], [16.43], [50.21],
+    def test_find_max_returns_highest_value(self):
+        maximum = tg.find_max([[183.32], [231.23], [16.43], [50.21],
                               [508.97], [212.05], [1.0]])
         assert maximum == 508.97
 
-    def test_findMaxLabelLength_returns_correct_length(self):
-        length = tg.findMaxLabelLength(['2007', '2008', '2009', '2010', '2011',
+    def test_find_max_label_length_returns_correct_length(self):
+        length = tg.find_max_label_length(['2007', '2008', '2009', '2010', '2011',
                                         '2012', '2014'])
         assert length == 4
-        length = tg.findMaxLabelLength(['aaaaaaaa', 'bbb', 'cccccccccccccc', 'z'])
+        length = tg.find_max_label_length(['aaaaaaaa', 'bbb', 'cccccccccccccc', 'z'])
         assert length == 14
 
     def test_normalize_returns_correct_results(self):
@@ -48,7 +48,7 @@ class TermgraphTest(unittest.TestCase):
         results = tg.normalize(expected, 20000)
         assert results == expected
 
-    def test_horizontal_rows_yields_correct_values(self):
+    def test_horiz_rows_yields_correct_values(self):
         labels = ['2007', '2008', '2009', '2010', '2011',
                   '2012', '2014']
         data = [[183.32], [231.23], [16.43], [50.21], [508.97],
@@ -65,14 +65,14 @@ class TermgraphTest(unittest.TestCase):
         colors = []
 
         rows = []
-        for row in tg.horiontal_rows(labels, data, normal_dat, args, colors):
+        for row in tg.horiz_rows(labels, data, normal_dat, args, colors):
             rows.append(row)
         assert rows == [(183.32, 17, 1.0, None), (231.23, 22, 1.0, None),
                         (16.43, 1, 1.0, None), (50.21, 4, 1.0, None),
                         (508.97, 50, 1.0, None), (212.05, 20, 1.0, None),
                         (1.0, 0, 1.0, None)]
     
-    def test_horizontal_rows_no_labels_yields_no_labels(self):
+    def test_horiz_rows_no_labels_yields_no_labels(self):
         with patch('sys.stdout', new=StringIO()) as output:
             labels = ['2007', '2008', '2009', '2010', '2011',
                       '2012', '2014']
@@ -90,7 +90,7 @@ class TermgraphTest(unittest.TestCase):
             colors = []
 
             rows = []
-            for row in tg.horiontal_rows(labels, data, normal_dat, args, colors):
+            for row in tg.horiz_rows(labels, data, normal_dat, args, colors):
                 rows.append(row)
             assert rows == [(183.32, 17, 1.0, None), (231.23, 22, 1.0, None),
                             (16.43, 1, 1.0, None), (50.21, 4, 1.0, None),
@@ -99,7 +99,7 @@ class TermgraphTest(unittest.TestCase):
             output = output.getvalue().strip()
             assert output == '183.32\n 231.23\n 16.43\n 50.21\n 508.97\n 212.05\n 1.00'
 
-    def test_horizontal_rows_multiple_series_only_has_label_at_beginning(self):
+    def test_horiz_rows_multiple_series_only_has_label_at_beginning(self):
         with patch('sys.stdout', new=StringIO()) as output:
             labels = ['2007', '2008', '2009', '2010', '2011',
                       '2012', '2014']
@@ -122,7 +122,7 @@ class TermgraphTest(unittest.TestCase):
             colors = [None, None, None]
 
             rows = []
-            for row in tg.horiontal_rows(labels, data, normal_dat, args, colors):
+            for row in tg.horiz_rows(labels, data, normal_dat, args, colors):
                 rows.append(row)
             assert rows == [(183.32, 99, -4.4, None), (190.52, 103, -4.4, None),
                             (90.0, 49, -4.4, None), (231.23, 124, -4.4, None),
