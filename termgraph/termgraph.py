@@ -144,7 +144,7 @@ def main():
         print('termgraph v{}'.format(VERSION))
         sys.exit()
 
-    labels, data, colors = read_data(args)
+    _, labels, data, colors = read_data(args)
     if args['calendar']:
         calendar_heatmap(data, labels, args)
     else:
