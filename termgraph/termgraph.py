@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # coding=utf-8
+"""This module allows drawing basic graphs in the terminal."""
 
 # termgraph.py - draw basic graphs on terminal
 # https://github.com/mkaz/termgraph
