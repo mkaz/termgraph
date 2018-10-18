@@ -11,6 +11,8 @@ import sys
 from datetime import datetime, timedelta
 from itertools import zip_longest
 from colorama import init
+import os
+import re
 
 
 VERSION = '0.1.4'
@@ -75,7 +77,6 @@ def init_args():
     parser.add_argument(
         '--color',
         nargs='*',
-        choices=AVAILABLE_COLORS,
         help='Graph bar color( s )'
     )
     parser.add_argument(
@@ -434,12 +435,30 @@ def check_data(labels, data, args):
 
     # If user inserts colors, they should be as many as the categories.
     if args['color'] is not None:
-        if len(args['color']) != len_categories:
-            print(">> Error: Color and category array sizes don't match")
-            sys.exit(1)
+        # Decompose arguments for Windows
+        if os.name == 'nt':
+            colorargs = re.findall(r'[a-z]+', args['color'][0])
+            if len(colorargs) != len_categories:
+                print(">> Error: Color and category array sizes don't match")
+            for color in colorargs:
+                if color not in AVAILABLE_COLORS:
+                    print(">> Error: invalid color. choose from 'red', 'blue', 'green', 'magenta', 'yellow', 'black', 'cyan'")
+                    sys.exit()
+        else:
+            if len(args['color']) != len_categories:
+                print(">> Error: Color and category array sizes don't match")
+            for color in args['color']:
+                if color not in AVAILABLE_COLORS:
+                    print(">> Error: invalid color. choose from 'red', 'blue', 'green', 'magenta', 'yellow', 'black', 'cyan'")
+                    sys.exit()
 
-        for color in args['color']:
-            colors.append(AVAILABLE_COLORS.get(color))
+
+        if os.name == 'nt':
+            for color in colorargs:
+                colors.append(AVAILABLE_COLORS.get(color))
+        else:
+            for color in args['color']:
+                colors.append(AVAILABLE_COLORS.get(color))
 
     # Vertical graph for multiple series of same scale is not supported yet.
     if args['vertical'] and len_categories > 1 and not args['different_scale']:
