@@ -122,6 +122,9 @@ def init_args():
         action='store_true',
         help='Display version and exit'
     )
+    if len(sys.argv) == 1:
+        parser.print_usage()
+        sys.exit(2)
     args = vars(parser.parse_args())
 
     if args['custom_tick'] != '':
@@ -139,17 +142,6 @@ def init_args():
 def main():
     """Main function."""
     args = init_args()
-
-    if len(sys.argv) is 1:
-        print('termgraph draws basic graphs on terminal')
-        print('Usage: termgraph [-h] [--title TITLE] [--width WIDTH] [--format FORMAT]')
-        print('                 [--suffix SUFFIX] [--no-labels]')
-        print('                 [--color [{red,blue,green,magenta,yellow,black,cyan} [{red,blue,green,magenta,yellow,black,cyan} ...]]]')
-        print('                 [--vertical] [--stacked] [--different-scale] [--calendar]')
-        print('                 [--start-dt START_DT] [--custom-tick CUSTOM_TICK]')
-        print('                 [--delim DELIM] [--verbose] [--version]')
-        print('                 [filenamename]')
-        sys.exit()
 
     if args['version']:
         print('termgraph v{}'.format(VERSION))
