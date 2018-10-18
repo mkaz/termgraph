@@ -267,7 +267,8 @@ def stacked_graph(labels, data, normal_data, len_categories, args, colors):
             # Hide the labels.
             label = ''
         else:
-            label = "{}: ".format(labels[i])
+            label = "{:<{x}}: ".format(labels[i],
+                                       x=find_max_label_length(labels))
 
         print(label, end="")
         values = data[i]
