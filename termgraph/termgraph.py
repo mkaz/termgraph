@@ -568,14 +568,14 @@ def check_data(labels, data, args):
             for color in colorargs:
                 if color not in AVAILABLE_COLORS:
                     print(">> Error: invalid color. choose from 'red', 'blue', 'green', 'magenta', 'yellow', 'black', 'cyan'")
-                    sys.exit()
+                    sys.exit(2)
         else:
             if len(args['color']) != len_categories:
                 print(">> Error: Color and category array sizes don't match")
             for color in args['color']:
                 if color not in AVAILABLE_COLORS:
                     print(">> Error: invalid color. choose from 'red', 'blue', 'green', 'magenta', 'yellow', 'black', 'cyan'")
-                    sys.exit()
+                    sys.exit(2)
 
 
         if os.name == 'nt':
