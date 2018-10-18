@@ -123,6 +123,9 @@ def init_args():
         action='store_true',
         help='Display version and exit'
     )
+    if len(sys.argv) == 1:
+        parser.print_usage()
+        sys.exit(2)
     args = vars(parser.parse_args())
 
     if args['custom_tick'] != '':
@@ -140,17 +143,6 @@ def init_args():
 def main():
     """Main function."""
     args = init_args()
-
-    if len(sys.argv) is 1:
-        print('termgraph draws basic graphs on terminal')
-        print('Usage: termgraph [-h] [--title TITLE] [--width WIDTH] [--format FORMAT]')
-        print('                 [--suffix SUFFIX] [--no-labels]')
-        print('                 [--color [{red,blue,green,magenta,yellow,black,cyan} [{red,blue,green,magenta,yellow,black,cyan} ...]]]')
-        print('                 [--vertical] [--stacked] [--different-scale] [--calendar]')
-        print('                 [--start-dt START_DT] [--custom-tick CUSTOM_TICK]')
-        print('                 [--delim DELIM] [--verbose] [--version]')
-        print('                 [filenamename]')
-        sys.exit()
 
     if args['version']:
         print('termgraph v{}'.format(VERSION))
@@ -443,14 +435,14 @@ def check_data(labels, data, args):
             for color in colorargs:
                 if color not in AVAILABLE_COLORS:
                     print(">> Error: invalid color. choose from 'red', 'blue', 'green', 'magenta', 'yellow', 'black', 'cyan'")
-                    sys.exit()
+                    sys.exit(2)
         else:
             if len(args['color']) != len_categories:
                 print(">> Error: Color and category array sizes don't match")
             for color in args['color']:
                 if color not in AVAILABLE_COLORS:
                     print(">> Error: invalid color. choose from 'red', 'blue', 'green', 'magenta', 'yellow', 'black', 'cyan'")
-                    sys.exit()
+                    sys.exit(2)
 
 
         if os.name == 'nt':
