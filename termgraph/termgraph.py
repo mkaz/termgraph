@@ -123,8 +123,10 @@ def init_args():
         help='Display version and exit'
     )
     if len(sys.argv) == 1:
-        parser.print_usage()
-        sys.exit(2)
+        if sys.stdin.isatty():
+            parser.print_usage()
+            sys.exit(2)
+
     args = vars(parser.parse_args())
 
     if args['custom_tick'] != '':
