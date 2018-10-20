@@ -13,7 +13,7 @@ from itertools import zip_longest
 from colorama import init
 
 
-VERSION = '0.1.4'
+VERSION = '0.1.5'
 
 init()
 
