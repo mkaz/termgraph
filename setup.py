@@ -28,6 +28,7 @@ setup(
     description='a python command-line tool which draws basic graphs in the terminal',
     platforms='any',
     keywords='python CLI tool drawing graphs shell terminal',
+    python_requires='>=3.6',
     install_requires=['colorama'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
