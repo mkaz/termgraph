@@ -19,7 +19,7 @@ setup(
     name='termgraph',
     packages=['termgraph'],
     entry_points={'console_scripts': ['termgraph=termgraph.termgraph:main']},
-    version='0.1.4',
+    version='0.2.0',
     author="mkaz",
     author_email="marcus@mkaz.com",
     url='https://github.com/mkaz/termgraph',
@@ -28,6 +28,7 @@ setup(
     description='a python command-line tool which draws basic graphs in the terminal',
     platforms='any',
     keywords='python CLI tool drawing graphs shell terminal',
+    python_requires='>=3.6',
     install_requires=['colorama'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
