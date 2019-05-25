@@ -249,7 +249,7 @@ def print_row(value, num_blocks, val_min, color):
     3: ▇▇▇▇ 4
     """
     if color:
-        sys.stdout.write(f'\033[{color}m') # Start to write colorized.
+        sys.stdout.write('\033[{color}m'.format(color=color)) # Start to write colorized.
 
     if num_blocks < 1 and (value > val_min or value > 0):
         # Print something if it's not the smallest
@@ -330,7 +330,7 @@ def vertically(value, num_blocks, val_min, color, args):
 def print_vertical(vertical_rows, labels, color, args):
     """Print the whole vertical graph."""
     if color:
-        sys.stdout.write(f'\033[{color}m') # Start to write colorized.
+        sys.stdout.write('\033[{color}m'.format(color=color)) # Start to write colorized.
 
     for row in vertical_rows:
         print(*row)
@@ -454,7 +454,7 @@ def print_categories(categories, colors):
        the graph."""
     for i in range(len(categories)):
         if colors:
-            sys.stdout.write(f'\033[{colors[i]}m') # Start to write colorized.
+            sys.stdout.write('\033[{color_i}m'.format(color_i=colors[i])) # Start to write colorized.
 
         sys.stdout.write(TICK + ' ' + categories[i] + '  ')
         if colors:
@@ -477,7 +477,7 @@ def read_data(args):
     stdin = filename == '-'
 
     if args['verbose']:
-        print(f'>> Reading data from {( "stdin" if stdin else filename )}')
+        print('>> Reading data from {src}'.format(src=( "stdin" if stdin else filename )))
 
     print('')
     if args['title']:
@@ -582,7 +582,7 @@ def calendar_heatmap(data, labels, args):
                 tick = ' '
 
             if colornum:
-                sys.stdout.write(f'\033[{colornum}m')
+                sys.stdout.write('\033[{colornum}m'.format(colornum=colornum))
 
             sys.stdout.write(tick)
             if colornum:
