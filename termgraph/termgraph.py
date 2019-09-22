@@ -707,7 +707,7 @@ def calendar_heatmap(data, labels, args):
             day_ = start_dt + timedelta(days=day + week * 7)
             day_str = day_.strftime("%Y-%m-%d")
 
-            if day_str in dt_dict:
+            if day_str in dt_dict and dt_dict[day_str] != 0.0:
                 if dt_dict[day_str] > max_val * 0.75:
                     tick = tick_4
                 elif dt_dict[day_str] > max_val * 0.50:
