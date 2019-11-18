@@ -388,7 +388,7 @@ def chart(colors, data, args, labels):
 
                 print()
                 value_list.clear(), zipped_list.clear(), vertical_list.clear()
-                return
+            return
 
     # One category/Multiple series graph with same scale
     # All-together normalization
