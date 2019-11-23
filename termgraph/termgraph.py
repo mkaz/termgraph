@@ -8,6 +8,7 @@
 from __future__ import print_function
 import argparse
 import sys
+import math
 from datetime import datetime, timedelta
 from itertools import zip_longest
 from colorama import init
@@ -87,6 +88,17 @@ def init_args():
         '--stacked',
         action='store_true',
         help='Stacked bar graph'
+    )
+    parser.add_argument(
+        '--histogram',
+        action='store_true',
+        help='Histogram'
+    )
+    parser.add_argument(
+        '--bins',
+        default=5,
+        type=int,
+        help='Bins of Histogram'
     )
     parser.add_argument(
         '--different-scale',
@@ -201,6 +213,66 @@ def normalize(data, width):
         normal_dat.append([_v * norm_factor for _v in dat])
 
     return normal_dat
+
+
+def hist_rows(data, args, colors):
+    """Prepare the Histgram graph.
+       Each row is printed through the print_row function."""
+
+    val_min = find_min(data)
+    val_max = find_max(data)
+
+    # Calculate borders
+    class_min = math.floor(val_min)
+    class_max = math.ceil(val_max)
+    class_range = class_max - class_min
+    class_width = class_range / args['bins']
+
+    border = class_min
+    borders = []
+    max_len = len(str(border))
+
+    for b in range(args['bins'] + 1):
+        borders.append(border)
+        len_border = len(str(border))
+        if len_border > max_len:
+            max_len = len_border
+        border += class_width
+        border = round(border, 1)
+
+
+    # Count num of data via border
+    count_list = []
+
+    for start, end in zip(borders[:-1], borders[1:]):
+        count = 0
+        #        for d in [d]
+        for v in [row[0] for row in data]:
+            if start <= v < end:
+                count += 1
+
+        count_list.append([count])
+
+    normal_counts = normalize(count_list, args['width'])
+
+    for i, border in enumerate(zip(borders[:-1], borders[1:])):
+        if colors:
+            color = colors[0]
+        else:
+            color = None
+
+        if not args['vertical']:
+            print('{:{x}} – {:{x}}: '.format(border[0], border[1], x=max_len), end='')
+
+        num_blocks = normal_counts[i]
+
+        yield(count_list[i][0], int(num_blocks[0]), 0, color)
+
+        if not args['vertical']:
+            tail = ' {}{}'.format(count_list[i][0],
+                                  args['suffix'])
+            print(tail)
+
 
 def horiz_rows(labels, data, normal_dat, args, colors):
     """Prepare the horizontal graph.
@@ -389,6 +461,19 @@ def chart(colors, data, args, labels):
                 print()
                 value_list.clear(), zipped_list.clear(), vertical_list.clear()
             return
+
+
+    if args['histogram']:
+        for row in hist_rows(data, args, colors):
+            if not args['vertical']:
+                print_row(*row)
+            else:
+                print(">> Error: Vertical graph for Histogram"
+                      " is not supported yet.")
+                sys.exit(1)
+
+        return
+
 
     # One category/Multiple series graph with same scale
     # All-together normalization
