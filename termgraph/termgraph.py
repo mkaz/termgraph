@@ -118,6 +118,11 @@ def init_args():
         help='Verbose output, helpful for debugging'
     )
     parser.add_argument(
+        '--reverse',
+        action='store_true',
+        help='Display the values before the bars'
+    )
+    parser.add_argument(
         '--version',
         action='store_true',
         help='Display version and exit'
@@ -202,7 +207,7 @@ def normalize(data, width):
 
     return normal_dat
 
-def horiz_rows(labels, data, normal_dat, args, colors):
+def horiz_rows(labels, data, normal_dat, args, colors, doprint = True):
     """Prepare the horizontal graph.
        Each row is printed through the print_row function."""
     val_min = find_min(data)
@@ -212,7 +217,11 @@ def horiz_rows(labels, data, normal_dat, args, colors):
             # Hide the labels.
             label = ''
         else:
-            label = "{:<{x}}: ".format(labels[i],
+            if args['reverse']:
+                fmt = "{:<{x}}"
+            else:
+                fmt = "{:<{x}}: "
+            label = fmt.format(labels[i],
                                        x=find_max_label_length(labels))
 
         values = data[i]
@@ -224,23 +233,27 @@ def horiz_rows(labels, data, normal_dat, args, colors):
             if j > 0:
                 len_label = len(label)
                 label = ' ' * len_label
-            tail = ' {}{}'.format(args['format'].format(values[j]),
+            if args['reverse']:
+                fmt = '{}{}'
+            else:
+                fmt = ' {}{}'
+            tail = fmt.format(args['format'].format(values[j]),
                                   args['suffix'])
             if colors:
                 color = colors[j]
             else:
                 color = None
 
-            if not args['vertical']:
+            if doprint and not args['vertical']:
                 print(label, end="")
 
-            yield(values[j], int(num_blocks[j]), val_min, color)
+            yield(values[j], int(num_blocks[j]), val_min, color, label, tail, not doprint and not args['vertical'])
 
-            if not args['vertical']:
+            if doprint and not args['vertical']:
                 print(tail)
 
 # Prints a row of the horizontal graph.
-def print_row(value, num_blocks, val_min, color):
+def print_row(value, num_blocks, val_min, color, label = False, tail = False, doprint = False):
     """A method to print a row for a horizontal graphs.
 
     i.e:
@@ -248,19 +261,28 @@ def print_row(value, num_blocks, val_min, color):
     2: ▇▇▇ 3
     3: ▇▇▇▇ 4
     """
-    if color:
-        sys.stdout.write(f'\033[{color}m') # Start to write colorized.
+    sys.stdout.write('\033[0m') # no color
+    if value == 0.0:
+        sys.stdout.write('\033[90m') # dark gray
 
-    if num_blocks < 1 and (value > val_min or value > 0):
+    if doprint:
+        print(label, tail, " ", end="")
+
+    if (num_blocks < 1 and (value > val_min or value > 0)) or (doprint and value == 0.0):
         # Print something if it's not the smallest
         # and the normal value is less than one.
         sys.stdout.write(SM_TICK)
     else:
+        if color:
+            sys.stdout.write(f'\033[{color}m') # Start to write colorized.
         for _ in range(num_blocks):
             sys.stdout.write(TICK)
 
     if color:
         sys.stdout.write('\033[0m') # Back to original.
+
+    if doprint:
+        print()
 
 def stacked_graph(labels, data, normal_data, len_categories, args, colors):
     """Prepare the horizontal stacked graph.
@@ -394,7 +416,8 @@ def chart(colors, data, args, labels):
     # All-together normalization
     if not args['stacked']:
         normal_dat = normalize(data, args['width'])
-        for row in horiz_rows(labels, data, normal_dat, args, colors):
+        sys.stdout.write('\033[0m') # no color
+        for row in horiz_rows(labels, data, normal_dat, args, colors, not args['reverse']):
             if not args['vertical']:
                 print_row(*row)
             else:
