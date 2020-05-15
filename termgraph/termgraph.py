@@ -162,11 +162,11 @@ def main():
 
 def find_min(list_):
     """Return the minimum value in sublist of list."""
-    return min([sublist[-1] for sublist in list_])
+    return min([min(sublist) for sublist in list_])
 
 def find_max(list_):
     """Return the maximum value in sublist of list."""
-    return max([sublist[-1] for sublist in list_])
+    return max([max(sublist) for sublist in list_])
 
 def find_max_label_length(labels):
     """Return the maximum length for the labels."""
