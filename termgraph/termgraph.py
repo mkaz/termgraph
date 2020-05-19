@@ -120,6 +120,7 @@ def init_args():
     parser.add_argument(
         '--label-before',
         action='store_true',
+        default=False,
         help='Display the values before the bars'
     )
     parser.add_argument(
@@ -217,7 +218,7 @@ def horiz_rows(labels, data, normal_dat, args, colors, doprint = True):
             # Hide the labels.
             label = ''
         else:
-            if args['label_before']:
+            if args.get('label_before'):
                 fmt = "{:<{x}}"
             else:
                 fmt = "{:<{x}}: "
@@ -233,7 +234,7 @@ def horiz_rows(labels, data, normal_dat, args, colors, doprint = True):
             if j > 0:
                 len_label = len(label)
                 label = ' ' * len_label
-            if args['label_before']:
+            if args.get('label_before'):
                 fmt = '{}{}'
             else:
                 fmt = ' {}{}'
@@ -417,7 +418,7 @@ def chart(colors, data, args, labels):
     if not args['stacked']:
         normal_dat = normalize(data, args['width'])
         sys.stdout.write('\033[0m') # no color
-        for row in horiz_rows(labels, data, normal_dat, args, colors, not args['label_before']):
+        for row in horiz_rows(labels, data, normal_dat, args, colors, not args.get('label_before')):
             if not args['vertical']:
                 print_row(*row)
             else:
