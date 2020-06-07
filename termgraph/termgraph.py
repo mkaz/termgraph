@@ -13,7 +13,6 @@ from datetime import datetime, timedelta
 from itertools import zip_longest
 from colorama import init
 
-
 VERSION = '0.2.3'
 
 init()
@@ -38,6 +37,7 @@ try:
     range = xrange
 except NameError:
     pass
+
 
 def init_args():
     """Parse and return the arguments."""
@@ -173,13 +173,16 @@ def main():
     else:
         chart(colors, data, args, labels)
 
+
 def find_min(list_):
     """Return the minimum value in sublist of list."""
     return min([min(sublist) for sublist in list_])
 
+
 def find_max(list_):
     """Return the maximum value in sublist of list."""
     return max([max(sublist) for sublist in list_])
+
 
 def find_max_label_length(labels):
     """Return the maximum length for the labels."""
@@ -189,6 +192,7 @@ def find_max_label_length(labels):
             length = len(labels[i])
 
     return length
+
 
 def normalize(data, width):
     """Normalize the data and return it."""
@@ -280,7 +284,7 @@ def hist_rows(data, args, colors):
             print(tail)
 
 
-def horiz_rows(labels, data, normal_dat, args, colors, doprint = True):
+def horiz_rows(labels, data, normal_dat, args, colors, doprint=True):
     """Prepare the horizontal graph.
        Each row is printed through the print_row function."""
     val_min = find_min(data)
@@ -295,7 +299,7 @@ def horiz_rows(labels, data, normal_dat, args, colors, doprint = True):
             else:
                 fmt = "{:<{x}}: "
             label = fmt.format(labels[i],
-                                       x=find_max_label_length(labels))
+                               x=find_max_label_length(labels))
 
         values = data[i]
         num_blocks = normal_dat[i]
@@ -311,7 +315,7 @@ def horiz_rows(labels, data, normal_dat, args, colors, doprint = True):
             else:
                 fmt = ' {}{}'
             tail = fmt.format(args['format'].format(values[j]),
-                                  args['suffix'])
+                              args['suffix'])
             if colors:
                 color = colors[j]
             else:
@@ -320,13 +324,14 @@ def horiz_rows(labels, data, normal_dat, args, colors, doprint = True):
             if doprint and not args['vertical']:
                 print(label, end="")
 
-            yield(values[j], int(num_blocks[j]), val_min, color, label, tail, not doprint and not args['vertical'])
+            yield (values[j], int(num_blocks[j]), val_min, color, label, tail, not doprint and not args['vertical'])
 
             if doprint and not args['vertical']:
                 print(tail)
 
+
 # Prints a row of the horizontal graph.
-def print_row(value, num_blocks, val_min, color, label = False, tail = False, doprint = False):
+def print_row(value, num_blocks, val_min, color, label=False, tail=False, doprint=False):
     """A method to print a row for a horizontal graphs.
 
     i.e:
@@ -334,9 +339,9 @@ def print_row(value, num_blocks, val_min, color, label = False, tail = False, do
     2: ▇▇▇ 3
     3: ▇▇▇▇ 4
     """
-    sys.stdout.write('\033[0m') # no color
+    sys.stdout.write('\033[0m')  # no color
     if value == 0.0:
-        sys.stdout.write('\033[90m') # dark gray
+        sys.stdout.write('\033[90m')  # dark gray
 
     if doprint:
         print(label, tail, " ", end="")
@@ -348,14 +353,16 @@ def print_row(value, num_blocks, val_min, color, label = False, tail = False, do
     else:
         if color:
             sys.stdout.write('\033[{color}m'.format(color=color)) # Start to write colorized.
+            sys.stdout.write(f'\033[{color}m')  # Start to write colorized.
         for _ in range(num_blocks):
             sys.stdout.write(TICK)
 
     if color:
-        sys.stdout.write('\033[0m') # Back to original.
+        sys.stdout.write('\033[0m')  # Back to original.
 
     if doprint:
         print()
+
 
 def stacked_graph(labels, data, normal_data, len_categories, args, colors):
     """Prepare the horizontal stacked graph.
@@ -381,7 +388,9 @@ def stacked_graph(labels, data, normal_data, len_categories, args, colors):
                               args['suffix'])
         print(tail)
 
+
 value_list, zipped_list, vertical_list, maxi = [], [], [], 0
+
 
 def vertically(value, num_blocks, val_min, color, args):
     """Prepare the vertical graph.
@@ -422,6 +431,7 @@ def vertically(value, num_blocks, val_min, color, args):
     # Return a list of rows which will be used to print the result vertically.
     return result_list
 
+
 def print_vertical(vertical_rows, labels, color, args):
     """Print the whole vertical graph."""
     if color:
@@ -430,7 +440,7 @@ def print_vertical(vertical_rows, labels, color, args):
     for row in vertical_rows:
         print(*row)
 
-    sys.stdout.write('\033[0m') # End of printing colored
+    sys.stdout.write('\033[0m')  # End of printing colored
 
     print("-" * len(row) + "Values" + "-" * len(row))
     # Print Values
@@ -442,6 +452,7 @@ def print_vertical(vertical_rows, labels, color, args):
         # Print Labels
         for label in zip_longest(*labels, fillvalue=''):
             print("  ".join(label))
+
 
 def chart(colors, data, args, labels):
     """Handle the normalization of data and the printing of the graph."""
@@ -502,7 +513,7 @@ def chart(colors, data, args, labels):
     # All-together normalization
     if not args['stacked']:
         normal_dat = normalize(data, args['width'])
-        sys.stdout.write('\033[0m') # no color
+        sys.stdout.write('\033[0m')  # no color
         for row in horiz_rows(labels, data, normal_dat, args, colors, not args.get('label_before')):
             if not args['vertical']:
                 print_row(*row)
@@ -518,6 +529,7 @@ def chart(colors, data, args, labels):
             print_vertical(vertic, labels, color, args)
 
         print()
+
 
 def check_data(labels, data, args):
     """Check that all data were inserted correctly. Return the colors."""
@@ -558,18 +570,21 @@ def check_data(labels, data, args):
 
     return colors
 
+
 def print_categories(categories, colors):
     """Print a tick and the category's name for each category above
        the graph."""
     for i in range(len(categories)):
         if colors:
             sys.stdout.write('\033[{color_i}m'.format(color_i=colors[i])) # Start to write colorized.
+            sys.stdout.write(f'\033[{colors[i]}m')  # Start to write colorized.
 
         sys.stdout.write(TICK + ' ' + categories[i] + '  ')
         if colors:
-            sys.stdout.write('\033[0m') # Back to original.
+            sys.stdout.write('\033[0m')  # Back to original.
 
     print('\n\n')
+
 
 def read_data(args):
     """Read data from a file or stdin and returns it.
@@ -631,6 +646,7 @@ def read_data(args):
 
     return categories, labels, data, colors
 
+
 def calendar_heatmap(data, labels, args):
     """Print a calendar heatmap."""
     if args['color']:
@@ -658,7 +674,7 @@ def calendar_heatmap(data, labels, args):
         start_dt = datetime.strptime(args['start_dt'], '%Y-%m-%d')
     else:
         start = datetime.now()
-        start_dt = datetime(year=start.year-1, month=start.month,
+        start_dt = datetime(year=start.year - 1, month=start.month,
                             day=start.day)
 
     # modify start date to be a Monday, subtract weekday() from day
@@ -668,10 +684,10 @@ def calendar_heatmap(data, labels, args):
     # top legend for months
     sys.stdout.write("     ")
     for month in range(13):
-        month_dt = datetime(year=start_dt.year, month=start_dt.month, day=1) +\
-                   timedelta(days=month*31)
+        month_dt = datetime(year=start_dt.year, month=start_dt.month, day=1) + \
+                   timedelta(days=month * 31)
         sys.stdout.write(month_dt.strftime("%b") + " ")
-        if args['custom_tick']: #assume custom tick is emoji which is one wider
+        if args['custom_tick']:  # assume custom tick is emoji which is one wider
             sys.stdout.write(" ")
 
     sys.stdout.write('\n')
@@ -679,7 +695,7 @@ def calendar_heatmap(data, labels, args):
     for day in range(7):
         sys.stdout.write(DAYS[day] + ': ')
         for week in range(53):
-            day_ = start_dt + timedelta(days=day + week*7)
+            day_ = start_dt + timedelta(days=day + week * 7)
             day_str = day_.strftime("%Y-%m-%d")
 
             if day_str in dt_dict:
