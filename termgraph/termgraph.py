@@ -509,30 +509,34 @@ def read_data(args):
 
     categories, labels, data, colors = ([] for i in range(4))
 
-    f = sys.stdin if stdin else open(filename, "r")
-    for line in f:
-        line = line.strip()
-        if line:
-            if not line.startswith('#'):
-                if line.find(DELIM) > 0:
-                    cols = line.split(DELIM)
-                else:
-                    cols = line.split()
+    try:
+        f = sys.stdin if stdin else open(filename, "r")
+        for line in f:
+            line = line.strip()
+            if line:
+                if not line.startswith('#'):
+                    if line.find(DELIM) > 0:
+                        cols = line.split(DELIM)
+                    else:
+                        cols = line.split()
 
-                # Line contains categories.
-                if line.startswith('@'):
-                    cols[0] = cols[0].replace("@ ", "")
-                    categories = cols
+                    # Line contains categories.
+                    if line.startswith('@'):
+                        cols[0] = cols[0].replace("@ ", "")
+                        categories = cols
 
-                # Line contains label and values.
-                else:
-                    labels.append(cols[0].strip())
-                    data_points = []
-                    for i in range(1, len(cols)):
-                        data_points.append(float(cols[i].strip()))
+                    # Line contains label and values.
+                    else:
+                        labels.append(cols[0].strip())
+                        data_points = []
+                        for i in range(1, len(cols)):
+                            data_points.append(float(cols[i].strip()))
 
-                    data.append(data_points)
-    f.close()
+                        data.append(data_points)
+    except IOError:
+        print("An IOError has occurred!")
+    finally:
+        f.close()
 
     # Check that all data are valid. (i.e. There are no missing values.)
     colors = check_data(labels, data, args)
