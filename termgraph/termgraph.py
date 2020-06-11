@@ -74,6 +74,11 @@ def init_args():
         help='Do not print the label column'
     )
     parser.add_argument(
+        '--no-values',
+        action='store_true',
+        help='Do not print the values at end'
+    )
+    parser.add_argument(
         '--color',
         nargs='*',
         choices=AVAILABLE_COLORS,
@@ -314,8 +319,12 @@ def horiz_rows(labels, data, normal_dat, args, colors, doprint=True):
                 fmt = '{}{}'
             else:
                 fmt = ' {}{}'
-            tail = fmt.format(args['format'].format(values[j]),
-                              args['suffix'])
+
+            if args['no_values']:
+                tail = args['suffix']
+            else:
+                tail = fmt.format(args['format'].format(values[j]), args['suffix'])
+
             if colors:
                 color = colors[j]
             else:
