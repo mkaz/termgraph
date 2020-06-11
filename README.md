@@ -103,20 +103,19 @@ Note: Be sure your PATH includes the pypi install directory, for me it is `~/.lo
 * Help: termgraph -h
 
 ```
-
-usage: termgraph [-h] [--title TITLE] [--width WIDTH] [--format FORMAT]
-                    [--suffix SUFFIX] [--no-labels]
-                    [--color [{red,blue,green,magenta,yellow,black,cyan} [{red,blue,green,magenta,yellow,black,cyan} ...]]]
-                    [--vertical] [--stacked] [--different-scale] [--calendar]
-                    [--start-dt START_DT] [--custom-tick CUSTOM_TICK]
-                    [--delim DELIM] [--verbose]
-                    [filename]
+usage: termgraph.py [-h] [--title TITLE] [--width WIDTH] [--format FORMAT]
+  [--suffix SUFFIX]
+  [--label-before] [--no-labels] [--no-values]
+  [--color [{red,blue,green,magenta,yellow,black,cyan} [{...} ...]]]
+  [--vertical] [--stacked] [--different-scale] [--calendar]
+  [--start-dt START_DT] [--custom-tick CUSTOM_TICK] [--delim DELIM]
+  [--verbose] [--version]
+  [filename]
 
 draw basic graphs on terminal
 
 positional arguments:
-  filename              data file name (comma or space separated). Defaults to
-                        stdin.
+  filename              data file name (comma or space separated). Defaults to stdin.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -125,7 +124,8 @@ optional arguments:
   --format FORMAT       format specifier to use.
   --suffix SUFFIX       string to add as a suffix to all data points.
   --no-labels           Do not print the label column
-  --color [{red,blue,green,magenta,yellow,black,cyan} [{red,blue,green,magenta,yellow,black,cyan} ...]]
+  --no-values           Do not print the values at end
+  --color [{red,blue,green,magenta,yellow,black,cyan} [{...} ...]]
                         Graph bar color( s )
   --vertical            Vertical graph
   --stacked             Stacked bar graph
@@ -136,6 +136,8 @@ optional arguments:
                         Custom tick mark, emoji approved
   --delim DELIM         Custom delimiter, default , or space
   --verbose             Verbose output, helpful for debugging
+  --label-before        Display the values before the bars
+  --version             Display version and exit
 ```
 
 
