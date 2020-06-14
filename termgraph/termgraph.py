@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from itertools import zip_longest
 from colorama import init
 
-VERSION = '0.3.0'
+VERSION = '0.3.1'
 
 init()
 
