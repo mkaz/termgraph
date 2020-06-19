@@ -15,6 +15,10 @@ from colorama import init
 import os
 import re
 
+from math_fns import find_max
+from math_fns import find_min
+from math_fns import normalize
+
 VERSION = "0.4.0"
 
 init()
@@ -130,16 +134,6 @@ def main():
         chart(colors, data, args, labels)
 
 
-def find_min(list_):
-    """Return the minimum value in sublist of list."""
-    return min([min(sublist) for sublist in list_])
-
-
-def find_max(list_):
-    """Return the maximum value in sublist of list."""
-    return max([max(sublist) for sublist in list_])
-
-
 def find_max_label_length(labels):
     """Return the maximum length for the labels."""
     length = 0
@@ -148,37 +142,6 @@ def find_max_label_length(labels):
             length = len(labels[i])
 
     return length
-
-
-def normalize(data, width):
-    """Normalize the data and return it."""
-    min_dat = find_min(data)
-    # We offset by the minimum if there's a negative.
-    off_data = []
-    if min_dat < 0:
-        min_dat = abs(min_dat)
-        for dat in data:
-            off_data.append([_d + min_dat for _d in dat])
-    else:
-        off_data = data
-    min_dat = find_min(off_data)
-    max_dat = find_max(off_data)
-
-    if max_dat < width:
-        # Don't need to normalize if the max value
-        # is less than the width we allow.
-        return off_data
-
-    # max_dat / width is the value for a single tick. norm_factor is the
-    # inverse of this value
-    # If you divide a number to the value of single tick, you will find how
-    # many ticks it does contain basically.
-    norm_factor = width / float(max_dat)
-    normal_dat = []
-    for dat in off_data:
-        normal_dat.append([_v * norm_factor for _v in dat])
-
-    return normal_dat
 
 
 def hist_rows(data, args, colors):
