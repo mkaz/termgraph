@@ -1,6 +1,6 @@
 # Termgraph
 
-A python command-line tool which draws basic graphs in the terminal.
+A command-line tool that draws basic graphs in the terminal, written in Python.
 
 Graph types supported:
 
@@ -8,6 +8,7 @@ Graph types supported:
 - Color charts
 - Multi-variable
 - Stacked charts
+- Histograms
 - Horizontal or Vertical
 - Emoji!
 
@@ -85,10 +86,10 @@ termgraph --calendar --start-dt 2017-07-01 data/cal.dat
 
 ### Install
 
-Works best with Python3, you can install from [PyPI project](https://pypi.org/project/termgraph/)
+Requires Python 3.5+, install from [PyPI project](https://pypi.org/project/termgraph/)
 
 ```
-pip3 install termgraph
+python -m pip install termgraph
 ```
 
 Note: Be sure your PATH includes the pypi install directory, for me it is `~/.local/bin/`
@@ -149,9 +150,11 @@ After seeing [command-line sparklines](https://github.com/holman/spark) I figure
 
 ### Contribute
 
-For feature requests or bug reports, use [Github Issues](https://github.com/mkaz/termgraph/issues).
+All contributions are welcome, for feature requests or bug reports, use [Github Issues](https://github.com/mkaz/termgraph/issues). Pull requests are welcome to help fix or add features.
 
-Thanks to all the additional [Contributors](https://github.com/mkaz/termgraph/graphs/contributors).
+**Code contributions**: This repository uses the [black code formatter](https://github.com/psf/black) to automatically format the code. A Github Action is setup to lint your code, to avoid failures it is recommended to [setup your editor to auto format on save](https://github.com/psf/black/blob/master/docs/editor_integration.md).
+
+Thanks to all the [contributors](https://github.com/mkaz/termgraph/graphs/contributors)!
 
 
 ### License
