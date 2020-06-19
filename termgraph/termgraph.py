@@ -15,7 +15,7 @@ from colorama import init
 import os
 import re
 
-VERSION = "0.3.1"
+VERSION = "0.4.0"
 
 init()
 
