@@ -362,6 +362,7 @@ def stacked_graph(labels, data, normal_data, len_categories, args, colors):
         print(tail)
 
 
+# FIXME: globals for vertical, not ideal
 value_list, zipped_list, vertical_list, maxi = [], [], [], 0
 
 
@@ -383,7 +384,7 @@ def vertically(value, num_blocks, val_min, color, args):
         vertical_list.append(SM_TICK)
 
     # Zip_longest method in order to turn them vertically.
-    for row in zip_longest(*vertical_list, fillvalue="  "):
+    for row in zip_longest(*vertical_list, fillvalue=" "):
         zipped_list.append(row)
 
     counter, result_list = 0, []
@@ -417,12 +418,12 @@ def print_vertical(vertical_rows, labels, color, args):
 
     sys.stdout.write("\033[0m")  # End of printing colored
 
-    print("-" * len(row) + "Values" + "-" * len(row))
-    # Print Values
-    for value in zip_longest(*value_list, fillvalue=" "):
-        print("  ".join(value))
+    if not args["no_values"]:
+        print("-" * len(row) + "Values" + "-" * len(row))
+        for value in zip_longest(*value_list, fillvalue=" "):
+            print("  ".join(value))
 
-    if args["no_labels"] == False:
+    if not args["no_labels"]:
         print("-" * len(row) + "Labels" + "-" * len(row))
         # Print Labels
         for label in zip_longest(*labels, fillvalue=""):
@@ -458,12 +459,14 @@ def chart(colors, data, args, labels):
                     labels, cat_data, normal_cat_data, args, [colors[i]]
                 ):
                     # Print the row
-                    if not args["vertical"]:
-                        print_row(*row)
+                    if args["vertical"]:
+                        # FIXME: passing args is getting complex
+                        vertic = vertically(row[0], row[1], row[2], row[3], args=args)
                     else:
-                        vertic = vertically(*row, args=args)
+                        print_row(*row)
 
-                # Vertical graph
+                # The above gathers data for vertical and does not pritn
+                # the final print happens at once here
                 if args["vertical"]:
                     print_vertical(vertic, labels, colors[i], args)
 
@@ -491,7 +494,8 @@ def chart(colors, data, args, labels):
             if not args["vertical"]:
                 print_row(*row)
             else:
-                vertic = vertically(*row, args=args)
+                # FIXME: passing args is getting complex
+                vertic = vertically(row[0], row[1], row[2], row[3], args=args)
 
         if args["vertical"] and len_categories == 1:
             if colors:
