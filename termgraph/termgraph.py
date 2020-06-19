@@ -19,7 +19,7 @@ from math_fns import find_max
 from math_fns import find_min
 from math_fns import normalize
 
-VERSION = "0.4.0"
+VERSION = "0.4.1"
 
 init()
 
