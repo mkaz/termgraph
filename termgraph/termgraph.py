@@ -226,16 +226,20 @@ def hist_rows(data, args, colors):
         else:
             color = None
 
-        if not args["vertical"]:
+        if not args.get("no_labels"):
             print("{:{x}} – {:{x}}: ".format(border[0], border[1], x=max_len), end="")
 
         num_blocks = normal_counts[i]
 
         yield (count_list[i][0], int(num_blocks[0]), 0, color)
 
-        if not args["vertical"]:
-            tail = " {}{}".format(count_list[i][0], args["suffix"])
-            print(tail)
+        if args.get("no_values"):
+            tail = ""
+        else:
+            tail = " {}{}".format(
+                args["format"].format(count_list[i][0]), args["suffix"]
+            )
+        print(tail)
 
 
 def horiz_rows(labels, data, normal_dat, args, colors, doprint=True):
@@ -468,13 +472,12 @@ def chart(colors, data, args, labels):
             return
 
     if args["histogram"]:
-        for row in hist_rows(data, args, colors):
-            if not args["vertical"]:
-                print_row(*row)
-            else:
-                print(">> Error: Vertical graph for Histogram" " is not supported yet.")
-                sys.exit(1)
+        if args["vertical"]:
+            print(">> Error: Vertical graph for Histogram" " is not supported yet.")
+            sys.exit(1)
 
+        for row in hist_rows(data, args, colors):
+            print_row(*row)
         return
 
     # One category/Multiple series graph with same scale
