@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from itertools import zip_longest
 from colorama import init
 
-VERSION = '0.3.2'
+VERSION = '0.4.3'
 
 init()
 
@@ -320,7 +320,7 @@ def stacked_graph(labels, data, normal_data, len_categories, args, colors):
         num_blocks = normal_data[i]
 
         for j in range(len(values)):
-            print_row(values[j], int(num_blocks[j]), val_min, colors[j])
+            print_row(values[j], round(num_blocks[j]), val_min, colors[j])
 
         if args['no_values']:
             tail = ''
@@ -329,7 +329,7 @@ def stacked_graph(labels, data, normal_data, len_categories, args, colors):
                                   args['suffix'])
         print(tail)
 
-
+# FIXME: globals for vertical, not ideal
 value_list, zipped_list, vertical_list, maxi = [], [], [], 0
 
 
