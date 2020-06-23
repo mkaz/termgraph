@@ -188,6 +188,16 @@ def find_max_label_length(labels):
 
 
 def normalize(data, width):
+    """ Normalize the data with the sum of each list inside data, using sum of the values """
+    norm_dat = list()
+    for dat in data:
+        norm_factor = float(width) / sum(dat)
+        norm_dat.append( [_v * norm_factor for _v in dat] )
+
+    return norm_dat
+
+
+def _normalize(data, width):
     """Normalize the data and return it."""
     min_dat = find_min(data)
     # We offset by the minimum if there's a negative.
@@ -270,7 +280,7 @@ def horiz_rows(labels, data, normal_dat, args, colors, doprint=True):
 
 # Prints a row of the horizontal graph.
 def print_row(value, num_blocks, val_min, color, label=False, tail=False, doprint=False):
-    """A method to print a row for a horizontal graphs.
+    """A method to print a row for a horizontal graph.
 
     i.e:
     1: ▇▇ 2
@@ -278,7 +288,7 @@ def print_row(value, num_blocks, val_min, color, label=False, tail=False, doprin
     3: ▇▇▇▇ 4
     """
     sys.stdout.write('\033[0m')  # no color
-    if value == 0.0:
+    if value <= 1e-5:# 0.0:
         sys.stdout.write('\033[90m')  # dark gray
 
     if doprint:
