@@ -94,6 +94,11 @@ def init_args():
         help='Stacked bar graph'
     )
     parser.add_argument(
+        '--norm-by-sum',
+        action='store_true',
+        help='Normalize each row by sum of values'
+    )
+    parser.add_argument(
         '--different-scale',
         action='store_true',
         help='Categories have different scales.'
@@ -187,17 +192,26 @@ def find_max_label_length(labels):
     return length
 
 
-def normalize(data, width):
+def normalize_by_sum(data, width):
     """ Normalize the data with the sum of each list inside data, using sum of the values """
+    min_dat = find_min(data)
+    off_data = list()
+    if min_dat < 0:
+        min_dat = abs(min_dat)
+        for dat in data:
+            off_data.append([_d + min_dat for _d in dat])
+    else:
+        off_data = data
+
     norm_dat = list()
-    for dat in data:
+    for dat in off_data:
         norm_factor = float(width) / sum(dat)
         norm_dat.append( [_v * norm_factor for _v in dat] )
 
     return norm_dat
 
 
-def _normalize(data, width):
+def normalize(data, width):
     """Normalize the data and return it."""
     min_dat = find_min(data)
     # We offset by the minimum if there's a negative.
@@ -411,7 +425,10 @@ def chart(colors, data, args, labels):
     if len_categories > 1:
         # Stacked graph
         if args['stacked']:
-            normal_dat = normalize(data, args['width'])
+            if args['norm_by_sum']:
+                normal_dat = normalize_by_sum(data, args['width'])
+            else:
+                normal_dat = normalize(data, args['width'])
             stacked_graph(labels, data, normal_dat, len_categories,
                           args, colors)
             return
@@ -428,7 +445,10 @@ def chart(colors, data, args, labels):
                     cat_data.append([dat[i]])
 
                 # Normalize data, handle negatives.
-                normal_cat_data = normalize(cat_data, args['width'])
+                if args['norm_by_sum']:
+                    normal_cat_data = normalize_by_sum(cat_data, args['width'])
+                else:
+                    normal_cat_data = normalize(cat_data, args['width'])
 
                 # Generate data for a row.
                 for row in horiz_rows(labels, cat_data, normal_cat_data,
@@ -450,7 +470,10 @@ def chart(colors, data, args, labels):
     # One category/Multiple series graph with same scale
     # All-together normalization
     if not args['stacked']:
-        normal_dat = normalize(data, args['width'])
+        if args['norm_by_sum']:
+            normal_dat = normalize_by_sum(data, args['width'])
+        else:
+            normal_dat = normalize(data, args['width'])
         sys.stdout.write('\033[0m')  # no color
         for row in horiz_rows(labels, data, normal_dat, args, colors, not args.get('label_before')):
             if not args['vertical']:
