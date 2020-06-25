@@ -322,8 +322,8 @@ def print_row(value, num_blocks, val_min, color, label=False, tail=False, doprin
     if color:
         sys.stdout.write('\033[0m')  # Back to original.
 
-    if doprint:
-        print()
+    # if doprint:
+    #     print()
 
 
 def stacked_graph(labels, data, normal_data, len_categories, args, colors):
@@ -544,7 +544,7 @@ def print_categories(categories, colors):
         if colors:
             sys.stdout.write('\033[0m')  # Back to original.
 
-    print('\n\n')
+    sys.stdout.write('\n')
 
 
 def read_data(args):
@@ -564,7 +564,7 @@ def read_data(args):
     if args['verbose']:
         print('>> Reading data from {src}'.format(src=( "stdin" if stdin else filename )))
 
-    print('')
+    # print('')
     if args['title']:
         print('# ' + args['title'] + '\n')
 
