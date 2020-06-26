@@ -24,7 +24,8 @@ AVAILABLE_COLORS = {
     'magenta': 95,
     'yellow': 93,
     'black': 90,
-    'cyan': 96
+    'cyan': 96,
+    'white': 97,
 }
 
 DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
