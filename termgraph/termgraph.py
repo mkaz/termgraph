@@ -31,6 +31,7 @@ AVAILABLE_COLORS = {
 }
 
 DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+UNITS = ["", "K", "M", "B", "T"]
 DELIM = ","
 TICK = "▇"
 SM_TICK = "▏"
@@ -39,7 +40,6 @@ try:
     range = xrange
 except NameError:
     pass
-
 
 def init_args():
     """Parse and return the arguments."""
@@ -63,6 +63,9 @@ def init_args():
     )
     parser.add_argument(
         "--no-values", action="store_true", help="Do not print the values at end"
+    )
+    parser.add_argument(
+        "--space-between", action="store_true", help="Print a new line after every field"
     )
     parser.add_argument("--color", nargs="*", help="Graph bar color( s )")
     parser.add_argument("--vertical", action="store_true", help="Vertical graph")
@@ -176,6 +179,23 @@ def find_max_label_length(labels):
 
     return length
 
+def cvtToReadable(num):
+    """Return the number in a human readable format
+    
+    Eg:
+    125000 -> 125.0K
+    12550 -> 12.55K
+    19561100 -> 19.561M
+    """
+
+    # Find the degree of the number like if it is in thousands or millions, etc.
+    index = math.floor(math.log(num) / math.log(1000))
+
+    # Converts the number to the human readable format and returns it.
+    newNum = round(num / (1000 ** index), 3)
+    degree = UNITS[index]
+
+    return (newNum, degree)
 
 def hist_rows(data, args, colors):
     """Prepare the Histgram graph.
@@ -257,6 +277,9 @@ def horiz_rows(labels, data, normal_dat, args, colors, doprint=True):
         values = data[i]
         num_blocks = normal_dat[i]
 
+        if args.get("space_between") and i != 0:
+            print()
+
         for j in range(len(values)):
             # In Multiple series graph 1st category has label at the beginning,
             # whereas the rest categories have only spaces.
@@ -264,14 +287,15 @@ def horiz_rows(labels, data, normal_dat, args, colors, doprint=True):
                 len_label = len(label)
                 label = " " * len_label
             if args.get("label_before"):
-                fmt = "{}{}"
+                fmt = "{}{}{}"
             else:
-                fmt = " {}{}"
+                fmt = " {}{}{}"
 
             if args["no_values"]:
                 tail = args["suffix"]
             else:
-                tail = fmt.format(args["format"].format(values[j]), args["suffix"])
+                val, deg = cvtToReadable(values[j])
+                tail = fmt.format(args["format"].format(val), deg, args["suffix"])
 
             if colors:
                 color = colors[j]
@@ -347,7 +371,11 @@ def stacked_graph(labels, data, normal_data, len_categories, args, colors):
         else:
             label = "{:<{x}}: ".format(labels[i], x=find_max_label_length(labels))
 
+        if args.get("space_between") and i != 0:
+            print()
+
         print(label, end="")
+
         values = data[i]
         num_blocks = normal_data[i]
 
@@ -460,6 +488,7 @@ def chart(colors, data, args, labels):
                         vertic = vertically(row[0], row[1], row[2], row[3], args=args)
                     else:
                         print_row(*row)
+                        print("\n")
 
                 # The above gathers data for vertical and does not pritn
                 # the final print happens at once here
@@ -477,6 +506,7 @@ def chart(colors, data, args, labels):
 
         for row in hist_rows(data, args, colors):
             print_row(*row)
+            print()
         return
 
     # One category/Multiple series graph with same scale
@@ -605,7 +635,9 @@ def read_data(args):
     if args["title"]:
         print("# " + args["title"] + "\n")
 
-    categories, labels, data, colors = ([] for i in range(4))
+    categories, labels, data, colors = ([] for _ in range(4))
+
+    f = None
 
     try:
         f = sys.stdin if stdin else open(filename, "r")
@@ -631,10 +663,19 @@ def read_data(args):
                             data_points.append(float(cols[i].strip()))
 
                         data.append(data_points)
+    except FileNotFoundError:
+        print(
+            ">> Error: The specified file [{fname}] does not exist.".format(
+                fname=filename
+            )
+        )
+        sys.exit()
     except IOError:
         print("An IOError has occurred!")
+        sys.exit()
     finally:
-        f.close()
+        if f is not None:
+            f.close()
 
     # Check that all data are valid. (i.e. There are no missing values.)
     colors = check_data(labels, data, args)
