@@ -30,7 +30,7 @@ AVAILABLE_COLORS = {
 
 DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 DELIM = ','
-TICK = '#' #'▇'
+TICK = '▇'
 SM_TICK = '' # '▏'
 
 try:
