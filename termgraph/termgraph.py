@@ -14,7 +14,7 @@ from colorama import init
 
 VERSION = '0.4.3'
 
-init()
+init(strip=False)
 
 # ANSI escape SGR Parameters color codes
 AVAILABLE_COLORS = {
