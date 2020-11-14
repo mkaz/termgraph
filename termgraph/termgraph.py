@@ -613,18 +613,18 @@ def read_data(args):
             line = line.strip()
             if line:
                 if not line.startswith("#"):
-                    if line.find(DELIM) > 0:
-                        cols = line.split(DELIM)
-                    else:
-                        cols = line.split()
-
                     # Line contains categories.
-                    if line.startswith("@"):
+                    if line.startswith('@'):
+                        cols = line.split(DELIM)
                         cols[0] = cols[0].replace("@ ", "")
                         categories = cols
 
                     # Line contains label and values.
                     else:
+                        if line.find(DELIM) > 0:
+                            cols = line.split(DELIM)
+                        else:
+                            cols = line.split()
                         labels.append(cols[0].strip())
                         data_points = []
                         for i in range(1, len(cols)):
