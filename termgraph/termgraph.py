@@ -5,13 +5,13 @@
 # termgraph.py - draw basic graphs on terminal
 # https://github.com/mkaz/termgraph
 
-from __future__ import print_function
+from __future__ import print_function, annotations
 import argparse
 import sys
 import math
 from datetime import datetime, timedelta
 from itertools import zip_longest
-from colorama import init
+from colorama import init  # type: ignore
 import os
 import re
 
@@ -36,7 +36,7 @@ TICK = "▇"
 SM_TICK = "▏"
 
 try:
-    range = xrange
+    range = xrange  # type: ignore
 except NameError:
     pass
 
