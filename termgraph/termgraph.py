@@ -6,6 +6,7 @@
 # https://github.com/mkaz/termgraph
 
 from __future__ import print_function, annotations
+from typing import List, Tuple, Dict
 import argparse
 import sys
 import math
@@ -41,7 +42,7 @@ except NameError:
     pass
 
 
-def init_args():
+def init_args() -> Dict:
     """Parse and return the arguments."""
     parser = argparse.ArgumentParser(description="draw basic graphs on terminal")
     parser.add_argument(
@@ -130,17 +131,17 @@ def main():
         chart(colors, data, args, labels)
 
 
-def find_min(data):
+def find_min(data: List):
     """Return the minimum value in sublist of list."""
     return min([min(sublist) for sublist in data])
 
 
-def find_max(data):
+def find_max(data: List):
     """Return the maximum value in sublist of list."""
     return max([max(sublist) for sublist in data])
 
 
-def normalize(data, width):
+def normalize(data: List, width: int) -> List:
     """Normalize the data and return it."""
 
     # We offset by the minimum if there's a negative.
@@ -167,7 +168,7 @@ def normalize(data, width):
     return normal_data
 
 
-def find_max_label_length(labels):
+def find_max_label_length(labels: List) -> int:
     """Return the maximum length for the labels."""
     length = 0
     for i in range(len(labels)):
@@ -177,7 +178,7 @@ def find_max_label_length(labels):
     return length
 
 
-def hist_rows(data, args, colors):
+def hist_rows(data: List, args: Dict, colors: List):
     """Prepare the Histgram graph.
     Each row is printed through the print_row function."""
 
@@ -238,7 +239,14 @@ def hist_rows(data, args, colors):
         print(tail)
 
 
-def horiz_rows(labels, data, normal_dat, args, colors, doprint=True):
+def horiz_rows(
+    labels: List,
+    data: List,
+    normal_dat: List,
+    args: Dict,
+    colors: List,
+    doprint: bool = True,
+):
     """Prepare the horizontal graph.
     Each row is printed through the print_row function."""
     val_min = find_min(data)
@@ -297,7 +305,13 @@ def horiz_rows(labels, data, normal_dat, args, colors, doprint=True):
 
 # Prints a row of the horizontal graph.
 def print_row(
-    value, num_blocks, val_min, color, label=False, tail=False, doprint=False
+    value,
+    num_blocks: int,
+    val_min: int,
+    color: bool,
+    label: bool = False,
+    tail: bool = False,
+    doprint: bool = False,
 ):
     """A method to print a row for a horizontal graphs.
 
@@ -335,7 +349,14 @@ def print_row(
         print()
 
 
-def stacked_graph(labels, data, normal_data, len_categories, args, colors):
+def stacked_graph(
+    labels: List,
+    data: List,
+    normal_data: List,
+    len_categories: int,
+    args: Dict,
+    colors: List,
+):
     """Prepare the horizontal stacked graph.
     Each row is printed through the print_row function."""
     val_min = find_min(data)
@@ -362,7 +383,7 @@ def stacked_graph(labels, data, normal_data, len_categories, args, colors):
 value_list, zipped_list, vertical_list, maxi = [], [], [], 0
 
 
-def vertically(value, num_blocks, val_min, color, args):
+def vertically(value, num_blocks: int, val_min: int, color: bool, args: Dict) -> List:
     """Prepare the vertical graph.
     The whole graph is printed through the print_vertical function."""
     global maxi, value_list
@@ -402,7 +423,7 @@ def vertically(value, num_blocks, val_min, color, args):
     return result_list
 
 
-def print_vertical(vertical_rows, labels, color, args):
+def print_vertical(vertical_rows: List, labels: List, color: bool, args: Dict) -> None:
     """Print the whole vertical graph."""
     if color:
         sys.stdout.write(
@@ -426,7 +447,7 @@ def print_vertical(vertical_rows, labels, color, args):
             print("  ".join(label))
 
 
-def chart(colors, data, args, labels):
+def chart(colors: List, data: List, args: Dict, labels: List) -> None:
     """Handle the normalization of data and the printing of the graph."""
     len_categories = len(data[0])
     if len_categories > 1:
@@ -504,7 +525,7 @@ def chart(colors, data, args, labels):
         print()
 
 
-def check_data(labels, data, args):
+def check_data(labels: List, data: List, args: Dict) -> List:
     """Check that all data were inserted correctly. Return the colors."""
     len_categories = len(data[0])
 
@@ -567,7 +588,7 @@ def check_data(labels, data, args):
     return colors
 
 
-def print_categories(categories, colors):
+def print_categories(categories: List, colors: List) -> None:
     """Print a tick and the category's name for each category above
     the graph."""
     for i in range(len(categories)):
@@ -584,7 +605,7 @@ def print_categories(categories, colors):
     print("\n\n")
 
 
-def read_data(args):
+def read_data(args: Dict) -> Tuple[List, List, List, List]:
     """Read data from a file or stdin and returns it.
 
     Filename includes (categories), labels and data.
@@ -645,7 +666,7 @@ def read_data(args):
     return categories, labels, data, colors
 
 
-def calendar_heatmap(data, labels, args):
+def calendar_heatmap(data: Dict, labels: List, args: Dict) -> None:
     """Print a calendar heatmap."""
     if args["color"]:
         colornum = AVAILABLE_COLORS.get(args["color"][0])
