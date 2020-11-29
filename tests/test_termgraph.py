@@ -262,10 +262,9 @@ def test_check_data_vertical_multiple_series_same_scale_exits_with_one():
         "verbose": False,
         "version": False,
     }
-    with self.assertRaises(SystemExit) as cm:
+    with pytest.raises(SystemExit) as e:
         tg.check_data(labels, data, args)
-
-    self.assertEqual(cm.exception.code, 1)
+        assert e.exception.code == 1
 
 
 def test_check_data_mismatching_color_and_category_count_exits_with_one():
@@ -316,10 +315,9 @@ def test_check_data_mismatching_data_and_labels_count_exits_with_one():
         "verbose": False,
         "version": False,
     }
-    with self.assertRaises(SystemExit) as cm:
+    with pytest.raises(SystemExit) as e:
         tg.check_data(labels, data, args)
-
-    self.assertEqual(cm.exception.code, 1)
+        assert e.exception.code == 1
 
 
 def test_check_data_missing_data_for_categories_count_exits_with_one():
@@ -351,10 +349,9 @@ def test_check_data_missing_data_for_categories_count_exits_with_one():
         "verbose": False,
         "version": False,
     }
-    with self.assertRaises(SystemExit) as cm:
+    with pytest.raises(SystemExit) as e:
         tg.check_data(labels, data, args)
-
-    self.assertEqual(cm.exception.code, 1)
+        assert e.exception.code == 1
 
 
 def test_read_data_returns_correct_results():
