@@ -68,8 +68,17 @@ def test_normalize_with_negative_datapoint_returns_correct_results():
 
 
 def test_normalize_with_larger_width_does_not_normalize():
-    expected = [[183.32], [231.23], [16.43], [50.21], [508.97], [212.05], [1.0]]
-    results = tg.normalize(expected, 20000)
+    data = [[183.32], [231.23], [16.43], [50.21], [508.97], [212.05], [1.0]]
+    expected = [
+        [7203.567990254828],
+        [9086.193685285969],
+        [645.6176198990117],
+        [1973.0043028076311],
+        [20000.0],
+        [8332.514686523764],
+        [39.29504685934338],
+    ]
+    results = tg.normalize(data, 20000)
     assert results == expected
 
 
@@ -100,6 +109,7 @@ def test_horiz_rows_yields_correct_values():
         "start_dt": None,
         "custom_tick": "",
         "delim": "",
+        "no_values": False,
         "verbose": False,
         "version": False,
     }
@@ -108,14 +118,15 @@ def test_horiz_rows_yields_correct_values():
     rows = []
     for row in tg.horiz_rows(labels, data, normal_dat, args, colors):
         rows.append(row)
+
     assert rows == [
-        (183.32, 17, 1.0, None),
-        (231.23, 22, 1.0, None),
-        (16.43, 1, 1.0, None),
-        (50.21, 4, 1.0, None),
-        (508.97, 50, 1.0, None),
-        (212.05, 20, 1.0, None),
-        (1.0, 0, 1.0, None),
+        (183.32, 17, 1.0, None, "2007: ", " 183.32", False),
+        (231.23, 22, 1.0, None, "2008: ", " 231.23", False),
+        (16.43, 1, 1.0, None, "2009: ", " 16.43", False),
+        (50.21, 4, 1.0, None, "2010: ", " 50.21", False),
+        (508.97, 50, 1.0, None, "2011: ", " 508.97", False),
+        (212.05, 20, 1.0, None, "2012: ", " 212.05", False),
+        (1.0, 0, 1.0, None, "2014: ", " 1.00 ", False),
     ]
 
 
@@ -267,7 +278,7 @@ def test_check_data_vertical_multiple_series_same_scale_exits_with_one():
         assert e.exception.code == 1
 
 
-def test_check_data_mismatching_color_and_category_count_exits_with_one():
+def test_check_data_mismatching_color_and_category_count():
     labels = ["2007", "2008", "2009", "2010", "2011", "2012", "2014"]
     data = [[183.32], [231.23], [16.43], [50.21], [508.97], [212.05], [1.0]]
     args = {
@@ -288,10 +299,7 @@ def test_check_data_mismatching_color_and_category_count_exits_with_one():
         "verbose": False,
         "version": False,
     }
-    with self.assertRaises(SystemExit) as cm:
-        tg.check_data(labels, data, args)
-
-    self.assertEqual(cm.exception.code, 1)
+    assert tg.check_data(labels, data, args)
 
 
 def test_check_data_mismatching_data_and_labels_count_exits_with_one():
