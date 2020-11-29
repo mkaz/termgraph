@@ -18,3 +18,8 @@ build: clean
 publish: build
 	twine upload dist/*
 
+# Test
+# Requires: python3 -m pip install pytest pytest-sugar
+.PHONY: test
+test:
+	py.test tests/
