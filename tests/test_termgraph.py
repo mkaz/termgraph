@@ -8,10 +8,6 @@ def test_init_args():
     tg.init_args()
 
 
-def test_main():
-    pass
-
-
 def test_find_min_returns_lowest_value():
     minimum = tg.find_min(
         [[183.32], [231.23], [16.43], [50.21], [508.97], [212.05], [1.0]]
@@ -155,10 +151,6 @@ def test_vertically_returns_correct_result():
     color = None
     result = tg.vertically(value, num_blocks, val_min, color, args)
     assert result == [("▇",), ("▇",)]
-
-
-def test_print_vertical():
-    pass
 
 
 def test_check_data_returns_correct_result():
