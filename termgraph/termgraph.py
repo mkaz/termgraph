@@ -482,7 +482,7 @@ def chart(colors: List, data: List, args: Dict, labels: List) -> None:
                     else:
                         print_row(*row)
 
-                # The above gathers data for vertical and does not pritn
+                # The above gathers data for vertical and does not print
                 # the final print happens at once here
                 if args["vertical"]:
                     print_vertical(vertic, labels, colors[i], args)
