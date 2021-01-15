@@ -1,5 +1,6 @@
 *.pyc
 venv/
+.vim/
 .vscode/
 .coverage
 htmlcov/
