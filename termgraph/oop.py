@@ -240,6 +240,28 @@ class Chart(object):
 
         raise NotImplementedError()
 
+    def _print_header(self) -> None:
+        title = self.args.get_arg("title")
+
+        if title is not None:
+            print(f"# {title}\n")
+
+        if len(self.data.categories) > 0:
+            colors = self.args.get_arg("colors")
+
+            for i in range(len(self.data.categories)):
+                if colors is not None:
+                    sys.stdout.write(
+                        "\033[{color_i}m".format(color_i=colors[i])
+                    )  # Start to write colorized.
+                    sys.stdout.write(f"\033[{colors[i]}m")  # Start to write colorized.
+
+                sys.stdout.write(TICK + " " + self.data.categories[i] + "  ")
+                if colors:
+                    sys.stdout.write("\033[0m")  # Back to original.
+
+        print("\n\n")
+
     def _normalize(self) -> List[float]:
         """Normalize the data and return it."""
 
@@ -343,6 +365,8 @@ class BarChart(HorizontalChart):
 
     def draw(self) -> None:
         """Draws the chart"""
+        self._print_header()
+
         colors = (
             self.args.get_arg("colors")
             if self.args.get_arg("colors") != None
