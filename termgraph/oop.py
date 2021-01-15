@@ -26,6 +26,7 @@ SM_TICK = "▏"
 
 colorama.init()
 
+
 class Colors(object):
     """Class representing available color values for graphs."""
 
@@ -163,29 +164,29 @@ class Args(object):
     """Class representing the arguments to modify the graph."""
 
     default = {
-            "filename": "-",
-            "title": None,
-            "width": 50,
-            "format": "{:<5.2f}",
-            "suffix": "",
-            "no_labels": False,
-            "no_values": False,
-            "space_between": False,
-            "colors": None,
-            "vertical": False,
-            "stacked": False,
-            "histogram": False,
-            "bins": 5,
-            "different_scale": False,
-            "calendar": False,
-            "start_dt": None,
-            "custom_tick": "",
-            "delim": "",
-            "verbose": False,
-            "label_before": False,
-        }
+        "filename": "-",
+        "title": None,
+        "width": 50,
+        "format": "{:<5.2f}",
+        "suffix": "",
+        "no_labels": False,
+        "no_values": False,
+        "space_between": False,
+        "colors": None,
+        "vertical": False,
+        "stacked": False,
+        "histogram": False,
+        "bins": 5,
+        "different_scale": False,
+        "calendar": False,
+        "start_dt": None,
+        "custom_tick": "",
+        "delim": "",
+        "verbose": False,
+        "label_before": False,
+    }
 
-    def __init__(self, **kwargs : Dict):
+    def __init__(self, **kwargs: Dict):
         """Initialize the Args object."""
 
         self.args = dict(self.default)
@@ -279,7 +280,15 @@ class HorizontalChart(Chart):
 
         super().__init__(data, args)
 
-    def print_row(self, value: Union[int, float], num_blocks: Union[int, float], val_min: Union[int, float], color: int, label: bool = False, tail: bool = False) -> None:
+    def print_row(
+        self,
+        value: Union[int, float],
+        num_blocks: Union[int, float],
+        val_min: Union[int, float],
+        color: int,
+        label: bool = False,
+        tail: bool = False,
+    ) -> None:
         """A method to print a row for a horizontal graphs.
         i.e:
         1: ▇▇ 2

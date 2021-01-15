@@ -41,6 +41,7 @@ try:
 except NameError:
     pass
 
+
 def init_args():
     """Parse and return the arguments."""
     parser = argparse.ArgumentParser(description="draw basic graphs on terminal")
@@ -65,7 +66,9 @@ def init_args():
         "--no-values", action="store_true", help="Do not print the values at end"
     )
     parser.add_argument(
-        "--space-between", action="store_true", help="Print a new line after every field"
+        "--space-between",
+        action="store_true",
+        help="Print a new line after every field",
     )
     parser.add_argument("--color", nargs="*", help="Graph bar color( s )")
     parser.add_argument("--vertical", action="store_true", help="Vertical graph")
@@ -132,6 +135,7 @@ def main():
     else:
         chart(colors, data, args, labels)
 
+
 def find_min(data):
     """Return the minimum value in sublist of list."""
     return min([min(sublist) for sublist in data])
@@ -173,9 +177,10 @@ def find_max_label_length(labels):
     """Return the maximum length for the labels."""
     return max([len(label) for label in labels])
 
+
 def cvt_to_readable(num):
     """Return the number in a human readable format
-    
+
     Eg:
     125000 -> 125.0K
     12550 -> 12.55K
@@ -200,9 +205,10 @@ def cvt_to_readable(num):
 
     return (newNum, degree)
 
+
 def hist_rows(data, args, colors):
     """Prepare the Histgram graph.
-       Each row is printed through the print_row function."""
+    Each row is printed through the print_row function."""
 
     val_min = find_min(data)
     val_max = find_max(data)
@@ -263,7 +269,7 @@ def hist_rows(data, args, colors):
 
 def horiz_rows(labels, data, normal_dat, args, colors):
     """Prepare the horizontal graph.
-       Each row is printed through the print_row function."""
+    Each row is printed through the print_row function."""
     val_min = find_min(data)
 
     for i in range(len(labels)):
@@ -360,7 +366,7 @@ def print_row(
 
 def stacked_graph(labels, data, normal_data, len_categories, args, colors):
     """Prepare the horizontal stacked graph.
-       Each row is printed through the print_row function."""
+    Each row is printed through the print_row function."""
     val_min = find_min(data)
 
     for i in range(len(labels)):
@@ -391,7 +397,7 @@ value_list, zipped_list, vertical_list, maxi = [], [], [], 0
 
 def vertically(value, num_blocks, val_min, color, args):
     """Prepare the vertical graph.
-       The whole graph is printed through the print_vertical function."""
+    The whole graph is printed through the print_vertical function."""
     global maxi, value_list
 
     value_list.append(str(value))
@@ -513,9 +519,7 @@ def chart(colors, data, args, labels):
     if not args["stacked"]:
         normal_dat = normalize(data, args["width"])
         sys.stdout.write("\033[0m")  # no color
-        for row in horiz_rows(
-            labels, data, normal_dat, args, colors
-        ):
+        for row in horiz_rows(labels, data, normal_dat, args, colors):
             if not args["vertical"]:
                 print_row(*row)
             else:
@@ -598,7 +602,7 @@ def check_data(labels, data, args):
 
 def print_categories(categories, colors):
     """Print a tick and the category's name for each category above
-       the graph."""
+    the graph."""
     for i in range(len(categories)):
         if colors:
             sys.stdout.write(
@@ -615,13 +619,13 @@ def print_categories(categories, colors):
 
 def read_data(args):
     """Read data from a file or stdin and returns it.
-       Filename includes (categories), labels and data.
-       We append categories and labels to lists.
-       Data are inserted to a list of lists due to the categories.
-       i.e.
-       labels = ['2001', '2002', '2003', ...]
-       categories = ['boys', 'girls']
-       data = [ [20.4, 40.5], [30.7, 100.0], ...]"""
+    Filename includes (categories), labels and data.
+    We append categories and labels to lists.
+    Data are inserted to a list of lists due to the categories.
+    i.e.
+    labels = ['2001', '2002', '2003', ...]
+    categories = ['boys', 'girls']
+    data = [ [20.4, 40.5], [30.7, 100.0], ...]"""
     filename = args["filename"]
     stdin = filename == "-"
 
