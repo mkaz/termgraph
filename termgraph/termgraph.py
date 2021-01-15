@@ -132,7 +132,6 @@ def main():
     else:
         chart(colors, data, args, labels)
 
-
 def find_min(data):
     """Return the minimum value in sublist of list."""
     return min([min(sublist) for sublist in data])
@@ -172,14 +171,9 @@ def normalize(data, width):
 
 def find_max_label_length(labels):
     """Return the maximum length for the labels."""
-    length = 0
-    for i in range(len(labels)):
-        if len(labels[i]) > length:
-            length = len(labels[i])
+    return max([len(label) for label in labels])
 
-    return length
-
-def cvtToReadable(num):
+def cvt_to_readable(num):
     """Return the number in a human readable format
     
     Eg:
@@ -188,12 +182,21 @@ def cvtToReadable(num):
     19561100 -> 19.561M
     """
 
-    # Find the degree of the number like if it is in thousands or millions, etc.
-    index = math.floor(math.log(num) / math.log(1000))
+    if num != 0:
+        neg = num < 0
+        num = abs(num)
 
-    # Converts the number to the human readable format and returns it.
-    newNum = round(num / (1000 ** index), 3)
-    degree = UNITS[index]
+        # Find the degree of the number like if it is in thousands or millions, etc.
+        index = math.floor(math.log(num) / math.log(1000))
+
+        # Converts the number to the human readable format and returns it.
+        newNum = round(num / (1000 ** index), 3)
+        newNum *= -1 if neg else 1
+        degree = UNITS[index]
+
+    else:
+        newNum = 0
+        degree = UNITS[0]
 
     return (newNum, degree)
 
@@ -258,7 +261,7 @@ def hist_rows(data, args, colors):
         print(tail)
 
 
-def horiz_rows(labels, data, normal_dat, args, colors, doprint=True):
+def horiz_rows(labels, data, normal_dat, args, colors):
     """Prepare the horizontal graph.
        Each row is printed through the print_row function."""
     val_min = find_min(data)
@@ -294,7 +297,7 @@ def horiz_rows(labels, data, normal_dat, args, colors, doprint=True):
             if args["no_values"]:
                 tail = args["suffix"]
             else:
-                val, deg = cvtToReadable(values[j])
+                val, deg = cvt_to_readable(values[j])
                 tail = fmt.format(args["format"].format(val), deg, args["suffix"])
 
             if colors:
@@ -302,7 +305,7 @@ def horiz_rows(labels, data, normal_dat, args, colors, doprint=True):
             else:
                 color = None
 
-            if doprint and not args["vertical"]:
+            if not args["label_before"] and not args["vertical"]:
                 print(label, end="")
 
             yield (
@@ -312,10 +315,10 @@ def horiz_rows(labels, data, normal_dat, args, colors, doprint=True):
                 color,
                 label,
                 tail,
-                not doprint and not args["vertical"],
+                args["label_before"] and not args["vertical"],
             )
 
-            if doprint and not args["vertical"]:
+            if not args["label_before"] and not args["vertical"]:
                 print(tail)
 
 
@@ -324,7 +327,6 @@ def print_row(
     value, num_blocks, val_min, color, label=False, tail=False, doprint=False
 ):
     """A method to print a row for a horizontal graphs.
-
     i.e:
     1: ▇▇ 2
     2: ▇▇▇ 3
@@ -345,9 +347,6 @@ def print_row(
         sys.stdout.write(SM_TICK)
     else:
         if color:
-            sys.stdout.write(
-                "\033[{color}m".format(color=color)
-            )  # Start to write colorized.
             sys.stdout.write(f"\033[{color}m")  # Start to write colorized.
         for _ in range(num_blocks):
             sys.stdout.write(TICK)
@@ -515,7 +514,7 @@ def chart(colors, data, args, labels):
         normal_dat = normalize(data, args["width"])
         sys.stdout.write("\033[0m")  # no color
         for row in horiz_rows(
-            labels, data, normal_dat, args, colors, not args.get("label_before")
+            labels, data, normal_dat, args, colors
         ):
             if not args["vertical"]:
                 print_row(*row)
@@ -616,11 +615,9 @@ def print_categories(categories, colors):
 
 def read_data(args):
     """Read data from a file or stdin and returns it.
-
        Filename includes (categories), labels and data.
        We append categories and labels to lists.
        Data are inserted to a list of lists due to the categories.
-
        i.e.
        labels = ['2001', '2002', '2003', ...]
        categories = ['boys', 'girls']
