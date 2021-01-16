@@ -268,7 +268,6 @@ def hist_rows(data: List, args: Dict, colors: List):
         print(tail)
 
 
-
 def horiz_rows(
     labels: List,
     data: List,
@@ -645,12 +644,12 @@ def read_data(args: Dict) -> Tuple[List, List, List, List]:
     Filename includes (categories), labels and data.
     We append categories and labels to lists.
     Data are inserted to a list of lists due to the categories.
-    
+
     i.e.
     labels = ['2001', '2002', '2003', ...]
     categories = ['boys', 'girls']
     data = [ [20.4, 40.5], [30.7, 100.0], ...]"""
-    
+
     filename = args["filename"]
     stdin = filename == "-"
 
