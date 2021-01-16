@@ -9,3 +9,5 @@ build/
 termgraph.egg-info/
 .coverage
 htmlcov/
+.python-version
+.vimrc
