@@ -125,10 +125,13 @@ def main():
         sys.exit()
 
     _, labels, data, colors = read_data(args)
-    if args["calendar"]:
-        calendar_heatmap(data, labels, args)
-    else:
-        chart(colors, data, args, labels)
+    try:
+        if args["calendar"]:
+            calendar_heatmap(data, labels, args)
+        else:
+            chart(colors, data, args, labels)
+    except BrokenPipeError:
+        pass
 
 
 def find_min(data: List):
