@@ -319,7 +319,7 @@ def horiz_rows(
             else:
                 color = None
 
-            if not args["label_before"] and not args["vertical"]:
+            if not args.get("label_before") and not args.get("vertical"):
                 print(label, end="")
 
             yield (
@@ -329,10 +329,10 @@ def horiz_rows(
                 color,
                 label,
                 tail,
-                args["label_before"] and not args["vertical"],
+                args.get("label_before") and not args.get("vertical"),
             )
 
-            if not args["label_before"] and not args["vertical"]:
+            if not args.get("label_before") and not args.get("vertical"):
                 print(tail)
 
 
