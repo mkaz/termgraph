@@ -32,6 +32,7 @@ AVAILABLE_COLORS = {
 }
 
 DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+UNITS = ["", "K", "M", "B", "T"]
 DELIM = ","
 TICK = "▇"
 SM_TICK = "▏"
@@ -64,6 +65,11 @@ def init_args() -> Dict:
     )
     parser.add_argument(
         "--no-values", action="store_true", help="Do not print the values at end"
+    )
+    parser.add_argument(
+        "--space-between",
+        action="store_true",
+        help="Print a new line after every field",
     )
     parser.add_argument("--color", nargs="*", help="Graph bar color( s )")
     parser.add_argument("--vertical", action="store_true", help="Vertical graph")
@@ -173,12 +179,35 @@ def normalize(data: List, width: int) -> List:
 
 def find_max_label_length(labels: List) -> int:
     """Return the maximum length for the labels."""
-    length = 0
-    for i in range(len(labels)):
-        if len(labels[i]) > length:
-            length = len(labels[i])
+    return max([len(label) for label in labels])
 
-    return length
+
+def cvt_to_readable(num):
+    """Return the number in a human readable format
+
+    Eg:
+    125000 -> 125.0K
+    12550 -> 12.55K
+    19561100 -> 19.561M
+    """
+
+    if num != 0:
+        neg = num < 0
+        num = abs(num)
+
+        # Find the degree of the number like if it is in thousands or millions, etc.
+        index = math.floor(math.log(num) / math.log(1000))
+
+        # Converts the number to the human readable format and returns it.
+        newNum = round(num / (1000 ** index), 3)
+        newNum *= -1 if neg else 1
+        degree = UNITS[index]
+
+    else:
+        newNum = 0
+        degree = UNITS[0]
+
+    return (newNum, degree)
 
 
 def hist_rows(data: List, args: Dict, colors: List):
@@ -268,6 +297,9 @@ def horiz_rows(
         values = data[i]
         num_blocks = normal_dat[i]
 
+        if args.get("space_between") and i != 0:
+            print()
+
         for j in range(len(values)):
             # In Multiple series graph 1st category has label at the beginning,
             # whereas the rest categories have only spaces.
@@ -275,21 +307,22 @@ def horiz_rows(
                 len_label = len(label)
                 label = " " * len_label
             if args.get("label_before"):
-                fmt = "{}{}"
+                fmt = "{}{}{}"
             else:
-                fmt = " {}{}"
+                fmt = " {}{}{}"
 
             if args["no_values"]:
                 tail = args["suffix"]
             else:
-                tail = fmt.format(args["format"].format(values[j]), args["suffix"])
+                val, deg = cvt_to_readable(values[j])
+                tail = fmt.format(args["format"].format(val), deg, args["suffix"])
 
             if colors:
                 color = colors[j]
             else:
                 color = None
 
-            if doprint and not args["vertical"]:
+            if not args.get("label_before") and not args.get("vertical"):
                 print(label, end="")
 
             yield (
@@ -299,10 +332,10 @@ def horiz_rows(
                 color,
                 label,
                 tail,
-                not doprint and not args["vertical"],
+                args.get("label_before") and not args.get("vertical"),
             )
 
-            if doprint and not args["vertical"]:
+            if not args.get("label_before") and not args.get("vertical"):
                 print(tail)
 
 
@@ -317,7 +350,6 @@ def print_row(
     doprint: bool = False,
 ):
     """A method to print a row for a horizontal graphs.
-
     i.e:
     1: ▇▇ 2
     2: ▇▇▇ 3
@@ -338,9 +370,6 @@ def print_row(
         sys.stdout.write(SM_TICK)
     else:
         if color:
-            sys.stdout.write(
-                "\033[{color}m".format(color=color)
-            )  # Start to write colorized.
             sys.stdout.write(f"\033[{color}m")  # Start to write colorized.
         for _ in range(num_blocks):
             sys.stdout.write(TICK)
@@ -371,7 +400,11 @@ def stacked_graph(
         else:
             label = "{:<{x}}: ".format(labels[i], x=find_max_label_length(labels))
 
+        if args.get("space_between") and i != 0:
+            print()
+
         print(label, end="")
+
         values = data[i]
         num_blocks = normal_data[i]
 
@@ -484,6 +517,7 @@ def chart(colors: List, data: List, args: Dict, labels: List) -> None:
                         vertic = vertically(row[0], row[1], row[2], row[3], args=args)
                     else:
                         print_row(*row)
+                        print("\n")
 
                 # The above gathers data for vertical and does not print
                 # the final print happens at once here
@@ -501,6 +535,7 @@ def chart(colors: List, data: List, args: Dict, labels: List) -> None:
 
         for row in hist_rows(data, args, colors):
             print_row(*row)
+            print()
         return
 
     # One category/Multiple series graph with same scale
@@ -508,9 +543,7 @@ def chart(colors: List, data: List, args: Dict, labels: List) -> None:
     if not args["stacked"]:
         normal_dat = normalize(data, args["width"])
         sys.stdout.write("\033[0m")  # no color
-        for row in horiz_rows(
-            labels, data, normal_dat, args, colors, not args.get("label_before")
-        ):
+        for row in horiz_rows(labels, data, normal_dat, args, colors):
             if not args["vertical"]:
                 print_row(*row)
             else:
@@ -619,6 +652,7 @@ def read_data(args: Dict) -> Tuple[List, List, List, List]:
     labels = ['2001', '2002', '2003', ...]
     categories = ['boys', 'girls']
     data = [ [20.4, 40.5], [30.7, 100.0], ...]"""
+
     filename = args["filename"]
     stdin = filename == "-"
 
@@ -629,7 +663,9 @@ def read_data(args: Dict) -> Tuple[List, List, List, List]:
     if args["title"]:
         print("# " + args["title"] + "\n")
 
-    categories, labels, data, colors = ([] for i in range(4))
+    categories, labels, data, colors = ([] for _ in range(4))
+
+    f = None
 
     try:
         f = sys.stdin if stdin else open(filename, "r")
@@ -655,10 +691,19 @@ def read_data(args: Dict) -> Tuple[List, List, List, List]:
                             data_points.append(float(cols[i].strip()))
 
                         data.append(data_points)
+    except FileNotFoundError:
+        print(
+            ">> Error: The specified file [{fname}] does not exist.".format(
+                fname=filename
+            )
+        )
+        sys.exit()
     except IOError:
         print("An IOError has occurred!")
+        sys.exit()
     finally:
-        f.close()
+        if f is not None:
+            f.close()
 
     # Check that all data are valid. (i.e. There are no missing values.)
     colors = check_data(labels, data, args)
