@@ -89,7 +89,7 @@ termgraph --calendar --start-dt 2017-07-01 data/cal.dat
 Requires Python 3.5+, install from [PyPI project](https://pypi.org/project/termgraph/)
 
 ```
-python -m pip install termgraph
+python3 -m pip install termgraph
 ```
 
 Note: Be sure your PATH includes the pypi install directory, for me it is `~/.local/bin/`
@@ -104,14 +104,7 @@ Note: Be sure your PATH includes the pypi install directory, for me it is `~/.lo
 * Help: termgraph -h
 
 ```
-usage: termgraph.py [-h] [--title TITLE] [--width WIDTH] [--format FORMAT]
-  [--suffix SUFFIX]
-  [--label-before] [--no-labels] [--no-values]
-  [--color [{red,blue,green,magenta,yellow,black,cyan} [{...} ...]]]
-  [--vertical] [--stacked] [--different-scale] [--calendar]
-  [--start-dt START_DT] [--custom-tick CUSTOM_TICK] [--delim DELIM]
-  [--verbose] [--version]
-  [filename]
+usage: termgraph.py [-h] [(optional arguments)] [filename]
 
 draw basic graphs on terminal
 
@@ -126,10 +119,12 @@ optional arguments:
   --suffix SUFFIX       string to add as a suffix to all data points.
   --no-labels           Do not print the label column
   --no-values           Do not print the values at end
-  --color [{red,blue,green,magenta,yellow,black,cyan} [{...} ...]]
-                        Graph bar color( s )
+  --space-between       Print a new line after every field
+  --color [COLOR ...]   Graph bar color( s )
   --vertical            Vertical graph
   --stacked             Stacked bar graph
+  --histogram           Histogram
+  --bins BINS           Bins of Histogram
   --different-scale     Categories have different scales.
   --calendar            Calendar Heatmap chart
   --start-dt START_DT   Start date for Calendar chart
