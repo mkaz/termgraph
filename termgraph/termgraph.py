@@ -16,7 +16,7 @@ from colorama import init  # type: ignore
 import os
 import re
 
-VERSION = "0.5.0"
+VERSION = "0.5.1"
 
 init()
 
