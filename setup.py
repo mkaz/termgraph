@@ -28,7 +28,7 @@ setup(
     description='A command-line tool that draws basic graphs in the terminal.',
     platforms='any',
     keywords='python CLI tool drawing graphs shell terminal',
-    python_requires='>=3.5',
+    python_requires='>=3.7',
     install_requires=['colorama'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -38,7 +38,7 @@ setup(
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: POSIX',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.6'],
+        'Programming Language :: Python :: 3.7'],
     long_description=long_description,
     long_description_content_type='text/markdown'
 )

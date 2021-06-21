@@ -86,7 +86,7 @@ termgraph --calendar --start-dt 2017-07-01 data/cal.dat
 
 ### Install
 
-Requires Python 3.6+, install from [PyPI project](https://pypi.org/project/termgraph/)
+Requires Python 3.7+, install from [PyPI project](https://pypi.org/project/termgraph/)
 
 ```
 python3 -m pip install termgraph
