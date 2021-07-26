@@ -165,6 +165,9 @@ def normalize(data: List, width: int) -> List:
     min_datum = find_min(data_offset)
     max_datum = find_max(data_offset)
 
+    if min_datum == max_datum:
+        return data_offset
+
     # max_dat / width is the value for a single tick. norm_factor is the
     # inverse of this value
     # If you divide a number to the value of single tick, you will find how
