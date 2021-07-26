@@ -19,7 +19,7 @@ setup(
     name='termgraph',
     packages=['termgraph'],
     entry_points={'console_scripts': ['termgraph=termgraph.termgraph:main']},
-    version='0.5.1',
+    version='0.5.2',
     author="mkaz",
     author_email="marcus@mkaz.com",
     url='https://github.com/mkaz/termgraph',
