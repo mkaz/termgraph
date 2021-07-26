@@ -47,6 +47,20 @@ def test_normalize_returns_correct_results():
     assert results == expected
 
 
+def test_normalize_with_all_zeros_returns_correct_results():
+    expected = [
+        [0],
+        [0],
+        [0],
+        [0],
+        [0],
+        [0],
+        [0],
+    ]
+    results = tg.normalize([[0], [0], [0], [0], [0], [0], [0]], 50)
+    assert results == expected
+
+
 def test_normalize_with_negative_datapoint_returns_correct_results():
     expected = [
         [18.625354066709058],
