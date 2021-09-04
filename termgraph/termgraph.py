@@ -202,9 +202,18 @@ def cvt_to_readable(num):
         index = math.floor(math.log(num) / math.log(1000))
 
         # Converts the number to the human readable format and returns it.
-        newNum = round(num / (1000 ** index), 3)
-        newNum *= -1 if neg else 1
-        degree = UNITS[index]
+        if index > 0 and index < len(UNITS):
+            newNum = round(num / (1000 ** index), 3)
+            newNum *= -1 if neg else 1
+            degree = UNITS[index]
+        elif index < 0:
+            newNum = round(num / (1000 ** index), 3)
+            newNum *= -1 if neg else 1
+            degree = 'e-' + str(-index*3)
+        else:
+            newNum = num
+            newNum *= -1 if neg else 1
+            degree = UNITS[0]
 
     else:
         newNum = 0
