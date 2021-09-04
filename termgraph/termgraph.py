@@ -56,7 +56,7 @@ def init_args() -> Dict:
     parser.add_argument(
         "--width", type=int, default=50, help="width of graph in characters default:50"
     )
-    parser.add_argument("--format", default="{:<5.2f}", help="format specifier to use.")
+    parser.add_argument("--format", default="{:<.2f}", help="format specifier to use.")
     parser.add_argument(
         "--suffix", default="", help="string to add as a suffix to all data points."
     )
