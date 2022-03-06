@@ -131,6 +131,7 @@ optional arguments:
   --custom-tick CUSTOM_TICK
                         Custom tick mark, emoji approved
   --delim DELIM         Custom delimiter, default , or space
+  --values-first        Read the first columns as values (labels go after)
   --verbose             Verbose output, helpful for debugging
   --label-before        Display the values before the bars
   --version             Display version and exit

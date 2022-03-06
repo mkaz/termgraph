@@ -92,6 +92,9 @@ def init_args() -> Dict:
         "--delim", default="", help="Custom delimiter, default , or space"
     )
     parser.add_argument(
+        "--values-first", action="store_true", help="Read the first columns as values (labels go after)"
+    )
+    parser.add_argument(
         "--verbose", action="store_true", help="Verbose output, helpful for debugging"
     )
     parser.add_argument(
@@ -659,6 +662,8 @@ def read_data(args: Dict) -> Tuple[List, List, List, List]:
     filename = args["filename"]
     stdin = filename == "-"
 
+    values_first = args["values_first"]
+
     if args["verbose"]:
         print(">> Reading data from {src}".format(src=("stdin" if stdin else filename)))
 
@@ -688,9 +693,10 @@ def read_data(args: Dict) -> Tuple[List, List, List, List]:
 
                     # Line contains label and values.
                     else:
-                        labels.append(cols[0].strip())
+                        labels.append(cols[-1 if values_first else 0].strip())
                         data_points = []
-                        for i in range(1, len(cols)):
+                        col_range = range(0, len(cols) - 1) if values_first else range(1, len(cols))
+                        for i in col_range:
                             data_points.append(float(cols[i].strip()))
 
                         data.append(data_points)
