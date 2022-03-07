@@ -122,6 +122,7 @@ def test_horiz_rows_yields_correct_values():
         "no_values": False,
         "verbose": False,
         "version": False,
+        "values_first": False,
     }
     colors = []
 
@@ -158,6 +159,7 @@ def test_vertically_returns_correct_result():
         "delim": "",
         "verbose": False,
         "version": False,
+        "values_first": False,
     }
     value = 2.0
     num_blocks = 2
@@ -187,6 +189,7 @@ def test_check_data_returns_correct_result():
         "delim": "",
         "verbose": False,
         "version": False,
+        "values_first": False,
     }
     result = tg.check_data(labels, data, args)
     assert result == []
@@ -212,6 +215,7 @@ def test_check_data_with_color_returns_correct_result():
         "delim": "",
         "verbose": False,
         "version": False,
+        "values_first": False,
     }
     result = tg.check_data(labels, data, args)
     assert result == [91]
@@ -245,6 +249,7 @@ def test_check_data_stacked_with_no_color_returns_correct_result():
         "delim": "",
         "verbose": False,
         "version": False,
+        "values_first": False,
     }
     result = tg.check_data(labels, data, args)
     assert result == [91, 94]
@@ -278,6 +283,7 @@ def test_check_data_vertical_multiple_series_same_scale_exits_with_one():
         "delim": "",
         "verbose": False,
         "version": False,
+        "values_first": False,
     }
     with pytest.raises(SystemExit) as e:
         tg.check_data(labels, data, args)
@@ -304,6 +310,7 @@ def test_check_data_mismatching_color_and_category_count():
         "delim": "",
         "verbose": False,
         "version": False,
+        "values_first": False,
     }
     assert tg.check_data(labels, data, args)
 
@@ -328,6 +335,7 @@ def test_check_data_mismatching_data_and_labels_count_exits_with_one():
         "delim": "",
         "verbose": False,
         "version": False,
+        "values_first": False,
     }
     with pytest.raises(SystemExit) as e:
         tg.check_data(labels, data, args)
@@ -362,10 +370,24 @@ def test_check_data_missing_data_for_categories_count_exits_with_one():
         "delim": "",
         "verbose": False,
         "version": False,
+        "values_first": False,
     }
     with pytest.raises(SystemExit) as e:
         tg.check_data(labels, data, args)
         assert e.exception.code == 1
+
+
+ex4_expected_categories = ["Boys", "Girls"]
+ex4_expected_labels = ["2007", "2008", "2009", "2010", "2011", "2012", "2014"]
+ex4_expected_data = [
+    [183.32, 190.52],
+    [231.23, 5.0],
+    [16.43, 53.1],
+    [50.21, 7.0],
+    [508.97, 10.45],
+    [212.05, 20.2],
+    [30.0, 20.0],
+]
 
 
 def test_read_data_returns_correct_results():
@@ -386,19 +408,39 @@ def test_read_data_returns_correct_results():
         "delim": "",
         "verbose": False,
         "version": False,
+        "values_first": False,
     }
     categories, labels, data, colors = tg.read_data(args)
-    assert categories == ["Boys", "Girls"]
-    assert labels == ["2007", "2008", "2009", "2010", "2011", "2012", "2014"]
-    assert data == [
-        [183.32, 190.52],
-        [231.23, 5.0],
-        [16.43, 53.1],
-        [50.21, 7.0],
-        [508.97, 10.45],
-        [212.05, 20.2],
-        [30.0, 20.0],
-    ]
+    assert categories == ex4_expected_categories
+    assert labels == ex4_expected_labels
+    assert data == ex4_expected_data
+    assert colors == []
+
+
+def test_values_first_returns_correct_results():
+    args = {
+        "filename": "data/ex10.dat",
+        "title": None,
+        "width": 50,
+        "format": "{:<5.2f}",
+        "suffix": "",
+        "no_labels": False,
+        "color": None,
+        "vertical": False,
+        "stacked": False,
+        "different_scale": False,
+        "calendar": False,
+        "start_dt": None,
+        "custom_tick": "",
+        "delim": "",
+        "verbose": False,
+        "version": False,
+        "values_first": True,
+    }
+    categories, labels, data, colors = tg.read_data(args)
+    assert categories == ex4_expected_categories
+    assert labels == ex4_expected_labels
+    assert data == ex4_expected_data
     assert colors == []
 
 
@@ -421,6 +463,7 @@ def test_read_data_with_title_prints_title():
             "delim": "",
             "verbose": False,
             "version": False,
+            "values_first": False,
         }
         tg.read_data(args)
         output = output.getvalue().strip()
@@ -446,6 +489,7 @@ def test_read_data_verbose():
             "delim": "",
             "verbose": True,
             "version": False,
+            "values_first": False,
         }
         tg.read_data(args)
         output = output.getvalue().strip()
