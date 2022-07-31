@@ -324,7 +324,7 @@ class HorizontalChart(Chart):
         sys.stdout.write("\033[0m")  # no color
 
         if value == 0.0:
-            sys.stdout.write(f"\033[{Colors.black}m")  # dark gray
+            sys.stdout.write(f"\033[{Colors.Black}m")  # dark gray
 
         if doprint:
             print(label, tail, " ", end="")
