@@ -103,6 +103,10 @@ def init_args() -> Dict:
     parser.add_argument(
         "--version", action="store_true", help="Display version and exit"
     )
+    parser.add_argument(
+        "--percentage", action="store_true", help="Display the number in percentage, as {:.0%}"
+    )
+
     if len(sys.argv) == 1:
         if sys.stdin.isatty():
             parser.print_usage()
@@ -185,7 +189,7 @@ def find_max_label_length(labels: List) -> int:
     return max([len(label) for label in labels])
 
 
-def cvt_to_readable(num):
+def cvt_to_readable(num, percentage=False):
     """Return the number in a human readable format
 
     Eg:
@@ -193,6 +197,9 @@ def cvt_to_readable(num):
     12550 -> 12.55K
     19561100 -> 19.561M
     """
+    if percentage:
+      return (num * 100, "%")
+
 
     if num != 0:
         neg = num < 0
@@ -317,7 +324,7 @@ def horiz_rows(
             if args["no_values"]:
                 tail = args["suffix"]
             else:
-                val, deg = cvt_to_readable(values[j])
+                val, deg = cvt_to_readable(values[j], percentage=args["percentage"])
                 tail = fmt.format(args["format"].format(val), deg, args["suffix"])
 
             if colors:
