@@ -104,7 +104,7 @@ def init_args() -> Dict:
         "--version", action="store_true", help="Display version and exit"
     )
     parser.add_argument(
-        "--percentage", action="store_true", help="Display the number in percentage, as {:.0%}"
+        "--percentage", action="store_true", help="Display the number in percentage, ignoring units and respecting the format flag"
     )
 
     if len(sys.argv) == 1:
