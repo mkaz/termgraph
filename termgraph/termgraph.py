@@ -103,6 +103,9 @@ def init_args() -> Dict:
     parser.add_argument(
         "--version", action="store_true", help="Display version and exit"
     )
+    parser.add_argument(
+        "--no-readable", action="store_true", help="Disable the readable numbers"
+    )
     if len(sys.argv) == 1:
         if sys.stdin.isatty():
             parser.print_usage()
@@ -317,8 +320,11 @@ def horiz_rows(
             if args["no_values"]:
                 tail = args["suffix"]
             else:
-                val, deg = cvt_to_readable(values[j])
-                tail = fmt.format(args["format"].format(val), deg, args["suffix"])
+                if not args.get("no_readable"):
+                    val, deg = cvt_to_readable(values[j])
+                    tail = fmt.format(args["format"].format(val), deg, args["suffix"])
+                else:
+                    tail = fmt.format(args["format"].format(values[j]), "", args["suffix"])
 
             if colors:
                 color = colors[j]
