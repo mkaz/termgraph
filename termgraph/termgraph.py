@@ -324,7 +324,9 @@ def horiz_rows(
                     val, deg = cvt_to_readable(values[j])
                     tail = fmt.format(args["format"].format(val), deg, args["suffix"])
                 else:
-                    tail = fmt.format(args["format"].format(values[j]), "", args["suffix"])
+                    tail = fmt.format(
+                        args["format"].format(values[j]), "", args["suffix"]
+                    )
 
             if colors:
                 color = colors[j]
