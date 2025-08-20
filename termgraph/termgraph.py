@@ -15,8 +15,9 @@ from itertools import zip_longest
 from colorama import init  # type: ignore
 import os
 import re
+import importlib.metadata
 
-VERSION = "0.5.3"
+__version__ = importlib.metadata.version("termgraph")
 
 init()
 
@@ -130,7 +131,7 @@ def main():
     args = init_args()
 
     if args["version"]:
-        print("termgraph v{}".format(VERSION))
+        print(f"termgraph v{__version__}")
         sys.exit()
 
     _, labels, data, colors = read_data(args)
