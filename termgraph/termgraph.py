@@ -6,7 +6,7 @@
 # https://github.com/mkaz/termgraph
 
 from __future__ import print_function, annotations
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, NamedTuple
 import argparse
 import sys
 import math
@@ -678,8 +678,10 @@ def read_data(args: Dict) -> Tuple[List, List, List, List]:
                 if not line.startswith("#"):
                     if line.find(DELIM) > 0:
                         cols = line.split(DELIM)
+                        delim = DELIM
                     else:
                         cols = line.split()
+                        delim = " "
 
                     # Line contains categories.
                     if line.startswith("@"):
@@ -688,12 +690,9 @@ def read_data(args: Dict) -> Tuple[List, List, List, List]:
 
                     # Line contains label and values.
                     else:
-                        labels.append(cols[0].strip())
-                        data_points = []
-                        for i in range(1, len(cols)):
-                            data_points.append(float(cols[i].strip()))
-
-                        data.append(data_points)
+                        labeled_row = _label_row([col.strip() for col in cols], delim)
+                        data.append(labeled_row.data)
+                        labels.append(labeled_row.label)
     except FileNotFoundError:
         print(
             ">> Error: The specified file [{fname}] does not exist.".format(
@@ -715,6 +714,45 @@ def read_data(args: Dict) -> Tuple[List, List, List, List]:
         print_categories(categories, colors)
 
     return categories, labels, data, colors
+
+
+class _LabeledRow(NamedTuple):
+    label: str | None
+    data: list[float]
+
+
+def _label_row(row: list[str], delim: str) -> LabeledRow:
+    data = []
+    labels = []
+    labelling = False
+
+    for text in row:
+        datum = _maybe_float(text)
+        if datum is None and not labels:
+            labels.append(text)
+            labelling = True
+        elif datum is None and labelling:
+            labels.append(text)
+        elif datum is not None:
+            data.append(datum)
+            labelling = False
+        else:
+            raise ValueError("Multiple labels not allowed: {labels}, {text}")
+
+    if labels:
+        label = delim.join(labels)
+    else:
+        label = row[0]
+        data.pop(0)
+
+    return _LabeledRow(label=label, data=data)
+
+
+def _maybe_float(text: str) -> float | None:
+    try:
+        return float(text)
+    except ValueError:
+        return None
 
 
 def calendar_heatmap(data: Dict, labels: List, args: Dict) -> None:
