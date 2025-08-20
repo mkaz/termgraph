@@ -13,7 +13,9 @@ def cvt_to_readable(num):
     """
 
     # Find the degree of the number like if it is in thousands or millions, etc.
-    index = int(math.log(num) / math.log(1000))
+    index = 0
+    if num > 0:
+        index = int(math.log(num) / math.log(1000))
 
     # Converts the number to the human readable format and returns it.
     newNum = round(num / (1000 ** index), 3)
