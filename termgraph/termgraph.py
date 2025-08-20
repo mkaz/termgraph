@@ -413,9 +413,15 @@ def stacked_graph(
 
         for j in range(len(values)):
             print_row(values[j], int(num_blocks[j]), val_min, colors[j])
-
-        tail = " {}{}".format(args["format"].format(sum(values)), args["suffix"])
-        print(tail)
+        if args["no_values"]:
+            # Hide the values.
+            tail = ""
+        else:
+            tail = " {}{}".format(args["format"].format(sum(values)), args["suffix"])
+        if args["no_new_lines"]:
+            print(tail, end = "")
+        else:
+            print(tail)
 
 
 # FIXME: globals for vertical, not ideal
