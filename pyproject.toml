@@ -66,9 +66,6 @@ minversion = "8.4"
 addopts = [
     "--strict-markers",
     "--strict-config",
-    "--cov=termgraph",
-    "--cov-report=term-missing",
-    "--cov-report=html",
 ]
 testpaths = ["tests"]
 markers = [
