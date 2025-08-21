@@ -1,52 +1,36 @@
-#!/usr/bin/env python3
-# coding=utf-8
 """This module allows drawing basic graphs in the terminal."""
 
 # termgraph.py - draw basic graphs on terminal
 # https://github.com/mkaz/termgraph
 
-from __future__ import print_function
-import sys, math, os
+import sys
 import colorama
-from typing import Dict, List, Tuple, Union
-from utils import cvt_to_readable
-
-DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-DELIM = ","
-TICK = "▇"
-SM_TICK = "▏"
-
-# Commented it out cause I don't know what its purpose is.
-# And the code was running just fine without it.
-# I am sorry if I am being stupid here.
-# try:
-#     range = xrange
-# except NameError:
-#     pass
+from .constants import DAYS, DELIM, TICK, SM_TICK, AVAILABLE_COLORS
+from .utils import cvt_to_readable
 
 colorama.init()
 
 
-class Colors(object):
+class Colors:
     """Class representing available color values for graphs."""
 
-    Black = 90
-    Red = 91
-    Green = 92
-    Yellow = 93
-    Blue = 94
-    Magenta = 95
-    Cyan = 96
+    Black = AVAILABLE_COLORS["black"]
+    Red = AVAILABLE_COLORS["red"]
+    Green = AVAILABLE_COLORS["green"]
+    Yellow = AVAILABLE_COLORS["yellow"]
+    Blue = AVAILABLE_COLORS["blue"]
+    Magenta = AVAILABLE_COLORS["magenta"]
+    Cyan = AVAILABLE_COLORS["cyan"]
 
 
-class Data(object):
+class Data:
     """Class representing the data for the chart."""
 
     def __init__(
         self,
-        data: List,
-        labels: List[str],
-        categories: List[str] = [],
+        data: list,
+        labels: list[str],
+        categories: list[str] = None,
     ):
         """Initialize data
 
@@ -60,10 +44,12 @@ class Data(object):
 
         self.labels = labels
         self.data = data
-        self.categories = categories
+        self.categories = categories or []
         self.dims = self._find_dims(data, labels)
 
-    def _find_dims(self, data, labels, dims=[]) -> Tuple[int]:
+    def _find_dims(self, data, labels, dims=None) -> tuple[int]:
+        if dims is None:
+            dims = []
         if all([isinstance(data[i], list) for i in range(len(data))]):
             last = None
 
@@ -84,12 +70,12 @@ class Data(object):
 
         return tuple(dims)
 
-    def find_min(self) -> Union[int, float]:
+    def find_min(self) -> int | float:
         """Return the minimum value in sublist of list."""
 
         return min([min(sublist) for sublist in self.data])
 
-    def find_max(self) -> Union[int, float]:
+    def find_max(self) -> int | float:
         """Return the maximum value in sublist of list."""
 
         return max([max(sublist) for sublist in self.data])
@@ -129,12 +115,12 @@ class Data(object):
             )
 
         output = [
-            f"{ ' ' * (maxlen_labels - len('Labels')) }Labels | Data",
-            f"{ '-' * (maxlen_labels + 1) }|{ '-' * (maxlen_data + 1) }",
+            f"{' ' * (maxlen_labels - len('Labels'))}Labels | Data",
+            f"{'-' * (maxlen_labels + 1)}|{'-' * (maxlen_data + 1)}",
         ]
 
         for i in range(len(self.data)):
-            line = f"{ ' ' * (maxlen_labels - len(self.labels[i])) + self.labels[i] } |"
+            line = f"{' ' * (maxlen_labels - len(self.labels[i])) + self.labels[i]} |"
 
             if len(self.categories) == 0:
                 line += f" {self.data[i]}"
@@ -145,11 +131,11 @@ class Data(object):
                         line += f" ({self.categories[j]}) {self.data[i][0]}\n"
 
                     else:
-                        line += f"{ ' ' * maxlen_labels } | ({self.categories[j]}) {self.data[i][j]}"
+                        line += f"{' ' * maxlen_labels} | ({self.categories[j]}) {self.data[i][j]}"
                         line += (
                             "\n"
                             if j < len(self.categories) - 1
-                            else f"\n{ ' ' * maxlen_labels } |"
+                            else f"\n{' ' * maxlen_labels} |"
                         )
 
             output.append(line)
@@ -157,10 +143,10 @@ class Data(object):
         return "\n".join(output)
 
     def __repr__(self):
-        return f"Data(data={ self.data if len(str(self.data)) < 25 else str(self.data)[:25] + '...' }, labels={self.labels}, categories={self.categories})"
+        return f"Data(data={self.data if len(str(self.data)) < 25 else str(self.data)[:25] + '...'}, labels={self.labels}, categories={self.categories})"
 
 
-class Args(object):
+class Args:
     """Class representing the arguments to modify the graph."""
 
     default = {
@@ -186,7 +172,7 @@ class Args(object):
         "label_before": False,
     }
 
-    def __init__(self, **kwargs: Dict):
+    def __init__(self, **kwargs):
         """Initialize the Args object."""
 
         self.args = dict(self.default)
@@ -197,7 +183,7 @@ class Args(object):
             else:
                 raise Exception(f"Invalid Argument: {arg}")
 
-    def get_arg(self, arg: str) -> Union[int, str, bool, None]:
+    def get_arg(self, arg: str) -> int | str | bool | None:
         """Returns the value for the argument given.
 
         :arg: The name of the argument.
@@ -220,7 +206,7 @@ class Args(object):
                 raise Exception(f"Invalid Argument: {arg}")
 
 
-class Chart(object):
+class Chart:
     """Class representing a chart"""
 
     def __init__(self, data: Data, args: Args()):
@@ -262,7 +248,7 @@ class Chart(object):
 
         print("\n\n")
 
-    def _normalize(self) -> List[float]:
+    def _normalize(self) -> list[float]:
         """Normalize the data and return it."""
 
         # We offset by the minimum if there's a negative.
@@ -304,9 +290,9 @@ class HorizontalChart(Chart):
 
     def print_row(
         self,
-        value: Union[int, float],
-        num_blocks: Union[int, float],
-        val_min: Union[int, float],
+        value: int | float,
+        num_blocks: int | float,
+        val_min: int | float,
         color: int,
         label: bool = False,
         tail: bool = False,
