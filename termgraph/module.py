@@ -30,7 +30,7 @@ class Data:
         self,
         data: list,
         labels: list[str],
-        categories: list[str] = None,
+        categories: list[str] | None = None,
     ):
         """Initialize data
 
@@ -47,7 +47,7 @@ class Data:
         self.categories = categories or []
         self.dims = self._find_dims(data, labels)
 
-    def _find_dims(self, data, labels, dims=None) -> tuple[int]:
+    def _find_dims(self, data, labels, dims=None) -> tuple[int] | None:
         if dims is None:
             dims = []
         if all([isinstance(data[i], list) for i in range(len(data))]):
@@ -209,7 +209,7 @@ class Args:
 class Chart:
     """Class representing a chart"""
 
-    def __init__(self, data: Data, args: Args()):
+    def __init__(self, data: Data, args: Args):
         """Initialize the chart
 
         :data: The data to be displayed on the chart
@@ -236,7 +236,7 @@ class Chart:
             colors = self.args.get_arg("colors")
 
             for i in range(len(self.data.categories)):
-                if colors is not None:
+                if colors is not None and isinstance(colors, list):
                     sys.stdout.write(
                         "\033[{color_i}m".format(color_i=colors[i])
                     )  # Start to write colorized.
@@ -248,7 +248,7 @@ class Chart:
 
         print("\n\n")
 
-    def _normalize(self) -> list[float]:
+    def _normalize(self) -> list[list[float]]:
         """Normalize the data and return it."""
 
         # We offset by the minimum if there's a negative.
@@ -269,7 +269,11 @@ class Chart:
         # inverse of this value
         # If you divide a number to the value of single tick, you will find how
         # many ticks it does contain basically.
-        norm_factor = self.args.get_arg("width") / float(max_datum)
+        width = self.args.get_arg("width")
+        if isinstance(width, int):
+            norm_factor = width / float(max_datum)
+        else:
+            norm_factor = 50 / float(max_datum)  # Default width
         normal_data = [[v * norm_factor for v in datum] for datum in data_offset]
 
         return normal_data
@@ -293,9 +297,9 @@ class HorizontalChart(Chart):
         value: int | float,
         num_blocks: int | float,
         val_min: int | float,
-        color: int,
-        label: bool = False,
-        tail: bool = False,
+        color: int | None,
+        label: str = "",
+        tail: str = "",
     ) -> None:
         """A method to print a row for a horizontal graphs.
         i.e:
@@ -310,7 +314,7 @@ class HorizontalChart(Chart):
         sys.stdout.write("\033[0m")  # no color
 
         if value == 0.0:
-            sys.stdout.write(f"\033[{Colors.black}m")  # dark gray
+            sys.stdout.write(f"\033[{Colors.Black}m")  # dark gray
 
         if doprint:
             print(label, tail, " ", end="")
@@ -326,7 +330,7 @@ class HorizontalChart(Chart):
             if color:
                 sys.stdout.write(f"\033[{color}m")  # Start to write colorized.
 
-            for _ in range(num_blocks):
+            for _ in range(int(num_blocks)):
                 sys.stdout.write(TICK)
 
         if color:
@@ -356,7 +360,7 @@ class BarChart(HorizontalChart):
         colors = (
             self.args.get_arg("colors")
             if self.args.get_arg("colors") != None
-            else [None] * self.data.dims[1]
+            else [None] * (self.data.dims[1] if self.data.dims and len(self.data.dims) > 1 else 1)
         )
 
         val_min = self.data.find_min()
@@ -399,15 +403,19 @@ class BarChart(HorizontalChart):
 
                 else:
                     val, deg = cvt_to_readable(values[j])
+                    format_str = self.args.get_arg("format")
+                    if isinstance(format_str, str):
+                        formatted_val = format_str.format(val)
+                    else:
+                        formatted_val = "{:<5.2f}".format(val)  # Default format
                     tail = fmt.format(
-                        self.args.get_arg("format").format(val),
+                        formatted_val,
                         deg,
                         self.args.get_arg("suffix"),
                     )
 
-                if colors:
+                if colors and isinstance(colors, list) and j < len(colors):
                     color = colors[j]
-
                 else:
                     color = None
 
@@ -422,7 +430,7 @@ class BarChart(HorizontalChart):
                     val_min,
                     color,
                     label,
-                    tail,
+                    str(tail) if tail is not None else "",
                 )
 
                 if not self.args.get_arg("label_before") and not self.args.get_arg(

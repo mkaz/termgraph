@@ -164,14 +164,14 @@ def hist_rows(data: list, args: dict, colors: list):
 
     normal_counts = normalize(count_list, args["width"])
 
-    for i, border in enumerate(zip(borders[:-1], borders[1:])):
+    for i, (start_border, end_border) in enumerate(zip(borders[:-1], borders[1:])):
         if colors:
             color = colors[0]
         else:
             color = None
 
         if not args.get("no_labels"):
-            print("{:{x}} – {:{x}}: ".format(border[0], border[1], x=max_len), end="")
+            print("{:{x}} – {:{x}}: ".format(start_border, end_border, x=max_len), end="")
 
         num_blocks = normal_counts[i]
 
@@ -263,7 +263,7 @@ def horiz_rows(
 def print_row(
     value,
     num_blocks: int,
-    val_min: int,
+    val_min: float,
     color: bool,
     label: bool = False,
     tail: bool = False,
@@ -451,7 +451,9 @@ def chart(colors: list, data: list, args: dict, labels: list) -> None:
                     print_vertical(vertic, labels, colors[i], args)
 
                 print()
-                value_list.clear(), zipped_list.clear(), vertical_list.clear()
+                value_list.clear()
+                zipped_list.clear()
+                vertical_list.clear()
             return
 
     if args["histogram"]:
@@ -589,7 +591,10 @@ def read_data(args: dict) -> tuple[list, list, list, list]:
     if args["title"]:
         print("# " + args["title"] + "\n")
 
-    categories, labels, data, colors = ([] for _ in range(4))
+    categories: list[str] = []
+    labels: list[str | None] = []
+    data: list = []
+    colors: list = []
 
     f = None
 
@@ -647,7 +652,7 @@ class _LabeledRow:
 
 def _label_row(row: list[str], delim: str) -> _LabeledRow:
     data = []
-    labels = []
+    labels: list[str] = []
     labelling = False
 
     for text in row:
