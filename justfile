@@ -45,6 +45,7 @@ lint-fix:
     uv run python -m ruff check --fix .
     uv run python -m ruff format .
 
+# Run mypy typecheck
 typecheck:
     uv run python -m mypy termgraph/
 
