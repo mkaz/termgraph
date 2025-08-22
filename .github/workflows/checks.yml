@@ -1,0 +1,23 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+      - name: Setup Python
+        run: uv python install 3.9
+      - name: Install dependencies
+        run: uv sync --dev
+      - name: Run lint
+        run: uv run python -m ruff check .
+      - name: Run typecheck
+        run: uv run python -m mypy termgraph/
+      - name: Run tests
+        run: uv run python -m pytest
