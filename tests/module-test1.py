@@ -1,4 +1,4 @@
-from module import Data, BarChart, Args, Colors
+from termgraph.module import Data, BarChart, Args, Colors
 
 data = Data([[765, 787], [781, 769]], ["6th G", "7th G"], ["Boys", "Girls"])
 chart = BarChart(

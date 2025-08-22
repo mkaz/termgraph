@@ -1,6 +1,3 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
 
 [project]
 name = "termgraph"
@@ -23,8 +20,6 @@ classifiers = [
     "Operating System :: MacOS :: MacOS X",
     "Operating System :: POSIX",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -33,26 +28,19 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 keywords = ["python", "CLI", "tool", "drawing", "graphs", "shell", "terminal", "visualization"]
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 dependencies = [
-    "colorama>=0.4.0",
-    "pytest>=7.4.4",
+    "colorama>=0.4.6",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
-    "pytest>=7.0.0",
-    "pytest-sugar>=0.9.0",
-    "pytest-cov>=4.0.0",
+    "pytest>=8.4.1",
     "ruff>=0.1.0",
-    "mypy>=1.0.0",
-    "build>=0.10.0",
-    "twine>=4.0.0",
-]
-test = [
-    "pytest>=7.0.0",
-    "pytest-sugar>=0.9.0",
-    "pytest-cov>=4.0.0",
+    "build>=1.3.0",
+    "twine>=6.1.0",
+    "mypy>=1.17.1",
+    "types-colorama>=0.4.15.20250801",
 ]
 
 [project.urls]
@@ -64,62 +52,20 @@ Changelog = "https://github.com/mkaz/termgraph/releases"
 [project.scripts]
 termgraph = "termgraph.termgraph:main"
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 # Ruff configuration
 [tool.ruff]
-target-version = "py37"
-line-length = 88
-select = [
-    "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings
-    "F",   # pyflakes
-    "I",   # isort
-    "B",   # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "UP",  # pyupgrade
-    "SIM", # flake8-simplify
-]
-ignore = [
-    "E501",  # line too long, handled by formatter
-    "B008",  # do not perform function calls in argument defaults
-    "B905",  # zip without an explicit strict parameter
-]
-
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-skip-magic-trailing-comma = false
-
-[tool.ruff.isort]
-known-first-party = ["termgraph"]
-
-[tool.ruff.per-file-ignores]
-"tests/**/*.py" = ["S101"]  # Allow assert in tests
-
-# MyPy configuration
-[tool.mypy]
-python_version = "3.7"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-check_untyped_defs = true
-disallow_untyped_decorators = true
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_no_return = true
-warn_unreachable = true
-strict_equality = true
+target-version = "py39"
 
 # Pytest configuration
 [tool.pytest.ini_options]
-minversion = "7.0"
+minversion = "8.4"
 addopts = [
     "--strict-markers",
     "--strict-config",
-    "--cov=termgraph",
-    "--cov-report=term-missing",
-    "--cov-report=html",
 ]
 testpaths = ["tests"]
 markers = [
@@ -127,20 +73,3 @@ markers = [
     "integration: marks tests as integration tests",
 ]
 
-# Coverage configuration
-[tool.coverage.run]
-source = ["termgraph"]
-omit = [
-    "tests/*",
-    "data/*",
-]
-
-[tool.coverage.report]
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise AssertionError",
-    "raise NotImplementedError",
-    "if __name__ == .__main__.:",
-    "if TYPE_CHECKING:",
-]

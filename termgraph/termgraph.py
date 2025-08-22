@@ -1,12 +1,9 @@
-#!/usr/bin/env python3
-# coding=utf-8
-"""This module allows drawing basic graphs in the terminal."""
+"""
+termgraph.py - draw basic graphs on terminal
+https://github.com/mkaz/termgraph
+"""
 
-# termgraph.py - draw basic graphs on terminal
-# https://github.com/mkaz/termgraph
-
-from __future__ import print_function, annotations
-from typing import List, Tuple, Dict, NamedTuple
+from __future__ import annotations
 import argparse
 import sys
 import math
@@ -17,34 +14,16 @@ import os
 import re
 import importlib.metadata
 
+from .constants import AVAILABLE_COLORS, DAYS, DELIM, TICK, SM_TICK
+from .utils import cvt_to_readable, find_min, find_max, find_max_label_length, normalize
+
 __version__ = importlib.metadata.version("termgraph")
 
 init()
 
-# ANSI escape SGR Parameters color codes
-AVAILABLE_COLORS = {
-    "red": 91,
-    "blue": 94,
-    "green": 92,
-    "magenta": 95,
-    "yellow": 93,
-    "black": 90,
-    "cyan": 96,
-}
-
-DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-UNITS = ["", "K", "M", "B", "T"]
-DELIM = ","
-TICK = "▇"
-SM_TICK = "▏"
-
-try:
-    range = xrange  # type: ignore
-except NameError:
-    pass
 
 
-def init_args() -> Dict:
+def init_args() -> dict:
     """Parse and return the arguments."""
     parser = argparse.ArgumentParser(description="draw basic graphs on terminal")
     parser.add_argument(
@@ -144,80 +123,9 @@ def main():
         pass
 
 
-def find_min(data: List):
-    """Return the minimum value in sublist of list."""
-    return min([min(sublist) for sublist in data])
 
 
-def find_max(data: List):
-    """Return the maximum value in sublist of list."""
-    return max([max(sublist) for sublist in data])
-
-
-def normalize(data: List, width: int) -> List:
-    """Normalize the data and return it."""
-
-    # We offset by the minimum if there's a negative.
-    data_offset = []
-    min_datum = find_min(data)
-    if min_datum < 0:
-        min_datum = abs(min_datum)
-        for datum in data:
-            data_offset.append([d + min_datum for d in datum])
-    else:
-        data_offset = data
-    min_datum = find_min(data_offset)
-    max_datum = find_max(data_offset)
-
-    if min_datum == max_datum:
-        return data_offset
-
-    # max_dat / width is the value for a single tick. norm_factor is the
-    # inverse of this value
-    # If you divide a number to the value of single tick, you will find how
-    # many ticks it does contain basically.
-    norm_factor = width / float(max_datum)
-    normal_data = []
-    for datum in data_offset:
-        normal_data.append([v * norm_factor for v in datum])
-
-    return normal_data
-
-
-def find_max_label_length(labels: List) -> int:
-    """Return the maximum length for the labels."""
-    return max([len(label) for label in labels])
-
-
-def cvt_to_readable(num):
-    """Return the number in a human readable format
-
-    Eg:
-    125000 -> 125.0K
-    12550 -> 12.55K
-    19561100 -> 19.561M
-    """
-
-    if num >= 1 or num <= -1:
-        neg = num < 0
-        num = abs(num)
-
-        # Find the degree of the number like if it is in thousands or millions, etc.
-        index = math.floor(math.log(num) / math.log(1000))
-
-        # Converts the number to the human readable format and returns it.
-        newNum = round(num / (1000 ** index), 3)
-        newNum *= -1 if neg else 1
-        degree = UNITS[index]
-
-    else:
-        newNum = num
-        degree = UNITS[0]
-
-    return (newNum, degree)
-
-
-def hist_rows(data: List, args: Dict, colors: List):
+def hist_rows(data: list, args: dict, colors: list):
     """Prepare the Histgram graph.
     Each row is printed through the print_row function."""
 
@@ -256,14 +164,14 @@ def hist_rows(data: List, args: Dict, colors: List):
 
     normal_counts = normalize(count_list, args["width"])
 
-    for i, border in enumerate(zip(borders[:-1], borders[1:])):
+    for i, (start_border, end_border) in enumerate(zip(borders[:-1], borders[1:])):
         if colors:
             color = colors[0]
         else:
             color = None
 
         if not args.get("no_labels"):
-            print("{:{x}} – {:{x}}: ".format(border[0], border[1], x=max_len), end="")
+            print("{:{x}} – {:{x}}: ".format(start_border, end_border, x=max_len), end="")
 
         num_blocks = normal_counts[i]
 
@@ -279,11 +187,11 @@ def hist_rows(data: List, args: Dict, colors: List):
 
 
 def horiz_rows(
-    labels: List,
-    data: List,
-    normal_dat: List,
-    args: Dict,
-    colors: List,
+    labels: list,
+    data: list,
+    normal_dat: list,
+    args: dict,
+    colors: list,
     doprint: bool = True,
 ):
     """Prepare the horizontal graph.
@@ -355,7 +263,7 @@ def horiz_rows(
 def print_row(
     value,
     num_blocks: int,
-    val_min: int,
+    val_min: float,
     color: bool,
     label: bool = False,
     tail: bool = False,
@@ -394,12 +302,12 @@ def print_row(
 
 
 def stacked_graph(
-    labels: List,
-    data: List,
-    normal_data: List,
+    labels: list,
+    data: list,
+    normal_data: list,
     len_categories: int,
-    args: Dict,
-    colors: List,
+    args: dict,
+    colors: list,
 ):
     """Prepare the horizontal stacked graph.
     Each row is printed through the print_row function."""
@@ -428,7 +336,7 @@ def stacked_graph(
         else:
             tail = " {}{}".format(args["format"].format(sum(values)), args["suffix"])
         if args["no_new_lines"]:
-            print(tail, end = "")
+            print(tail, end="")
         else:
             print(tail)
 
@@ -437,7 +345,7 @@ def stacked_graph(
 value_list, zipped_list, vertical_list, maxi = [], [], [], 0
 
 
-def vertically(value, num_blocks: int, val_min: int, color: bool, args: Dict) -> List:
+def vertically(value, num_blocks: int, val_min: int, color: bool, args: dict) -> list:
     """Prepare the vertical graph.
     The whole graph is printed through the print_vertical function."""
     global maxi, value_list
@@ -477,7 +385,7 @@ def vertically(value, num_blocks: int, val_min: int, color: bool, args: Dict) ->
     return result_list
 
 
-def print_vertical(vertical_rows: List, labels: List, color: bool, args: Dict) -> None:
+def print_vertical(vertical_rows: list, labels: list, color: bool, args: dict) -> None:
     """Print the whole vertical graph."""
     if color:
         sys.stdout.write(
@@ -501,7 +409,7 @@ def print_vertical(vertical_rows: List, labels: List, color: bool, args: Dict) -
             print("  ".join(label))
 
 
-def chart(colors: List, data: List, args: Dict, labels: List) -> None:
+def chart(colors: list, data: list, args: dict, labels: list) -> None:
     """Handle the normalization of data and the printing of the graph."""
     len_categories = len(data[0])
     if len_categories > 1:
@@ -543,12 +451,14 @@ def chart(colors: List, data: List, args: Dict, labels: List) -> None:
                     print_vertical(vertic, labels, colors[i], args)
 
                 print()
-                value_list.clear(), zipped_list.clear(), vertical_list.clear()
+                value_list.clear()
+                zipped_list.clear()
+                vertical_list.clear()
             return
 
     if args["histogram"]:
         if args["vertical"]:
-            print(">> Error: Vertical graph for Histogram" " is not supported yet.")
+            print(">> Error: Vertical graph for Histogram is not supported yet.")
             sys.exit(1)
 
         for row in hist_rows(data, args, colors):
@@ -579,7 +489,7 @@ def chart(colors: List, data: List, args: Dict, labels: List) -> None:
         print()
 
 
-def check_data(labels: List, data: List, args: Dict) -> List:
+def check_data(labels: list, data: list, args: dict) -> list:
     """Check that all data were inserted correctly. Return the colors."""
     len_categories = len(data[0])
 
@@ -642,7 +552,7 @@ def check_data(labels: List, data: List, args: Dict) -> List:
     return colors
 
 
-def print_categories(categories: List, colors: List) -> None:
+def print_categories(categories: list, colors: list) -> None:
     """Print a tick and the category's name for each category above
     the graph."""
     for i in range(len(categories)):
@@ -659,7 +569,7 @@ def print_categories(categories: List, colors: List) -> None:
     print("\n\n")
 
 
-def read_data(args: Dict) -> Tuple[List, List, List, List]:
+def read_data(args: dict) -> tuple[list, list, list, list]:
     """Read data from a file or stdin and returns it.
 
     Filename includes (categories), labels and data.
@@ -681,7 +591,10 @@ def read_data(args: Dict) -> Tuple[List, List, List, List]:
     if args["title"]:
         print("# " + args["title"] + "\n")
 
-    categories, labels, data, colors = ([] for _ in range(4))
+    categories: list[str] = []
+    labels: list[str | None] = []
+    data: list = []
+    colors: list = []
 
     f = None
 
@@ -731,14 +644,15 @@ def read_data(args: Dict) -> Tuple[List, List, List, List]:
     return categories, labels, data, colors
 
 
-class _LabeledRow(NamedTuple):
-    label: str | None
-    data: list[float]
+class _LabeledRow:
+    def __init__(self, label: str | None, data: list[float]):
+        self.label = label
+        self.data = data
 
 
-def _label_row(row: list[str], delim: str) -> LabeledRow:
+def _label_row(row: list[str], delim: str) -> _LabeledRow:
     data = []
-    labels = []
+    labels: list[str] = []
     labelling = False
 
     for text in row:
@@ -770,7 +684,7 @@ def _maybe_float(text: str) -> float | None:
         return None
 
 
-def calendar_heatmap(data: Dict, labels: List, args: Dict) -> None:
+def calendar_heatmap(data: dict, labels: list, args: dict) -> None:
     """Print a calendar heatmap."""
     if args["color"]:
         colornum = AVAILABLE_COLORS.get(args["color"][0])

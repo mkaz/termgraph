@@ -1,52 +1,37 @@
-#!/usr/bin/env python3
-# coding=utf-8
 """This module allows drawing basic graphs in the terminal."""
 
 # termgraph.py - draw basic graphs on terminal
 # https://github.com/mkaz/termgraph
 
-from __future__ import print_function
-import sys, math, os
+import sys
+from typing import Union
 import colorama
-from typing import Dict, List, Tuple, Union
-from utils import cvt_to_readable
-
-DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-DELIM = ","
-TICK = "▇"
-SM_TICK = "▏"
-
-# Commented it out cause I don't know what its purpose is.
-# And the code was running just fine without it.
-# I am sorry if I am being stupid here.
-# try:
-#     range = xrange
-# except NameError:
-#     pass
+from .constants import TICK, SM_TICK, AVAILABLE_COLORS
+from .utils import cvt_to_readable
 
 colorama.init()
 
 
-class Colors(object):
+class Colors:
     """Class representing available color values for graphs."""
 
-    Black = 90
-    Red = 91
-    Green = 92
-    Yellow = 93
-    Blue = 94
-    Magenta = 95
-    Cyan = 96
+    Black = AVAILABLE_COLORS["black"]
+    Red = AVAILABLE_COLORS["red"]
+    Green = AVAILABLE_COLORS["green"]
+    Yellow = AVAILABLE_COLORS["yellow"]
+    Blue = AVAILABLE_COLORS["blue"]
+    Magenta = AVAILABLE_COLORS["magenta"]
+    Cyan = AVAILABLE_COLORS["cyan"]
 
 
-class Data(object):
+class Data:
     """Class representing the data for the chart."""
 
     def __init__(
         self,
-        data: List,
-        labels: List[str],
-        categories: List[str] = [],
+        data: list,
+        labels: list[str],
+        categories: Union[list[str], None] = None,
     ):
         """Initialize data
 
@@ -60,10 +45,12 @@ class Data(object):
 
         self.labels = labels
         self.data = data
-        self.categories = categories
+        self.categories = categories or []
         self.dims = self._find_dims(data, labels)
 
-    def _find_dims(self, data, labels, dims=[]) -> Tuple[int]:
+    def _find_dims(self, data, labels, dims=None) -> Union[tuple[int], None]:
+        if dims is None:
+            dims = []
         if all([isinstance(data[i], list) for i in range(len(data))]):
             last = None
 
@@ -129,12 +116,12 @@ class Data(object):
             )
 
         output = [
-            f"{ ' ' * (maxlen_labels - len('Labels')) }Labels | Data",
-            f"{ '-' * (maxlen_labels + 1) }|{ '-' * (maxlen_data + 1) }",
+            f"{' ' * (maxlen_labels - len('Labels'))}Labels | Data",
+            f"{'-' * (maxlen_labels + 1)}|{'-' * (maxlen_data + 1)}",
         ]
 
         for i in range(len(self.data)):
-            line = f"{ ' ' * (maxlen_labels - len(self.labels[i])) + self.labels[i] } |"
+            line = f"{' ' * (maxlen_labels - len(self.labels[i])) + self.labels[i]} |"
 
             if len(self.categories) == 0:
                 line += f" {self.data[i]}"
@@ -145,11 +132,11 @@ class Data(object):
                         line += f" ({self.categories[j]}) {self.data[i][0]}\n"
 
                     else:
-                        line += f"{ ' ' * maxlen_labels } | ({self.categories[j]}) {self.data[i][j]}"
+                        line += f"{' ' * maxlen_labels} | ({self.categories[j]}) {self.data[i][j]}"
                         line += (
                             "\n"
                             if j < len(self.categories) - 1
-                            else f"\n{ ' ' * maxlen_labels } |"
+                            else f"\n{' ' * maxlen_labels} |"
                         )
 
             output.append(line)
@@ -157,10 +144,10 @@ class Data(object):
         return "\n".join(output)
 
     def __repr__(self):
-        return f"Data(data={ self.data if len(str(self.data)) < 25 else str(self.data)[:25] + '...' }, labels={self.labels}, categories={self.categories})"
+        return f"Data(data={self.data if len(str(self.data)) < 25 else str(self.data)[:25] + '...'}, labels={self.labels}, categories={self.categories})"
 
 
-class Args(object):
+class Args:
     """Class representing the arguments to modify the graph."""
 
     default = {
@@ -186,7 +173,7 @@ class Args(object):
         "label_before": False,
     }
 
-    def __init__(self, **kwargs: Dict):
+    def __init__(self, **kwargs):
         """Initialize the Args object."""
 
         self.args = dict(self.default)
@@ -220,10 +207,10 @@ class Args(object):
                 raise Exception(f"Invalid Argument: {arg}")
 
 
-class Chart(object):
+class Chart:
     """Class representing a chart"""
 
-    def __init__(self, data: Data, args: Args()):
+    def __init__(self, data: Data, args: Args):
         """Initialize the chart
 
         :data: The data to be displayed on the chart
@@ -250,7 +237,7 @@ class Chart(object):
             colors = self.args.get_arg("colors")
 
             for i in range(len(self.data.categories)):
-                if colors is not None:
+                if colors is not None and isinstance(colors, list):
                     sys.stdout.write(
                         "\033[{color_i}m".format(color_i=colors[i])
                     )  # Start to write colorized.
@@ -262,7 +249,7 @@ class Chart(object):
 
         print("\n\n")
 
-    def _normalize(self) -> List[float]:
+    def _normalize(self) -> list[list[float]]:
         """Normalize the data and return it."""
 
         # We offset by the minimum if there's a negative.
@@ -283,7 +270,11 @@ class Chart(object):
         # inverse of this value
         # If you divide a number to the value of single tick, you will find how
         # many ticks it does contain basically.
-        norm_factor = self.args.get_arg("width") / float(max_datum)
+        width = self.args.get_arg("width")
+        if isinstance(width, int):
+            norm_factor = width / float(max_datum)
+        else:
+            norm_factor = 50 / float(max_datum)  # Default width
         normal_data = [[v * norm_factor for v in datum] for datum in data_offset]
 
         return normal_data
@@ -307,9 +298,9 @@ class HorizontalChart(Chart):
         value: Union[int, float],
         num_blocks: Union[int, float],
         val_min: Union[int, float],
-        color: int,
-        label: bool = False,
-        tail: bool = False,
+        color: Union[int, None],
+        label: str = "",
+        tail: str = "",
     ) -> None:
         """A method to print a row for a horizontal graphs.
         i.e:
@@ -324,7 +315,7 @@ class HorizontalChart(Chart):
         sys.stdout.write("\033[0m")  # no color
 
         if value == 0.0:
-            sys.stdout.write(f"\033[{Colors.black}m")  # dark gray
+            sys.stdout.write(f"\033[{Colors.Black}m")  # dark gray
 
         if doprint:
             print(label, tail, " ", end="")
@@ -340,7 +331,7 @@ class HorizontalChart(Chart):
             if color:
                 sys.stdout.write(f"\033[{color}m")  # Start to write colorized.
 
-            for _ in range(num_blocks):
+            for _ in range(int(num_blocks)):
                 sys.stdout.write(TICK)
 
         if color:
@@ -369,8 +360,8 @@ class BarChart(HorizontalChart):
 
         colors = (
             self.args.get_arg("colors")
-            if self.args.get_arg("colors") != None
-            else [None] * self.data.dims[1]
+            if self.args.get_arg("colors") is not None
+            else [None] * (self.data.dims[1] if self.data.dims and len(self.data.dims) > 1 else 1)
         )
 
         val_min = self.data.find_min()
@@ -413,15 +404,19 @@ class BarChart(HorizontalChart):
 
                 else:
                     val, deg = cvt_to_readable(values[j])
+                    format_str = self.args.get_arg("format")
+                    if isinstance(format_str, str):
+                        formatted_val = format_str.format(val)
+                    else:
+                        formatted_val = "{:<5.2f}".format(val)  # Default format
                     tail = fmt.format(
-                        self.args.get_arg("format").format(val),
+                        formatted_val,
                         deg,
                         self.args.get_arg("suffix"),
                     )
 
-                if colors:
+                if colors and isinstance(colors, list) and j < len(colors):
                     color = colors[j]
-
                 else:
                     color = None
 
@@ -436,7 +431,7 @@ class BarChart(HorizontalChart):
                     val_min,
                     color,
                     label,
-                    tail,
+                    str(tail) if tail is not None else "",
                 )
 
                 if not self.args.get_arg("label_before") and not self.args.get_arg(
