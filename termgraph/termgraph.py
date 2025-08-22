@@ -14,7 +14,7 @@ import os
 import re
 import importlib.metadata
 
-from .constants import AVAILABLE_COLORS, DAYS, UNITS, DELIM, TICK, SM_TICK
+from .constants import AVAILABLE_COLORS, DAYS, DELIM, TICK, SM_TICK
 from .utils import cvt_to_readable, find_min, find_max, find_max_label_length, normalize
 
 __version__ = importlib.metadata.version("termgraph")

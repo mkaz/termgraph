@@ -5,7 +5,7 @@
 
 import sys
 import colorama
-from .constants import DAYS, DELIM, TICK, SM_TICK, AVAILABLE_COLORS
+from .constants import TICK, SM_TICK, AVAILABLE_COLORS
 from .utils import cvt_to_readable
 
 colorama.init()
@@ -359,7 +359,7 @@ class BarChart(HorizontalChart):
 
         colors = (
             self.args.get_arg("colors")
-            if self.args.get_arg("colors") != None
+            if self.args.get_arg("colors") is not None
             else [None] * (self.data.dims[1] if self.data.dims and len(self.data.dims) > 1 else 1)
         )
 
