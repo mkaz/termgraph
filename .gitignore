@@ -11,3 +11,5 @@ termgraph.egg-info/
 htmlcov/
 .python-version
 .vimrc
+
+CLAUDE.md
