@@ -4,6 +4,7 @@
 # https://github.com/mkaz/termgraph
 
 import sys
+from typing import Union
 import colorama
 from .constants import TICK, SM_TICK, AVAILABLE_COLORS
 from .utils import cvt_to_readable
@@ -30,7 +31,7 @@ class Data:
         self,
         data: list,
         labels: list[str],
-        categories: list[str] | None = None,
+        categories: Union[list[str], None] = None,
     ):
         """Initialize data
 
@@ -47,7 +48,7 @@ class Data:
         self.categories = categories or []
         self.dims = self._find_dims(data, labels)
 
-    def _find_dims(self, data, labels, dims=None) -> tuple[int] | None:
+    def _find_dims(self, data, labels, dims=None) -> Union[tuple[int], None]:
         if dims is None:
             dims = []
         if all([isinstance(data[i], list) for i in range(len(data))]):
@@ -70,12 +71,12 @@ class Data:
 
         return tuple(dims)
 
-    def find_min(self) -> int | float:
+    def find_min(self) -> Union[int, float]:
         """Return the minimum value in sublist of list."""
 
         return min([min(sublist) for sublist in self.data])
 
-    def find_max(self) -> int | float:
+    def find_max(self) -> Union[int, float]:
         """Return the maximum value in sublist of list."""
 
         return max([max(sublist) for sublist in self.data])
@@ -183,7 +184,7 @@ class Args:
             else:
                 raise Exception(f"Invalid Argument: {arg}")
 
-    def get_arg(self, arg: str) -> int | str | bool | None:
+    def get_arg(self, arg: str) -> Union[int, str, bool, None]:
         """Returns the value for the argument given.
 
         :arg: The name of the argument.
@@ -294,10 +295,10 @@ class HorizontalChart(Chart):
 
     def print_row(
         self,
-        value: int | float,
-        num_blocks: int | float,
-        val_min: int | float,
-        color: int | None,
+        value: Union[int, float],
+        num_blocks: Union[int, float],
+        val_min: Union[int, float],
+        color: Union[int, None],
         label: str = "",
         tail: str = "",
     ) -> None:
