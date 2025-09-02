@@ -22,7 +22,6 @@ __version__ = importlib.metadata.version("termgraph")
 init()
 
 
-
 def init_args() -> dict:
     """Parse and return the arguments."""
     parser = argparse.ArgumentParser(description="draw basic graphs on terminal")
@@ -86,6 +85,10 @@ def init_args() -> dict:
     parser.add_argument(
         "--no-readable", action="store_true", help="Disable the readable numbers"
     )
+    parser.add_argument(
+        "--percentage", action="store_true", help="Display the number in percentage"
+    )
+
     if len(sys.argv) == 1:
         if sys.stdin.isatty():
             parser.print_usage()
@@ -121,8 +124,6 @@ def main():
             chart(colors, data, args, labels)
     except BrokenPipeError:
         pass
-
-
 
 
 def hist_rows(data: list, args: dict, colors: list):
@@ -171,7 +172,9 @@ def hist_rows(data: list, args: dict, colors: list):
             color = None
 
         if not args.get("no_labels"):
-            print("{:{x}} – {:{x}}: ".format(start_border, end_border, x=max_len), end="")
+            print(
+                "{:{x}} – {:{x}}: ".format(start_border, end_border, x=max_len), end=""
+            )
 
         num_blocks = normal_counts[i]
 
@@ -199,7 +202,7 @@ def horiz_rows(
     val_min = find_min(data)
 
     for i in range(len(labels)):
-        if args["no_labels"]:
+        if args.get("no_labels"):
             # Hide the labels.
             label = ""
         else:
@@ -226,11 +229,11 @@ def horiz_rows(
             else:
                 fmt = " {}{}{}"
 
-            if args["no_values"]:
+            if args.get("no_values"):
                 tail = args["suffix"]
             else:
                 if not args.get("no_readable"):
-                    val, deg = cvt_to_readable(values[j])
+                    val, deg = cvt_to_readable(values[j], args.get("percentage"))
                     tail = fmt.format(args["format"].format(val), deg, args["suffix"])
                 else:
                     tail = fmt.format(
@@ -495,11 +498,11 @@ def check_data(labels: list, data: list, args: dict) -> list:
     if not labels:
         print(">> Error: No labels provided")
         sys.exit(1)
-    
+
     if not data:
         print(">> Error: No data provided")
         sys.exit(1)
-    
+
     len_categories = len(data[0])
 
     # Check that there are data for all labels.

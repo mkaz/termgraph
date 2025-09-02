@@ -74,3 +74,29 @@ def test_vertically_returns_correct_result():
     color = None
     result = tg.vertically(value, num_blocks, val_min, color, args)
     assert result == [("▇",), ("▇",)]
+
+
+def test_percentage_flag_displays_values_as_percentages():
+    """Test that percentage=True converts values to percentages (e.g., 1 -> 100%, 2 -> 200%)"""
+    labels = ["1", "2", "3", "4", "5"]
+    data = [[1], [2], [3], [4], [5]]
+    normal_dat = [[10], [20], [30], [40], [50]]  # Normalized values
+    args = {
+        "suffix": "",
+        "format": "{:.0f}",
+        "percentage": True,  # This should convert values to percentages
+    }
+    colors = []
+
+    rows = []
+    for row in tg.horiz_rows(labels, data, normal_dat, args, colors):
+        rows.append(row)
+
+    # Values should be displayed as percentages: 1->100%, 2->200%, etc.
+    assert rows == [
+        (1, 10, 1, None, "1: ", " 100%", None),
+        (2, 20, 1, None, "2: ", " 200%", None),
+        (3, 30, 1, None, "3: ", " 300%", None),
+        (4, 40, 1, None, "4: ", " 400%", None),
+        (5, 50, 1, None, "5: ", " 500%", None),
+    ]

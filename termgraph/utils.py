@@ -5,7 +5,7 @@ import math
 from .constants import UNITS
 
 
-def cvt_to_readable(num):
+def cvt_to_readable(num, percentage=False):
     """Return the number in a human readable format.
 
     Examples:
@@ -13,6 +13,10 @@ def cvt_to_readable(num):
         12550 -> (12.55, 'K')
         19561100 -> (19.561, 'M')
     """
+
+    if percentage:
+        return (num * 100, '%')
+
     if num >= 1 or num <= -1:
         neg = num < 0
         num = abs(num)

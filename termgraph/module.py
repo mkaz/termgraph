@@ -171,6 +171,7 @@ class Args:
         "delim": "",
         "verbose": False,
         "label_before": False,
+        "percentage": False,
     }
 
     def __init__(self, **kwargs):
