@@ -15,7 +15,7 @@ import re
 import importlib.metadata
 
 from .constants import AVAILABLE_COLORS, DAYS, DELIM, TICK, SM_TICK
-from .utils import cvt_to_readable, find_min, find_max, find_max_label_length, normalize
+from .utils import cvt_to_readable, find_min, find_max, find_max_label_length, normalize, print_row_core
 
 __version__ = importlib.metadata.version("termgraph")
 
@@ -278,27 +278,16 @@ def print_row(
     2: ▇▇▇ 3
     3: ▇▇▇▇ 4
     """
-    sys.stdout.write("\033[0m")  # no color
-    if value == 0.0:
-        sys.stdout.write("\033[90m")  # dark gray
-
     if doprint:
         print(label, tail, " ", end="")
 
-    if (num_blocks < 1 and (value > val_min or value > 0)) or (
-        doprint and value == 0.0
-    ):
-        # Print something if it's not the smallest
-        # and the normal value is less than one.
-        sys.stdout.write(SM_TICK)
-    else:
-        if color:
-            sys.stdout.write(f"\033[{color}m")  # Start to write colorized.
-        for _ in range(num_blocks):
-            sys.stdout.write(TICK)
-
-    if color:
-        sys.stdout.write("\033[0m")  # Back to original.
+    print_row_core(
+        value=value,
+        num_blocks=num_blocks,
+        val_min=val_min,
+        color=color,
+        zero_as_small_tick=doprint
+    )
 
     if doprint:
         print()
