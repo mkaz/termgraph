@@ -229,6 +229,7 @@ class Chart:
 
     def _print_header(self) -> None:
         title = self.args.get_arg("title")
+        has_header_content = title is not None or len(self.data.categories) > 0
 
         if title is not None:
             print(f"# {title}\n")
@@ -247,7 +248,8 @@ class Chart:
                 if colors:
                     sys.stdout.write("\033[0m")  # Back to original.
 
-        print("\n\n")
+        if has_header_content:
+            print("\n\n")
 
     def _normalize(self) -> list[list[float]]:
         """Normalize the data and return it."""
