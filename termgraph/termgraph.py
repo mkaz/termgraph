@@ -491,6 +491,15 @@ def chart(colors: list, data: list, args: dict, labels: list) -> None:
 
 def check_data(labels: list, data: list, args: dict) -> list:
     """Check that all data were inserted correctly. Return the colors."""
+    # Check for empty arguments
+    if not labels:
+        print(">> Error: No labels provided")
+        sys.exit(1)
+    
+    if not data:
+        print(">> Error: No data provided")
+        sys.exit(1)
+    
     len_categories = len(data[0])
 
     # Check that there are data for all labels.
