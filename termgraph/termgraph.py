@@ -616,20 +616,20 @@ def read_data(args: dict) -> tuple[list, list, list, list]:
             line = line.strip()
             if line:
                 if not line.startswith("#"):
-                    if line.find(DELIM) > 0:
-                        cols = line.split(DELIM)
-                        delim = DELIM
-                    else:
-                        cols = line.split()
-                        delim = " "
-
                     # Line contains categories.
                     if line.startswith("@"):
+                        cols = line.split(DELIM)
                         cols[0] = cols[0].replace("@ ", "")
                         categories = cols
 
                     # Line contains label and values.
                     else:
+                        if line.find(DELIM) > 0:
+                            cols = line.split(DELIM)
+                            delim = DELIM
+                        else:
+                            cols = line.split()
+                            delim = " "
                         labeled_row = _label_row([col.strip() for col in cols], delim)
                         data.append(labeled_row.data)
                         labels.append(labeled_row.label)
