@@ -6,7 +6,7 @@
 # Import all classes from their dedicated files to maintain backward compatibility
 from .data import Data
 from .args import Args
-from .chart import Colors, Chart, HorizontalChart, BarChart
+from .chart import Colors, Chart, HorizontalChart, BarChart, StackedChart, HistogramChart
 
 # Re-export everything to maintain existing API
-__all__ = ['Data', 'Args', 'Colors', 'Chart', 'HorizontalChart', 'BarChart']
+__all__ = ['Data', 'Args', 'Colors', 'Chart', 'HorizontalChart', 'BarChart', 'StackedChart', 'HistogramChart']

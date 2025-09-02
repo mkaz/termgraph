@@ -29,6 +29,7 @@ class Args:
         "verbose": False,
         "label_before": False,
         "percentage": False,
+        "no_readable": False,
     }
 
     def __init__(self, **kwargs):

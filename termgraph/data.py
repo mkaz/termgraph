@@ -53,19 +53,19 @@ class Data:
 
     def find_min(self) -> Union[int, float]:
         """Return the minimum value in sublist of list."""
-        return min([min(sublist) for sublist in self.data])
+        return min(value for sublist in self.data for value in sublist)
 
     def find_max(self) -> Union[int, float]:
         """Return the maximum value in sublist of list."""
-        return max([max(sublist) for sublist in self.data])
+        return max(value for sublist in self.data for value in sublist)
 
     def find_min_label_length(self) -> int:
         """Return the minimum length for the labels."""
-        return min([len(label) for label in self.labels])
+        return min(len(label) for label in self.labels)
 
     def find_max_label_length(self) -> int:
         """Return the maximum length for the labels."""
-        return max([len(label) for label in self.labels])
+        return max(len(label) for label in self.labels)
 
     def __str__(self):
         """Returns the string representation of the data.
@@ -123,22 +123,3 @@ class Data:
         return f"Data(data={self.data if len(str(self.data)) < 25 else str(self.data)[:25] + '...'}, labels={self.labels}, categories={self.categories})"
 
 
-# Backward compatibility - provide procedural interface
-def find_min(data: list) -> float:
-    """Return the minimum value in sublist of list."""
-    data_obj = Data(data, [str(i) for i in range(len(data))])
-    return data_obj.find_min()
-
-
-def find_max(data: list) -> float:
-    """Return the maximum value in sublist of list."""
-    data_obj = Data(data, [str(i) for i in range(len(data))])
-    return data_obj.find_max()
-
-
-def find_max_label_length(labels: list) -> int:
-    """Return the maximum length for the labels."""
-    # Create dummy data for compatibility
-    dummy_data = [[0]] * len(labels)
-    data_obj = Data(dummy_data, labels)
-    return data_obj.find_max_label_length()

@@ -37,23 +37,21 @@ def cvt_to_readable(num, percentage=False):
     return (newNum, degree)
 
 
-# Import data utilities from data module to avoid duplication
-from .data import find_min, find_max, find_max_label_length
 
 
 def normalize(data: list, width: int) -> list:
     """Normalize the data and return it."""
     # We offset by the minimum if there's a negative.
     data_offset = []
-    min_datum = find_min(data)
+    min_datum = min(value for sublist in data for value in sublist)
     if min_datum < 0:
         min_datum = abs(min_datum)
         for datum in data:
             data_offset.append([d + min_datum for d in datum])
     else:
         data_offset = data
-    min_datum = find_min(data_offset)
-    max_datum = find_max(data_offset)
+    min_datum = min(value for sublist in data_offset for value in sublist)
+    max_datum = max(value for sublist in data_offset for value in sublist)
 
     if min_datum == max_datum:
         return data_offset
@@ -74,7 +72,7 @@ def print_row_core(
     value: float,
     num_blocks: int,
     val_min: float,
-    color: int = None,
+    color: int | None = None,
     label_before: bool = False,
     zero_as_small_tick: bool = False,
 ) -> None:

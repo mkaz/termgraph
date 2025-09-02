@@ -1,10 +1,11 @@
 """Chart classes for termgraph - handles chart rendering and display."""
 
 from __future__ import annotations
+import math
 import sys
 from typing import Union
 import colorama
-from .constants import TICK, SM_TICK, AVAILABLE_COLORS
+from .constants import TICK, AVAILABLE_COLORS
 from .utils import cvt_to_readable, normalize, print_row_core
 from .data import Data
 from .args import Args
@@ -116,7 +117,7 @@ class HorizontalChart(Chart):
             num_blocks=int(num_blocks),
             val_min=float(val_min),
             color=color,
-            zero_as_small_tick=self.args.get_arg("label_before")
+            zero_as_small_tick=bool(self.args.get_arg("label_before"))
         )
 
         if doprint:
@@ -220,3 +221,185 @@ class BarChart(HorizontalChart):
                     "vertical"
                 ):
                     print(tail)
+
+
+class StackedChart(HorizontalChart):
+    """Class representing a stacked bar chart"""
+
+    def __init__(self, data: Data, args: Args = Args()):
+        """Initialize the stacked chart
+
+        :data: The data to be displayed on the chart
+        :args: The arguments for the chart
+        """
+        super().__init__(data, args)
+
+    def draw(self) -> None:
+        """Draws the stacked chart"""
+        self._print_header()
+
+        colors_arg = self.args.get_arg("colors")
+        if isinstance(colors_arg, list):
+            colors = colors_arg
+        else:
+            colors = [None] * (self.data.dims[1] if self.data.dims and len(self.data.dims) > 1 else 1)
+
+        val_min = self.data.find_min()
+        normal_data = self._normalize()
+
+        for i in range(len(self.data.labels)):
+            if self.args.get_arg("no_labels"):
+                # Hide the labels.
+                label = ""
+            else:
+                label = "{:<{x}}: ".format(self.data.labels[i], x=self.data.find_max_label_length())
+
+            if self.args.get_arg("space_between") and i != 0:
+                print()
+
+            print(label, end="")
+
+            values = self.data.data[i]
+            num_blocks = normal_data[i]
+
+            for j in range(len(values)):
+                print_row_core(
+                    value=values[j],
+                    num_blocks=int(num_blocks[j]),
+                    val_min=val_min,
+                    color=colors[j] if j < len(colors) else None,
+                    zero_as_small_tick=False,
+                )
+            
+            if self.args.get_arg("no_values"):
+                # Hide the values.
+                tail = ""
+            else:
+                format_str = self.args.get_arg("format")
+                if isinstance(format_str, str):
+                    formatted_sum = format_str.format(sum(values))
+                else:
+                    formatted_sum = "{:<5.2f}".format(sum(values))
+                if self.args.get_arg("percentage"):
+                    if "%" not in formatted_sum:
+                        try:
+                            # Convert to percentage
+                            numeric_value = float(formatted_sum)
+                            formatted_sum = f"{numeric_value * 100:.0f}%"
+                        except ValueError:
+                            # If conversion fails, just add % suffix
+                            formatted_sum += "%"
+                
+                tail = " {}{}".format(formatted_sum, self.args.get_arg("suffix"))
+            
+            print(tail)
+
+
+class HistogramChart(Chart):
+    """Class representing a histogram chart"""
+
+    def __init__(self, data: Data, args: Args = Args()):
+        """Initialize the histogram chart
+
+        :data: The data to be displayed on the chart
+        :args: The arguments for the chart
+        """
+        super().__init__(data, args)
+
+    def draw(self) -> None:
+        """Draws the histogram chart"""
+        self._print_header()
+
+        colors_arg = self.args.get_arg("colors")
+        if isinstance(colors_arg, list):
+            colors = colors_arg
+        else:
+            colors = [None]
+
+        val_min = self.data.find_min()
+        val_max = self.data.find_max()
+
+        # Calculate borders
+        class_min = math.floor(val_min)
+        class_max = math.ceil(val_max)
+        class_range = class_max - class_min
+        bins_arg = self.args.get_arg("bins")
+        if isinstance(bins_arg, int):
+            bins_count = bins_arg
+        else:
+            bins_count = 5  # default
+        class_width = class_range / bins_count
+
+        border = float(class_min)
+        borders = []
+        max_len = len(str(border))
+
+        for b in range(bins_count + 1):
+            borders.append(border)
+            len_border = len(str(border))
+            if len_border > max_len:
+                max_len = len_border
+            border += class_width
+            border = round(border, 1)
+
+        # Count num of data via border
+        count_list = []
+
+        for start, end in zip(borders[:-1], borders[1:]):
+            count = 0
+            # Count values in this bin range
+            for row in self.data.data:
+                for v in row:  # Handle multi-dimensional data
+                    if start <= v < end:
+                        count += 1
+
+            count_list.append([count])
+
+        width_arg = self.args.get_arg("width")
+        if isinstance(width_arg, int):
+            width = width_arg
+        else:
+            width = 50  # default
+        normal_counts = normalize(count_list, width)
+
+        for i, (start_border, end_border) in enumerate(zip(borders[:-1], borders[1:])):
+            if colors and colors[0]:
+                color = colors[0]
+            else:
+                color = None
+
+            if not self.args.get_arg("no_labels"):
+                print(
+                    "{:{x}} – {:{x}}: ".format(start_border, end_border, x=max_len), end=""
+                )
+
+            num_blocks = normal_counts[i]
+
+            print_row_core(
+                value=count_list[i][0],
+                num_blocks=int(num_blocks[0]),
+                val_min=0,  # Histogram always starts from 0
+                color=color,
+                zero_as_small_tick=False,
+            )
+
+            if self.args.get_arg("no_values"):
+                tail = ""
+            else:
+                format_str = self.args.get_arg("format")
+                if isinstance(format_str, str):
+                    formatted_val = format_str.format(count_list[i][0])
+                else:
+                    formatted_val = "{:<5.2f}".format(count_list[i][0])
+                if self.args.get_arg("percentage"):
+                    if "%" not in formatted_val:
+                        try:
+                            # Convert to percentage
+                            numeric_value = float(formatted_val)
+                            formatted_val = f"{numeric_value * 100:.0f}%"
+                        except ValueError:
+                            # If conversion fails, just add % suffix
+                            formatted_val += "%"
+                
+                tail = " {}{}".format(formatted_val, self.args.get_arg("suffix"))
+            print(tail)
