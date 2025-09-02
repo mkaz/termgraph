@@ -1,7 +1,7 @@
 
 [project]
 name = "termgraph"
-version = "0.6.0"
+version = "0.6.1"
 description = "A command-line tool that draws basic graphs in the terminal."
 readme = "README.md"
 license = "MIT"
