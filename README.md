@@ -96,6 +96,8 @@ Note: Be sure your PATH includes the pypi install directory, for me it is `~/.lo
 
 ### Usage
 
+#### Command Line Interface
+
 * Create data file with two columns either comma or space separated.
   The first column is your labels, the second column is a numeric data
 
@@ -103,15 +105,48 @@ Note: Be sure your PATH includes the pypi install directory, for me it is `~/.lo
 
 * Help: termgraph -h
 
+#### Programmatic API
+
+Termgraph can also be used as a Python library for creating charts programmatically:
+
+```python
+from termgraph import Data, Args, BarChart
+
+# Create data
+data = Data([[10], [25], [50], [40]], ["Q1", "Q2", "Q3", "Q4"])
+
+# Configure chart options  
+args = Args(
+    title="Quarterly Sales",
+    width=50,
+    format="{:.0f}",
+    suffix="K"
+)
+
+# Create and display chart
+chart = BarChart(data, args)
+chart.draw()
 ```
-usage: termgraph.py [-h] [(optional arguments)] [filename]
+
+This produces:
+```
+# Quarterly Sales
+
+Q1: ▇▇▇▇▇▇▇▇▇▇ 10K
+Q2: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 25K  
+Q3: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50K
+Q4: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 40K
+```
+
+```
+usage: termgraph [-h] [options] [filename]
 
 draw basic graphs on terminal
 
 positional arguments:
   filename              data file name (comma or space separated). Defaults to stdin.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   --title TITLE         Title of graph
   --width WIDTH         width of graph in characters default:50
@@ -133,6 +168,8 @@ optional arguments:
   --delim DELIM         Custom delimiter, default , or space
   --verbose             Verbose output, helpful for debugging
   --label-before        Display the values before the bars
+  --no-readable         Disable the readable numbers
+  --percentage          Display the number in percentage
   --version             Display version and exit
 ```
 
@@ -145,9 +182,14 @@ After seeing [command-line sparklines](https://github.com/holman/spark) I figure
 
 ### Contribute
 
-All contributions are welcome, for feature requests or bug reports, use [Github Issues](https://github.com/mkaz/termgraph/issues). Pull requests are welcome to help fix or add features.
+All contributions are welcome! For detailed information about the project structure, development workflow, and contribution guidelines, please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-**Code contributions**: This repository uses the [black code formatter](https://github.com/psf/black) to automatically format the code. A Github Action is setup to lint your code, to avoid failures it is recommended to [setup your editor to auto format on save](https://github.com/psf/black/blob/master/docs/editor_integration.md).
+**Quick Start:**
+- 🐛 **Bug reports** and 🚀 **feature requests**: Use [GitHub Issues](https://github.com/mkaz/termgraph/issues)
+- 🔧 **Code contributions**: See our [development workflow](CONTRIBUTING.md#development-workflow)  
+- 📚 **Documentation**: Help improve our guides and examples
+
+**Code Quality:** We use `ruff` for linting and formatting, `mypy` for type checking, and maintain comprehensive test coverage.
 
 Thanks to all the [contributors](https://github.com/mkaz/termgraph/graphs/contributors)!
 

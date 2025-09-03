@@ -6,7 +6,6 @@ https://github.com/mkaz/termgraph
 from __future__ import annotations
 import argparse
 import sys
-import math
 from datetime import datetime, timedelta
 from itertools import zip_longest
 from colorama import init  # type: ignore
@@ -15,7 +14,10 @@ import re
 import importlib.metadata
 
 from .constants import AVAILABLE_COLORS, DAYS, DELIM, TICK, SM_TICK
-from .utils import cvt_to_readable, find_min, find_max, find_max_label_length, normalize
+from .utils import cvt_to_readable, normalize, print_row_core
+from .data import Data
+from .args import Args
+from .chart import Chart, BarChart, StackedChart, HistogramChart
 
 __version__ = importlib.metadata.version("termgraph")
 
@@ -126,68 +128,6 @@ def main():
         pass
 
 
-def hist_rows(data: list, args: dict, colors: list):
-    """Prepare the Histgram graph.
-    Each row is printed through the print_row function."""
-
-    val_min = find_min(data)
-    val_max = find_max(data)
-
-    # Calculate borders
-    class_min = math.floor(val_min)
-    class_max = math.ceil(val_max)
-    class_range = class_max - class_min
-    class_width = class_range / args["bins"]
-
-    border = class_min
-    borders = []
-    max_len = len(str(border))
-
-    for b in range(args["bins"] + 1):
-        borders.append(border)
-        len_border = len(str(border))
-        if len_border > max_len:
-            max_len = len_border
-        border += class_width
-        border = round(border, 1)
-
-    # Count num of data via border
-    count_list = []
-
-    for start, end in zip(borders[:-1], borders[1:]):
-        count = 0
-        #        for d in [d]
-        for v in [row[0] for row in data]:
-            if start <= v < end:
-                count += 1
-
-        count_list.append([count])
-
-    normal_counts = normalize(count_list, args["width"])
-
-    for i, (start_border, end_border) in enumerate(zip(borders[:-1], borders[1:])):
-        if colors:
-            color = colors[0]
-        else:
-            color = None
-
-        if not args.get("no_labels"):
-            print(
-                "{:{x}} – {:{x}}: ".format(start_border, end_border, x=max_len), end=""
-            )
-
-        num_blocks = normal_counts[i]
-
-        yield (count_list[i][0], int(num_blocks[0]), 0, color)
-
-        if args.get("no_values"):
-            tail = ""
-        else:
-            tail = " {}{}".format(
-                args["format"].format(count_list[i][0]), args["suffix"]
-            )
-        print(tail)
-
 
 def horiz_rows(
     labels: list,
@@ -199,7 +139,9 @@ def horiz_rows(
 ):
     """Prepare the horizontal graph.
     Each row is printed through the print_row function."""
-    val_min = find_min(data)
+    # Create Data object to use class methods
+    data_obj = Data(data, labels)
+    val_min = data_obj.find_min()
 
     for i in range(len(labels)):
         if args.get("no_labels"):
@@ -210,7 +152,7 @@ def horiz_rows(
                 fmt = "{:<{x}}"
             else:
                 fmt = "{:<{x}}: "
-            label = fmt.format(labels[i], x=find_max_label_length(labels))
+            label = fmt.format(labels[i], x=data_obj.find_max_label_length())
 
         values = data[i]
         num_blocks = normal_dat[i]
@@ -278,70 +220,21 @@ def print_row(
     2: ▇▇▇ 3
     3: ▇▇▇▇ 4
     """
-    sys.stdout.write("\033[0m")  # no color
-    if value == 0.0:
-        sys.stdout.write("\033[90m")  # dark gray
-
     if doprint:
         print(label, tail, " ", end="")
 
-    if (num_blocks < 1 and (value > val_min or value > 0)) or (
-        doprint and value == 0.0
-    ):
-        # Print something if it's not the smallest
-        # and the normal value is less than one.
-        sys.stdout.write(SM_TICK)
-    else:
-        if color:
-            sys.stdout.write(f"\033[{color}m")  # Start to write colorized.
-        for _ in range(num_blocks):
-            sys.stdout.write(TICK)
-
-    if color:
-        sys.stdout.write("\033[0m")  # Back to original.
+    print_row_core(
+        value=value,
+        num_blocks=num_blocks,
+        val_min=val_min,
+        color=color,
+        zero_as_small_tick=doprint
+    )
 
     if doprint:
         print()
 
 
-def stacked_graph(
-    labels: list,
-    data: list,
-    normal_data: list,
-    len_categories: int,
-    args: dict,
-    colors: list,
-):
-    """Prepare the horizontal stacked graph.
-    Each row is printed through the print_row function."""
-    val_min = find_min(data)
-
-    for i in range(len(labels)):
-        if args["no_labels"]:
-            # Hide the labels.
-            label = ""
-        else:
-            label = "{:<{x}}: ".format(labels[i], x=find_max_label_length(labels))
-
-        if args.get("space_between") and i != 0:
-            print()
-
-        print(label, end="")
-
-        values = data[i]
-        num_blocks = normal_data[i]
-
-        for j in range(len(values)):
-            print_row(values[j], int(num_blocks[j]), val_min, colors[j])
-        if args["no_values"]:
-            # Hide the values.
-            tail = ""
-        else:
-            tail = " {}{}".format(args["format"].format(sum(values)), args["suffix"])
-        if args["no_new_lines"]:
-            print(tail, end="")
-        else:
-            print(tail)
 
 
 # FIXME: globals for vertical, not ideal
@@ -415,11 +308,51 @@ def print_vertical(vertical_rows: list, labels: list, color: bool, args: dict) -
 def chart(colors: list, data: list, args: dict, labels: list) -> None:
     """Handle the normalization of data and the printing of the graph."""
     len_categories = len(data[0])
+    
+    # Simple bar chart case - use the BarChart class
+    if len_categories == 1 and not args["stacked"] and not args["histogram"] and not args["vertical"]:
+        # Convert CLI args dict to chart Args class, mapping incompatible keys
+        chart_args_dict = dict(args)
+        if "color" in chart_args_dict:
+            chart_args_dict["colors"] = chart_args_dict.pop("color")
+        
+        # Remove CLI-specific args that don't belong in chart Args
+        cli_only_args = ["filename", "delim", "verbose", "version"]
+        for cli_arg in cli_only_args:
+            chart_args_dict.pop(cli_arg, None)
+        
+        chart_args = Args(**chart_args_dict)
+        if colors and not chart_args.get_arg("colors"):
+            chart_args.update_args(colors=colors)
+        
+        # Create Data object and chart
+        data_obj = Data(data, labels)
+        chart_obj: Chart = BarChart(data_obj, chart_args)
+        chart_obj.draw()
+        return
+    
+    # Complex cases still use the old procedural code until we can extend chart classes
     if len_categories > 1:
         # Stacked graph
         if args["stacked"]:
-            normal_dat = normalize(data, args["width"])
-            stacked_graph(labels, data, normal_dat, len_categories, args, colors)
+            # Convert CLI args dict to chart Args class, mapping incompatible keys
+            chart_args_dict = dict(args)
+            if "color" in chart_args_dict:
+                chart_args_dict["colors"] = chart_args_dict.pop("color")
+            
+            # Remove CLI-specific args that don't belong in chart Args
+            cli_only_args = ["filename", "delim", "verbose", "version"]
+            for cli_arg in cli_only_args:
+                chart_args_dict.pop(cli_arg, None)
+            
+            chart_args = Args(**chart_args_dict)
+            if colors and not chart_args.get_arg("colors"):
+                chart_args.update_args(colors=colors)
+            
+            # Create Data object and chart
+            data_obj = Data(data, labels)
+            stacked_chart: Chart = StackedChart(data_obj, chart_args)
+            stacked_chart.draw()
             return
 
         if not colors:
@@ -464,9 +397,24 @@ def chart(colors: list, data: list, args: dict, labels: list) -> None:
             print(">> Error: Vertical graph for Histogram is not supported yet.")
             sys.exit(1)
 
-        for row in hist_rows(data, args, colors):
-            print_row(*row)
-            print()
+        # Convert CLI args dict to chart Args class, mapping incompatible keys
+        chart_args_dict = dict(args)
+        if "color" in chart_args_dict:
+            chart_args_dict["colors"] = chart_args_dict.pop("color")
+        
+        # Remove CLI-specific args that don't belong in chart Args
+        cli_only_args = ["filename", "delim", "verbose", "version"]
+        for cli_arg in cli_only_args:
+            chart_args_dict.pop(cli_arg, None)
+        
+        chart_args = Args(**chart_args_dict)
+        if colors and not chart_args.get_arg("colors"):
+            chart_args.update_args(colors=colors)
+        
+        # Create Data object and chart
+        data_obj = Data(data, labels)
+        hist_chart: Chart = HistogramChart(data_obj, chart_args)
+        hist_chart.draw()
         return
 
     # One category/Multiple series graph with same scale

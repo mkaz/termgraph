@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 import math
-from .constants import UNITS
+import sys
+from .constants import UNITS, TICK, SM_TICK
 
 
 def cvt_to_readable(num, percentage=False):
@@ -36,34 +37,21 @@ def cvt_to_readable(num, percentage=False):
     return (newNum, degree)
 
 
-def find_min(data: list) -> float:
-    """Return the minimum value in sublist of list."""
-    return min([min(sublist) for sublist in data])
-
-
-def find_max(data: list) -> float:
-    """Return the maximum value in sublist of list."""
-    return max([max(sublist) for sublist in data])
-
-
-def find_max_label_length(labels: list) -> int:
-    """Return the maximum length for the labels."""
-    return max([len(label) for label in labels])
 
 
 def normalize(data: list, width: int) -> list:
     """Normalize the data and return it."""
     # We offset by the minimum if there's a negative.
     data_offset = []
-    min_datum = find_min(data)
+    min_datum = min(value for sublist in data for value in sublist)
     if min_datum < 0:
         min_datum = abs(min_datum)
         for datum in data:
             data_offset.append([d + min_datum for d in datum])
     else:
         data_offset = data
-    min_datum = find_min(data_offset)
-    max_datum = find_max(data_offset)
+    min_datum = min(value for sublist in data_offset for value in sublist)
+    max_datum = max(value for sublist in data_offset for value in sublist)
 
     if min_datum == max_datum:
         return data_offset
@@ -78,3 +66,42 @@ def normalize(data: list, width: int) -> list:
         normal_data.append([v * norm_factor for v in datum])
 
     return normal_data
+
+
+def print_row_core(
+    value: float,
+    num_blocks: int,
+    val_min: float,
+    color: int | None = None,
+    label_before: bool = False,
+    zero_as_small_tick: bool = False,
+) -> None:
+    """Core logic for printing a row of bars in horizontal graphs.
+    
+    Args:
+        value: The data value being displayed
+        num_blocks: Number of blocks/ticks to print
+        val_min: Minimum value in dataset
+        color: ANSI color code (optional)
+        label_before: Whether to use small tick for zero values with label_before
+        zero_as_small_tick: Additional condition for using small tick on zero
+    """
+    sys.stdout.write("\033[0m")  # no color
+    
+    if value == 0.0:
+        sys.stdout.write("\033[90m")  # dark gray
+
+    if (num_blocks < 1 and (value > val_min or value > 0)) or (
+        zero_as_small_tick and value == 0.0
+    ):
+        # Print something if it's not the smallest
+        # and the normal value is less than one.
+        sys.stdout.write(SM_TICK)
+    else:
+        if color:
+            sys.stdout.write(f"\033[{color}m")  # Start to write colorized.
+        for _ in range(num_blocks):
+            sys.stdout.write(TICK)
+
+    if color:
+        sys.stdout.write("\033[0m")  # Back to original.
