@@ -57,9 +57,6 @@ class Chart:
 
             for i in range(len(self.data.categories)):
                 if colors is not None and isinstance(colors, list):
-                    sys.stdout.write(
-                        "\033[{color_i}m".format(color_i=colors[i])
-                    )  # Start to write colorized.
                     sys.stdout.write(f"\033[{colors[i]}m")  # Start to write colorized.
 
                 sys.stdout.write(TICK + " " + self.data.categories[i] + "  ")

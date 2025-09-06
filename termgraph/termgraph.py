@@ -322,7 +322,7 @@ def chart(colors: list, data: list, args: dict, labels: list) -> None:
             chart_args_dict.pop(cli_arg, None)
         
         chart_args = Args(**chart_args_dict)
-        if colors and not chart_args.get_arg("colors"):
+        if colors:
             chart_args.update_args(colors=colors)
         
         # Create Data object and chart
@@ -346,7 +346,7 @@ def chart(colors: list, data: list, args: dict, labels: list) -> None:
                 chart_args_dict.pop(cli_arg, None)
             
             chart_args = Args(**chart_args_dict)
-            if colors and not chart_args.get_arg("colors"):
+            if colors:
                 chart_args.update_args(colors=colors)
             
             # Create Data object and chart
@@ -408,7 +408,7 @@ def chart(colors: list, data: list, args: dict, labels: list) -> None:
             chart_args_dict.pop(cli_arg, None)
         
         chart_args = Args(**chart_args_dict)
-        if colors and not chart_args.get_arg("colors"):
+        if colors:
             chart_args.update_args(colors=colors)
         
         # Create Data object and chart
@@ -517,9 +517,6 @@ def print_categories(categories: list, colors: list) -> None:
     the graph."""
     for i in range(len(categories)):
         if colors:
-            sys.stdout.write(
-                "\033[{color_i}m".format(color_i=colors[i])
-            )  # Start to write colorized.
             sys.stdout.write(f"\033[{colors[i]}m")  # Start to write colorized.
 
         sys.stdout.write(TICK + " " + categories[i] + "  ")
