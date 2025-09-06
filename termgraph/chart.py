@@ -14,26 +14,28 @@ from .args import Args
 colorama.init()
 
 
-def format_value(value: Union[int, float], format_str_arg, percentage_arg, suffix_arg) -> str:
+def format_value(
+    value: Union[int, float], format_str_arg, percentage_arg, suffix_arg
+) -> str:
     """Format a value consistently across chart types."""
     # Handle type conversions and defaults
     if format_str_arg is None or not isinstance(format_str_arg, str):
         format_str = "{:<5.2f}"
     else:
         format_str = format_str_arg
-        
+
     if percentage_arg is None or not isinstance(percentage_arg, bool):
         percentage = False
     else:
         percentage = percentage_arg
-        
+
     if suffix_arg is None or not isinstance(suffix_arg, str):
         suffix = ""
     else:
         suffix = suffix_arg
-    
+
     formatted_val = format_str.format(value)
-    
+
     if percentage and "%" not in formatted_val:
         try:
             # Convert to percentage
@@ -42,7 +44,7 @@ def format_value(value: Union[int, float], format_str_arg, percentage_arg, suffi
         except ValueError:
             # If conversion fails, just add % suffix
             formatted_val += "%"
-    
+
     return f" {formatted_val}{suffix}"
 
 
@@ -96,8 +98,7 @@ class Chart:
                 if colors:
                     sys.stdout.write("\033[0m")  # Back to original.
 
-        if has_header_content:
-            print("\n\n")
+            print("\n")
 
     def _normalize(self) -> list[list[float]]:
         """Normalize the data and return it."""
@@ -147,7 +148,7 @@ class HorizontalChart(Chart):
             num_blocks=int(num_blocks),
             val_min=float(val_min),
             color=color,
-            zero_as_small_tick=bool(self.args.get_arg("label_before"))
+            zero_as_small_tick=bool(self.args.get_arg("label_before")),
         )
 
         if doprint:
@@ -195,7 +196,8 @@ class BarChart(HorizontalChart):
         colors = (
             self.args.get_arg("colors")
             if self.args.get_arg("colors") is not None
-            else [None] * (self.data.dims[1] if self.data.dims and len(self.data.dims) > 1 else 1)
+            else [None]
+            * (self.data.dims[1] if self.data.dims and len(self.data.dims) > 1 else 1)
         )
 
         val_min = self.data.find_min()
@@ -237,7 +239,9 @@ class BarChart(HorizontalChart):
                     tail = self.args.get_arg("suffix")
 
                 else:
-                    val, deg = cvt_to_readable(values[j], self.args.get_arg("percentage"))
+                    val, deg = cvt_to_readable(
+                        values[j], self.args.get_arg("percentage")
+                    )
                     format_str = self.args.get_arg("format")
                     if isinstance(format_str, str):
                         formatted_val = format_str.format(val)
@@ -293,7 +297,9 @@ class StackedChart(HorizontalChart):
         if isinstance(colors_arg, list):
             colors = colors_arg
         else:
-            colors = [None] * (self.data.dims[1] if self.data.dims and len(self.data.dims) > 1 else 1)
+            colors = [None] * (
+                self.data.dims[1] if self.data.dims and len(self.data.dims) > 1 else 1
+            )
 
         val_min = self.data.find_min()
         normal_data = self._normalize()
@@ -321,18 +327,18 @@ class StackedChart(HorizontalChart):
                     color=colors[j] if j < len(colors) else None,
                     zero_as_small_tick=False,
                 )
-            
+
             if self.args.get_arg("no_values"):
                 # Hide the values.
                 tail = ""
             else:
                 tail = format_value(
-                    sum(values), 
-                    self.args.get_arg("format"), 
-                    self.args.get_arg("percentage"), 
-                    self.args.get_arg("suffix")
+                    sum(values),
+                    self.args.get_arg("format"),
+                    self.args.get_arg("percentage"),
+                    self.args.get_arg("suffix"),
                 )
-            
+
             print(tail)
 
 
@@ -377,7 +383,7 @@ class VerticalChart(Chart):
             self.zipped_list.append(row)
 
         result_list = []
-        
+
         if self.zipped_list:
             counter = 0
             width = self.args.get_arg("width")
@@ -396,7 +402,7 @@ class VerticalChart(Chart):
                 else:
                     if counter == self.maxi:
                         break
-        
+
         if color:
             sys.stdout.write(f"\033[{color}m")
 
@@ -490,9 +496,7 @@ class HistogramChart(Chart):
                 color = None
 
             if not self.args.get_arg("no_labels"):
-                print(
-                    f"{start_border:{max_len}} – {end_border:{max_len}}: ", end=""
-                )
+                print(f"{start_border:{max_len}} – {end_border:{max_len}}: ", end="")
 
             num_blocks = normal_counts[i]
 
@@ -508,9 +512,9 @@ class HistogramChart(Chart):
                 tail = ""
             else:
                 tail = format_value(
-                    count_list[i][0], 
-                    self.args.get_arg("format"), 
-                    self.args.get_arg("percentage"), 
-                    self.args.get_arg("suffix")
+                    count_list[i][0],
+                    self.args.get_arg("format"),
+                    self.args.get_arg("percentage"),
+                    self.args.get_arg("suffix"),
                 )
             print(tail)
