@@ -4,8 +4,9 @@ from __future__ import annotations
 import math
 import sys
 from typing import Union
+from itertools import zip_longest
 import colorama
-from .constants import TICK, AVAILABLE_COLORS
+from .constants import TICK, SM_TICK, AVAILABLE_COLORS
 from .utils import cvt_to_readable, normalize, print_row_core
 from .data import Data
 from .args import Args
@@ -166,6 +167,27 @@ class BarChart(HorizontalChart):
 
         super().__init__(data, args)
 
+    def _normalize(self) -> list[list[float]]:
+        """Normalize the data and return it."""
+        if self.args.get_arg("different_scale"):
+            # Normalization per category
+            normal_data = [[] for _ in range(len(self.data.data))]
+            width = self.args.get_arg("width")
+            if not isinstance(width, int):
+                width = 50  # Default width
+
+            if self.data.dims:
+                for i in range(self.data.dims[1]):
+                    cat_data = [[dat[i]] for dat in self.data.data]
+
+                    normal_cat_data = normalize(cat_data, width)
+
+                    for row_idx, norm_val in enumerate(normal_cat_data):
+                        normal_data[row_idx].append(norm_val[0])
+            return normal_data
+        else:
+            return super()._normalize()
+
     def draw(self) -> None:
         """Draws the chart"""
         self._print_header()
@@ -312,6 +334,86 @@ class StackedChart(HorizontalChart):
                 )
             
             print(tail)
+
+
+class VerticalChart(Chart):
+    """Class representing a vertical chart"""
+
+    def __init__(self, data: Data, args: Args = Args()):
+        """Initialize the vertical chart"""
+        super().__init__(data, args)
+        self.value_list: list[str] = []
+        self.zipped_list: list[tuple] = []
+        self.vertical_list: list[str] = []
+        self.maxi = 0
+
+    def _prepare_vertical(self, value: float, num_blocks: int):
+        """Prepare the vertical graph data."""
+        self.value_list.append(str(value))
+
+        if self.maxi < num_blocks:
+            self.maxi = num_blocks
+
+        if num_blocks > 0:
+            self.vertical_list.append((TICK * num_blocks))
+        else:
+            self.vertical_list.append(SM_TICK)
+
+    def draw(self) -> None:
+        """Draws the vertical chart"""
+        self._print_header()
+
+        colors = self.args.get_arg("colors")
+        color = colors[0] if colors and isinstance(colors, list) else None
+
+        for i in range(len(self.data.labels)):
+            values = self.data.data[i]
+            num_blocks = self.normal_data[i]
+            for j in range(len(values)):
+                self._prepare_vertical(values[j], int(num_blocks[j]))
+
+        # Zip_longest method in order to turn them vertically.
+        for row in zip_longest(*self.vertical_list, fillvalue=" "):
+            self.zipped_list.append(row)
+
+        result_list = []
+        
+        if self.zipped_list:
+            counter = 0
+            width = self.args.get_arg("width")
+            if not isinstance(width, int):
+                width = 50  # Default width
+
+            # Combined with the maxi variable, escapes the appending method at
+            # the correct point or the default one (width).
+            for i in reversed(self.zipped_list):
+                result_list.append(i)
+                counter += 1
+
+                if self.maxi == width:
+                    if counter == width:
+                        break
+                else:
+                    if counter == self.maxi:
+                        break
+        
+        if color:
+            sys.stdout.write(f"\033[{color}m")
+
+        for row in result_list:
+            print(*row)
+
+        sys.stdout.write("\033[0m")
+
+        if result_list and not self.args.get_arg("no_values"):
+            print("-" * len(result_list[0]) * 2)
+            print("  ".join(self.value_list))
+
+        if result_list and not self.args.get_arg("no_labels"):
+            print("-" * len(result_list[0]) * 2)
+            # Print Labels
+            labels = self.data.labels
+            print("  ".join(labels))
 
 
 class HistogramChart(Chart):

@@ -17,7 +17,7 @@ from .constants import AVAILABLE_COLORS, DAYS, DELIM, TICK, SM_TICK
 from .utils import cvt_to_readable, normalize, print_row_core
 from .data import Data
 from .args import Args
-from .chart import Chart, BarChart, StackedChart, HistogramChart
+from .chart import Chart, BarChart, StackedChart, HistogramChart, VerticalChart
 
 __version__ = importlib.metadata.version("termgraph")
 
@@ -128,314 +128,37 @@ def main():
         pass
 
 
-
-def horiz_rows(
-    labels: list,
-    data: list,
-    normal_dat: list,
-    args: dict,
-    colors: list,
-    doprint: bool = True,
-):
-    """Prepare the horizontal graph.
-    Each row is printed through the print_row function."""
-    # Create Data object to use class methods
-    data_obj = Data(data, labels)
-    val_min = data_obj.find_min()
-
-    for i in range(len(labels)):
-        if args.get("no_labels"):
-            # Hide the labels.
-            label = ""
-        else:
-            if args.get("label_before"):
-                fmt = "{:<{x}}"
-            else:
-                fmt = "{:<{x}}: "
-            label = fmt.format(labels[i], x=data_obj.find_max_label_length())
-
-        values = data[i]
-        num_blocks = normal_dat[i]
-
-        if args.get("space_between") and i != 0:
-            print()
-
-        for j in range(len(values)):
-            # In Multiple series graph 1st category has label at the beginning,
-            # whereas the rest categories have only spaces.
-            if j > 0:
-                len_label = len(label)
-                label = " " * len_label
-            if args.get("label_before"):
-                fmt = "{}{}{}"
-            else:
-                fmt = " {}{}{}"
-
-            if args.get("no_values"):
-                tail = args["suffix"]
-            else:
-                if not args.get("no_readable"):
-                    val, deg = cvt_to_readable(values[j], args.get("percentage"))
-                    tail = fmt.format(args["format"].format(val), deg, args["suffix"])
-                else:
-                    tail = fmt.format(
-                        args["format"].format(values[j]), "", args["suffix"]
-                    )
-
-            if colors:
-                color = colors[j]
-            else:
-                color = None
-
-            if not args.get("label_before") and not args.get("vertical"):
-                print(label, end="")
-
-            yield (
-                values[j],
-                int(num_blocks[j]),
-                val_min,
-                color,
-                label,
-                tail,
-                args.get("label_before") and not args.get("vertical"),
-            )
-
-            if not args.get("label_before") and not args.get("vertical"):
-                print(tail)
-
-
-# Prints a row of the horizontal graph.
-def print_row(
-    value,
-    num_blocks: int,
-    val_min: float,
-    color: bool,
-    label: bool = False,
-    tail: bool = False,
-    doprint: bool = False,
-):
-    """A method to print a row for a horizontal graphs.
-    i.e:
-    1: ▇▇ 2
-    2: ▇▇▇ 3
-    3: ▇▇▇▇ 4
-    """
-    if doprint:
-        print(label, tail, " ", end="")
-
-    print_row_core(
-        value=value,
-        num_blocks=num_blocks,
-        val_min=val_min,
-        color=color,
-        zero_as_small_tick=doprint
-    )
-
-    if doprint:
-        print()
-
-
-
-
-# FIXME: globals for vertical, not ideal
-value_list, zipped_list, vertical_list, maxi = [], [], [], 0
-
-
-def vertically(value, num_blocks: int, val_min: int, color: bool, args: dict) -> list:
-    """Prepare the vertical graph.
-    The whole graph is printed through the print_vertical function."""
-    global maxi, value_list
-
-    value_list.append(str(value))
-
-    # In case the number of blocks at the end of the normalization is less
-    # than the default number, use the maxi variable to escape.
-    if maxi < num_blocks:
-        maxi = num_blocks
-
-    if num_blocks > 0:
-        vertical_list.append((TICK * num_blocks))
-    else:
-        vertical_list.append(SM_TICK)
-
-    # Zip_longest method in order to turn them vertically.
-    for row in zip_longest(*vertical_list, fillvalue=" "):
-        zipped_list.append(row)
-
-    counter, result_list = 0, []
-
-    # Combined with the maxi variable, escapes the appending method at
-    # the correct point or the default one (width).
-    for i in reversed(zipped_list):
-        result_list.append(i)
-        counter += 1
-
-        if maxi == args["width"]:
-            if counter == (args["width"]):
-                break
-        else:
-            if counter == maxi:
-                break
-
-    # Return a list of rows which will be used to print the result vertically.
-    return result_list
-
-
-def print_vertical(vertical_rows: list, labels: list, color: bool, args: dict) -> None:
-    """Print the whole vertical graph."""
-    if color:
-        sys.stdout.write(f"\033[{color}m")  # Start to write colorized.
-
-    for row in vertical_rows:
-        print(*row)
-
-    sys.stdout.write("\033[0m")  # End of printing colored
-
-    if not args["no_values"]:
-        print("-" * len(row) + "Values" + "-" * len(row))
-        for value in zip_longest(*value_list, fillvalue=" "):
-            print("  ".join(value))
-
-    if not args["no_labels"]:
-        print("-" * len(row) + "Labels" + "-" * len(row))
-        # Print Labels
-        for label in zip_longest(*labels, fillvalue=""):
-            print("  ".join(label))
-
-
 def chart(colors: list, data: list, args: dict, labels: list) -> None:
     """Handle the normalization of data and the printing of the graph."""
-    len_categories = len(data[0])
-    
-    # Simple bar chart case - use the BarChart class
-    if len_categories == 1 and not args["stacked"] and not args["histogram"] and not args["vertical"]:
-        # Convert CLI args dict to chart Args class, mapping incompatible keys
-        chart_args_dict = dict(args)
-        if "color" in chart_args_dict:
-            chart_args_dict["colors"] = chart_args_dict.pop("color")
-        
-        # Remove CLI-specific args that don't belong in chart Args
-        cli_only_args = ["filename", "delim", "verbose", "version"]
-        for cli_arg in cli_only_args:
-            chart_args_dict.pop(cli_arg, None)
-        
-        chart_args = Args(**chart_args_dict)
-        if colors:
-            chart_args.update_args(colors=colors)
-        
-        # Create Data object and chart
-        data_obj = Data(data, labels)
-        chart_obj: Chart = BarChart(data_obj, chart_args)
-        chart_obj.draw()
-        return
-    
-    # Complex cases still use the old procedural code until we can extend chart classes
-    if len_categories > 1:
-        # Stacked graph
-        if args["stacked"]:
-            # Convert CLI args dict to chart Args class, mapping incompatible keys
-            chart_args_dict = dict(args)
-            if "color" in chart_args_dict:
-                chart_args_dict["colors"] = chart_args_dict.pop("color")
-            
-            # Remove CLI-specific args that don't belong in chart Args
-            cli_only_args = ["filename", "delim", "verbose", "version"]
-            for cli_arg in cli_only_args:
-                chart_args_dict.pop(cli_arg, None)
-            
-            chart_args = Args(**chart_args_dict)
-            if colors:
-                chart_args.update_args(colors=colors)
-            
-            # Create Data object and chart
-            data_obj = Data(data, labels)
-            stacked_chart: Chart = StackedChart(data_obj, chart_args)
-            stacked_chart.draw()
-            return
+    # Convert CLI args dict to chart Args class, mapping incompatible keys
+    chart_args_dict = dict(args)
+    if "color" in chart_args_dict:
+        chart_args_dict["colors"] = chart_args_dict.pop("color")
 
-        if not colors:
-            colors = [None] * len_categories
+    # Remove CLI-specific args that don't belong in chart Args
+    cli_only_args = ["filename", "delim", "verbose", "version"]
+    for cli_arg in cli_only_args:
+        chart_args_dict.pop(cli_arg, None)
 
-        # Multiple series graph with different scales
-        # Normalization per category
-        if args["different_scale"]:
-            for i in range(len_categories):
-                cat_data = []
-                for dat in data:
-                    cat_data.append([dat[i]])
+    chart_args = Args(**chart_args_dict)
+    if colors:
+        chart_args.update_args(colors=colors)
 
-                # Normalize data, handle negatives.
-                normal_cat_data = normalize(cat_data, args["width"])
+    # Create Data object
+    data_obj = Data(data, labels)
 
-                # Generate data for a row.
-                for row in horiz_rows(
-                    labels, cat_data, normal_cat_data, args, [colors[i]]
-                ):
-                    # Print the row
-                    if args["vertical"]:
-                        # FIXME: passing args is getting complex
-                        vertic = vertically(row[0], row[1], row[2], row[3], args=args)
-                    else:
-                        print_row(*row)
-                        print("\n")
+    # Choose chart type
+    chart_obj: Chart
+    if args["stacked"]:
+        chart_obj = StackedChart(data_obj, chart_args)
+    elif args["histogram"]:
+        chart_obj = HistogramChart(data_obj, chart_args)
+    elif args["vertical"]:
+        chart_obj = VerticalChart(data_obj, chart_args)
+    else:
+        chart_obj = BarChart(data_obj, chart_args)
 
-                # The above gathers data for vertical and does not print
-                # the final print happens at once here
-                if args["vertical"]:
-                    print_vertical(vertic, labels, colors[i], args)
-
-                print()
-                value_list.clear()
-                zipped_list.clear()
-                vertical_list.clear()
-            return
-
-    if args["histogram"]:
-        if args["vertical"]:
-            print(">> Error: Vertical graph for Histogram is not supported yet.")
-            sys.exit(1)
-
-        # Convert CLI args dict to chart Args class, mapping incompatible keys
-        chart_args_dict = dict(args)
-        if "color" in chart_args_dict:
-            chart_args_dict["colors"] = chart_args_dict.pop("color")
-        
-        # Remove CLI-specific args that don't belong in chart Args
-        cli_only_args = ["filename", "delim", "verbose", "version"]
-        for cli_arg in cli_only_args:
-            chart_args_dict.pop(cli_arg, None)
-        
-        chart_args = Args(**chart_args_dict)
-        if colors:
-            chart_args.update_args(colors=colors)
-        
-        # Create Data object and chart
-        data_obj = Data(data, labels)
-        hist_chart: Chart = HistogramChart(data_obj, chart_args)
-        hist_chart.draw()
-        return
-
-    # One category/Multiple series graph with same scale
-    # All-together normalization
-    if not args["stacked"]:
-        normal_dat = normalize(data, args["width"])
-        sys.stdout.write("\033[0m")  # no color
-        for row in horiz_rows(labels, data, normal_dat, args, colors):
-            if not args["vertical"]:
-                print_row(*row)
-            else:
-                # FIXME: passing args is getting complex
-                vertic = vertically(row[0], row[1], row[2], row[3], args=args)
-
-        if args["vertical"] and len_categories == 1:
-            if colors:
-                color = colors[0]
-            else:
-                color = None
-
-            print_vertical(vertic, labels, color, args)
-
-        print()
+    chart_obj.draw()
 
 
 def check_data(labels: list, data: list, args: dict) -> list:
@@ -493,14 +216,6 @@ def check_data(labels: list, data: list, args: dict) -> list:
         else:
             for color in args["color"]:
                 colors.append(AVAILABLE_COLORS.get(color))
-
-    # Vertical graph for multiple series of same scale is not supported yet.
-    if args["vertical"] and len_categories > 1 and not args["different_scale"]:
-        print(
-            ">> Error: Vertical graph for multiple series of same "
-            "scale is not supported yet."
-        )
-        sys.exit(1)
 
     # If user hasn't inserted colors, pick the first n colors
     # from the dict (n = number of categories).
