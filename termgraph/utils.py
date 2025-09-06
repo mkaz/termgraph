@@ -26,7 +26,7 @@ def cvt_to_readable(num, percentage=False):
         index = math.floor(math.log(num) / math.log(1000))
 
         # Converts the number to the human readable format and returns it.
-        newNum = round(num / (1000 ** index), 3)
+        newNum = round(num / (1000**index), 3)
         newNum *= -1 if neg else 1
         degree = UNITS[index]
 
@@ -35,8 +35,6 @@ def cvt_to_readable(num, percentage=False):
         degree = UNITS[0]
 
     return (newNum, degree)
-
-
 
 
 def normalize(data: list, width: int) -> list:
@@ -77,7 +75,7 @@ def print_row_core(
     zero_as_small_tick: bool = False,
 ) -> None:
     """Core logic for printing a row of bars in horizontal graphs.
-    
+
     Args:
         value: The data value being displayed
         num_blocks: Number of blocks/ticks to print
@@ -87,9 +85,6 @@ def print_row_core(
         zero_as_small_tick: Additional condition for using small tick on zero
     """
     sys.stdout.write("\033[0m")  # no color
-    
-    if value == 0.0:
-        sys.stdout.write("\033[90m")  # dark gray
 
     if (num_blocks < 1 and (value > val_min or value > 0)) or (
         zero_as_small_tick and value == 0.0
