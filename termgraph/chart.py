@@ -3,11 +3,11 @@
 from __future__ import annotations
 import math
 import sys
-from typing import Union
+from typing import Union, List, Tuple
 from itertools import zip_longest
 import colorama
 from .constants import TICK, SM_TICK, AVAILABLE_COLORS
-from .utils import cvt_to_readable, normalize, print_row_core
+from .utils import cvt_to_readable, print_row_core
 from .data import Data
 from .args import Args
 
@@ -82,7 +82,6 @@ class Chart:
 
     def _print_header(self) -> None:
         title = self.args.get_arg("title")
-        has_header_content = title is not None or len(self.data.categories) > 0
 
         if title is not None:
             print(f"# {title}\n")
@@ -99,13 +98,15 @@ class Chart:
                     sys.stdout.write("\033[0m")  # Back to original.
 
             print("\n")
+        elif title is not None:
+            print()
 
     def _normalize(self) -> list[list[float]]:
         """Normalize the data and return it."""
         width = self.args.get_arg("width")
         if not isinstance(width, int):
             width = 50  # Default width
-        return normalize(self.data.data, width)
+        return self.data.normalize(width)
 
 
 class HorizontalChart(Chart):
@@ -172,16 +173,19 @@ class BarChart(HorizontalChart):
         """Normalize the data and return it."""
         if self.args.get_arg("different_scale"):
             # Normalization per category
-            normal_data = [[] for _ in range(len(self.data.data))]
+            normal_data: List[List[float]] = [[] for _ in range(len(self.data.data))]
             width = self.args.get_arg("width")
             if not isinstance(width, int):
                 width = 50  # Default width
 
-            if self.data.dims:
+            if self.data.dims and len(self.data.dims) > 1:
                 for i in range(self.data.dims[1]):
                     cat_data = [[dat[i]] for dat in self.data.data]
-
-                    normal_cat_data = normalize(cat_data, width)
+                    
+                    # Create temporary Data object for category data
+                    from .data import Data
+                    temp_data = Data(cat_data, [f"cat_{j}" for j in range(len(cat_data))])
+                    normal_cat_data = temp_data.normalize(width)
 
                     for row_idx, norm_val in enumerate(normal_cat_data):
                         normal_data[row_idx].append(norm_val[0])
@@ -349,7 +353,7 @@ class VerticalChart(Chart):
         """Initialize the vertical chart"""
         super().__init__(data, args)
         self.value_list: list[str] = []
-        self.zipped_list: list[tuple] = []
+        self.zipped_list: list[tuple[str, ...]] = []
         self.vertical_list: list[str] = []
         self.maxi = 0
 
@@ -382,7 +386,7 @@ class VerticalChart(Chart):
         for row in zip_longest(*self.vertical_list, fillvalue=" "):
             self.zipped_list.append(row)
 
-        result_list = []
+        result_list: List[Tuple[str, ...]] = []
 
         if self.zipped_list:
             counter = 0
@@ -392,8 +396,8 @@ class VerticalChart(Chart):
 
             # Combined with the maxi variable, escapes the appending method at
             # the correct point or the default one (width).
-            for i in reversed(self.zipped_list):
-                result_list.append(i)
+            for row in reversed(self.zipped_list):
+                result_list.append(row)
                 counter += 1
 
                 if self.maxi == width:
@@ -419,7 +423,8 @@ class VerticalChart(Chart):
             print("-" * len(result_list[0]) * 2)
             # Print Labels
             labels = self.data.labels
-            print("  ".join(labels))
+            if labels:
+                print("  ".join(labels))
 
 
 class HistogramChart(Chart):
@@ -487,7 +492,11 @@ class HistogramChart(Chart):
             width = width_arg
         else:
             width = 50  # default
-        normal_counts = normalize(count_list, width)
+        
+        # Create temporary Data object for count data
+        from .data import Data
+        temp_data = Data(count_list, [f"bin_{i}" for i in range(len(count_list))])
+        normal_counts = temp_data.normalize(width)
 
         for i, (start_border, end_border) in enumerate(zip(borders[:-1], borders[1:])):
             if colors and colors[0]:

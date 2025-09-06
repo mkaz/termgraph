@@ -1,4 +1,3 @@
-import pytest
 from termgraph.data import Data
 from termgraph.args import Args
 from termgraph.chart import BarChart, VerticalChart

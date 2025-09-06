@@ -1,20 +1,13 @@
-"""
-termgraph.py - draw basic graphs on terminal
-https://github.com/mkaz/termgraph
-"""
-
 from __future__ import annotations
 import argparse
 import sys
 from datetime import datetime, timedelta
-from itertools import zip_longest
 from colorama import init  # type: ignore
 import os
 import re
 import importlib.metadata
 
-from .constants import AVAILABLE_COLORS, DAYS, DELIM, TICK, SM_TICK
-from .utils import cvt_to_readable, normalize, print_row_core
+from .constants import AVAILABLE_COLORS, DAYS, DELIM, TICK
 from .data import Data
 from .args import Args
 from .chart import Chart, BarChart, StackedChart, HistogramChart, VerticalChart
@@ -22,6 +15,13 @@ from .chart import Chart, BarChart, StackedChart, HistogramChart, VerticalChart
 __version__ = importlib.metadata.version("termgraph")
 
 init()
+
+
+def normalize(data: list, width: int) -> list:
+    """Normalize the data and return it."""
+    # Create a temporary Data object and use its normalize method
+    temp_data = Data(data, [f"label_{i}" for i in range(len(data))])
+    return temp_data.normalize(width)
 
 
 def init_args() -> dict:
@@ -99,9 +99,8 @@ def init_args() -> dict:
     args = vars(parser.parse_args())
 
     if args["custom_tick"] != "":
-        global TICK, SM_TICK
+        global TICK
         TICK = args["custom_tick"]
-        SM_TICK = ""
 
     if args["delim"] != "":
         global DELIM
@@ -134,16 +133,16 @@ def chart(colors: list, data: list, args: dict, labels: list) -> None:
     chart_args_dict = dict(args)
     if "color" in chart_args_dict:
         chart_args_dict["colors"] = chart_args_dict.pop("color")
-
+    
     # Remove CLI-specific args that don't belong in chart Args
     cli_only_args = ["filename", "delim", "verbose", "version"]
     for cli_arg in cli_only_args:
         chart_args_dict.pop(cli_arg, None)
-
+    
     chart_args = Args(**chart_args_dict)
     if colors:
         chart_args.update_args(colors=colors)
-
+    
     # Create Data object
     data_obj = Data(data, labels)
 
@@ -157,7 +156,7 @@ def chart(colors: list, data: list, args: dict, labels: list) -> None:
         chart_obj = VerticalChart(data_obj, chart_args)
     else:
         chart_obj = BarChart(data_obj, chart_args)
-
+        
     chart_obj.draw()
 
 
@@ -247,7 +246,7 @@ def read_data(args: dict) -> tuple[list, list, list, list]:
     Data are inserted to a list of lists due to the categories.
 
     i.e.
-    labels = ['2001', '2002', '2003', ...]
+    labels = ['2001', '2002', '2003', ...] 
     categories = ['boys', 'girls']
     data = [ [20.4, 40.5], [30.7, 100.0], ...]"""
 
