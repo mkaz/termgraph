@@ -13,6 +13,38 @@ from .args import Args
 colorama.init()
 
 
+def format_value(value: Union[int, float], format_str_arg, percentage_arg, suffix_arg) -> str:
+    """Format a value consistently across chart types."""
+    # Handle type conversions and defaults
+    if format_str_arg is None or not isinstance(format_str_arg, str):
+        format_str = "{:<5.2f}"
+    else:
+        format_str = format_str_arg
+        
+    if percentage_arg is None or not isinstance(percentage_arg, bool):
+        percentage = False
+    else:
+        percentage = percentage_arg
+        
+    if suffix_arg is None or not isinstance(suffix_arg, str):
+        suffix = ""
+    else:
+        suffix = suffix_arg
+    
+    formatted_val = format_str.format(value)
+    
+    if percentage and "%" not in formatted_val:
+        try:
+            # Convert to percentage
+            numeric_value = float(formatted_val)
+            formatted_val = f"{numeric_value * 100:.0f}%"
+        except ValueError:
+            # If conversion fails, just add % suffix
+            formatted_val += "%"
+    
+    return f" {formatted_val}{suffix}"
+
+
 class Colors:
     """Class representing available color values for graphs."""
 
@@ -188,7 +220,7 @@ class BarChart(HorizontalChart):
                     if isinstance(format_str, str):
                         formatted_val = format_str.format(val)
                     else:
-                        formatted_val = "{:<5.2f}".format(val)  # Default format
+                        formatted_val = f"{val:<5.2f}"  # Default format
                     tail = fmt.format(
                         formatted_val,
                         deg,
@@ -249,7 +281,7 @@ class StackedChart(HorizontalChart):
                 # Hide the labels.
                 label = ""
             else:
-                label = "{:<{x}}: ".format(self.data.labels[i], x=self.data.find_max_label_length())
+                label = f"{self.data.labels[i]:<{self.data.find_max_label_length()}}: "
 
             if self.args.get_arg("space_between") and i != 0:
                 print()
@@ -272,22 +304,12 @@ class StackedChart(HorizontalChart):
                 # Hide the values.
                 tail = ""
             else:
-                format_str = self.args.get_arg("format")
-                if isinstance(format_str, str):
-                    formatted_sum = format_str.format(sum(values))
-                else:
-                    formatted_sum = "{:<5.2f}".format(sum(values))
-                if self.args.get_arg("percentage"):
-                    if "%" not in formatted_sum:
-                        try:
-                            # Convert to percentage
-                            numeric_value = float(formatted_sum)
-                            formatted_sum = f"{numeric_value * 100:.0f}%"
-                        except ValueError:
-                            # If conversion fails, just add % suffix
-                            formatted_sum += "%"
-                
-                tail = " {}{}".format(formatted_sum, self.args.get_arg("suffix"))
+                tail = format_value(
+                    sum(values), 
+                    self.args.get_arg("format"), 
+                    self.args.get_arg("percentage"), 
+                    self.args.get_arg("suffix")
+                )
             
             print(tail)
 
@@ -367,7 +389,7 @@ class HistogramChart(Chart):
 
             if not self.args.get_arg("no_labels"):
                 print(
-                    "{:{x}} – {:{x}}: ".format(start_border, end_border, x=max_len), end=""
+                    f"{start_border:{max_len}} – {end_border:{max_len}}: ", end=""
                 )
 
             num_blocks = normal_counts[i]
@@ -383,20 +405,10 @@ class HistogramChart(Chart):
             if self.args.get_arg("no_values"):
                 tail = ""
             else:
-                format_str = self.args.get_arg("format")
-                if isinstance(format_str, str):
-                    formatted_val = format_str.format(count_list[i][0])
-                else:
-                    formatted_val = "{:<5.2f}".format(count_list[i][0])
-                if self.args.get_arg("percentage"):
-                    if "%" not in formatted_val:
-                        try:
-                            # Convert to percentage
-                            numeric_value = float(formatted_val)
-                            formatted_val = f"{numeric_value * 100:.0f}%"
-                        except ValueError:
-                            # If conversion fails, just add % suffix
-                            formatted_val += "%"
-                
-                tail = " {}{}".format(formatted_val, self.args.get_arg("suffix"))
+                tail = format_value(
+                    count_list[i][0], 
+                    self.args.get_arg("format"), 
+                    self.args.get_arg("percentage"), 
+                    self.args.get_arg("suffix")
+                )
             print(tail)

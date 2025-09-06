@@ -284,9 +284,7 @@ def vertically(value, num_blocks: int, val_min: int, color: bool, args: dict) ->
 def print_vertical(vertical_rows: list, labels: list, color: bool, args: dict) -> None:
     """Print the whole vertical graph."""
     if color:
-        sys.stdout.write(
-            "\033[{color}m".format(color=color)
-        )  # Start to write colorized.
+        sys.stdout.write(f"\033[{color}m")  # Start to write colorized.
 
     for row in vertical_rows:
         print(*row)
@@ -542,7 +540,7 @@ def read_data(args: dict) -> tuple[list, list, list, list]:
     stdin = filename == "-"
 
     if args["verbose"]:
-        print(">> Reading data from {src}".format(src=("stdin" if stdin else filename)))
+        print(f">> Reading data from {('stdin' if stdin else filename)}")
 
     print("")
     if args["title"]:
@@ -579,11 +577,7 @@ def read_data(args: dict) -> tuple[list, list, list, list]:
                         data.append(labeled_row.data)
                         labels.append(labeled_row.label)
     except FileNotFoundError:
-        print(
-            ">> Error: The specified file [{fname}] does not exist.".format(
-                fname=filename
-            )
-        )
+        print(f">> Error: The specified file [{filename}] does not exist.")
         sys.exit()
     except IOError:
         print("An IOError has occurred!")
@@ -709,7 +703,7 @@ def calendar_heatmap(data: dict, labels: list, args: dict) -> None:
                 tick = " "
 
             if colornum:
-                sys.stdout.write("\033[{colornum}m".format(colornum=colornum))
+                sys.stdout.write(f"\033[{colornum}m")
 
             sys.stdout.write(tick)
             if colornum:
