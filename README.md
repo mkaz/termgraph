@@ -4,7 +4,7 @@ A command-line tool and Python library that draws basic graphs in the terminal.
 
 Graph types supported:
 - Bar Graphs
-- Color charts  
+- Color charts
 - Multi-variable
 - Stacked charts
 - Histograms
@@ -17,7 +17,7 @@ Graph types supported:
 ### Command Line Usage
 
 ```
-termgraph data/ex1.dat
+$ termgraph data/ex1.dat
 
 # Reading data from data/ex1.dat
 
@@ -38,7 +38,7 @@ from termgraph import Data, Args, BarChart
 # Create data
 data = Data([[10], [25], [50], [40]], ["Q1", "Q2", "Q3", "Q4"])
 
-# Configure chart options  
+# Configure chart options
 args = Args(
     title="Quarterly Sales",
     width=50,
@@ -56,24 +56,9 @@ Output:
 # Quarterly Sales
 
 Q1: ▇▇▇▇▇▇▇▇▇▇ 10K
-Q2: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 25K  
+Q2: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 25K
 Q3: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50K
 Q4: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 40K
-```
-
-For stacked charts with categories:
-
-```python  
-from termgraph import Data, Args, StackedChart
-
-# Multi-category data: [Desktop, Mobile] for each quarter
-data = Data([[20, 15], [25, 30], [35, 40], [30, 35]], 
-           ["Q1", "Q2", "Q3", "Q4"], 
-           categories=["Desktop", "Mobile"])
-
-args = Args(title="Sales by Platform", width=50, suffix="K")
-chart = StackedChart(data, args) 
-chart.draw()
 ```
 
 ## More Examples
@@ -97,44 +82,33 @@ termgraph data/ex1.dat --custom-tick "🏃" --width 20 --title "Running Data"
 
 ```
 
-
-An example using stdin and emoji:
-
-```
-echo "Label,3,9,1" | termgraph --custom-tick "😀" --no-label
-
-
-😀😀😀 3.00
-😀😀😀😀😀😀😀😀😀 9.00
-😀 1.00
-
-```
-
 ### Color Charts
 
-Most results can be copied and pasted wherever you like, since they use standard block characters. However the color charts will not show, since they use terminal escape codes for color. A couple images to show color examples:
+Note: Color charts use ANSI escape codes, so may not be able to copy/paste from terminal into other uses.
 
-```
-termgraph data/ex4.dat --color {blue,red}
-```
-
-<img src="https://user-images.githubusercontent.com/45363/43405623-1a2cc4d4-93cf-11e8-8c96-b7134d8986a2.png" width="655" alt="Multi variable bar chart with colors" />
-
-```
-termgraph data/ex7.dat --color {yellow,magenta} --stacked --title "Stacked Data"
+```bash
+$ termgraph data/ex4.dat --color {cyan/yellow} --space-between
 ```
 
-<img src="https://user-images.githubusercontent.com/45363/43405624-1a4a821c-93cf-11e8-84f3-f45c65b7ca98.png" width="686" alt="Multi variable stacked bar chart with colors" />
+![Bar chart with multiple variables](/docs/assets/barchart-multivar.svg)
+
+---
+
+```
+termgraph data/ex7.dat --color {green,magenta} --stacked
+```
+
+![Stacked Bar Chart](/docs/assets/barchart-stacked.svg)
 
 ### Calendar Heatmap
 
 Calendar Heatmap, expects first column to be date in yyyy-mm-dd
 
 ```
-termgraph --calendar --start-dt 2017-07-01 data/cal.dat
+$ termgraph --calendar --start-dt 2017-07-01 data/cal.dat
 ```
 
-<img src="https://user-images.githubusercontent.com/45363/43405619-1a15998a-93cf-11e8-8a3f-abfd2f6104a5.png" width="596" alt="Calendar Heatmap" />
+![Calendar Heatmap](/docs/assets/cal-heatmap.svg)
 
 
 
@@ -192,17 +166,17 @@ All chart types are available as classes:
 
 ```python
 from termgraph import (
-    Data, Args, 
+    Data, Args,
     BarChart, StackedChart, VerticalChart, HistogramChart
 )
 
 # Basic setup
-data = Data([[10], [20]], ["A", "B"])  
+data = Data([[10], [20]], ["A", "B"])
 args = Args(title="My Chart")
 
 # Choose your chart type
 chart = BarChart(data, args)        # Horizontal bars
-# chart = StackedChart(data, args)  # Stacked bars  
+# chart = StackedChart(data, args)  # Stacked bars
 # chart = VerticalChart(data, args) # Vertical bars
 # chart = HistogramChart(data, args) # Histogram
 
@@ -211,7 +185,7 @@ chart.draw()
 
 Available Args options:
 - `title`: Chart title
-- `width`: Width in characters (default: 50)  
+- `width`: Width in characters (default: 50)
 - `format`: Number format string (default: "{:<5.2f}")
 - `suffix`: Add suffix to all values
 - `no_labels`: Don't show labels
@@ -230,7 +204,7 @@ All contributions are welcome! For detailed information about the project struct
 
 **Quick Start:**
 - 🐛 **Bug reports** and 🚀 **feature requests**: Use [GitHub Issues](https://github.com/mkaz/termgraph/issues)
-- 🔧 **Code contributions**: See our [development workflow](CONTRIBUTING.md#development-workflow)  
+- 🔧 **Code contributions**: See our [development workflow](CONTRIBUTING.md#development-workflow)
 - 📚 **Documentation**: Help improve our guides and examples
 
 **Code Quality:** We use `ruff` for linting and formatting, `mypy` for type checking, and maintain comprehensive test coverage.
