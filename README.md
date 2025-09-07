@@ -1,19 +1,20 @@
 # Termgraph
 
-A command-line tool that draws basic graphs in the terminal, written in Python.
+A command-line tool and Python library that draws basic graphs in the terminal.
 
 Graph types supported:
-
 - Bar Graphs
-- Color charts
+- Color charts  
 - Multi-variable
 - Stacked charts
 - Histograms
 - Horizontal or Vertical
+- Calendar heatmaps
 - Emoji!
 
+## Quick Start
 
-### Examples
+### Command Line Usage
 
 ```
 termgraph data/ex1.dat
@@ -28,6 +29,56 @@ termgraph data/ex1.dat
 2012: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 212.05
 2014: ▏ 1.00
 ```
+
+### Python Module Usage
+
+```python
+from termgraph import Data, Args, BarChart
+
+# Create data
+data = Data([[10], [25], [50], [40]], ["Q1", "Q2", "Q3", "Q4"])
+
+# Configure chart options  
+args = Args(
+    title="Quarterly Sales",
+    width=50,
+    format="{:.0f}",
+    suffix="K"
+)
+
+# Create and display chart
+chart = BarChart(data, args)
+chart.draw()
+```
+
+Output:
+```
+# Quarterly Sales
+
+Q1: ▇▇▇▇▇▇▇▇▇▇ 10K
+Q2: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 25K  
+Q3: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50K
+Q4: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 40K
+```
+
+For stacked charts with categories:
+
+```python  
+from termgraph import Data, Args, StackedChart
+
+# Multi-category data: [Desktop, Mobile] for each quarter
+data = Data([[20, 15], [25, 30], [35, 40], [30, 35]], 
+           ["Q1", "Q2", "Q3", "Q4"], 
+           categories=["Desktop", "Mobile"])
+
+args = Args(title="Sales by Platform", width=50, suffix="K")
+chart = StackedChart(data, args) 
+chart.draw()
+```
+
+## More Examples
+
+### Custom Tick Marks
 
 An example using emoji as custom tick:
 
@@ -59,6 +110,8 @@ echo "Label,3,9,1" | termgraph --custom-tick "😀" --no-label
 
 ```
 
+### Color Charts
+
 Most results can be copied and pasted wherever you like, since they use standard block characters. However the color charts will not show, since they use terminal escape codes for color. A couple images to show color examples:
 
 ```
@@ -73,6 +126,7 @@ termgraph data/ex7.dat --color {yellow,magenta} --stacked --title "Stacked Data"
 
 <img src="https://user-images.githubusercontent.com/45363/43405624-1a4a821c-93cf-11e8-84f3-f45c65b7ca98.png" width="686" alt="Multi variable stacked bar chart with colors" />
 
+### Calendar Heatmap
 
 Calendar Heatmap, expects first column to be date in yyyy-mm-dd
 
@@ -84,17 +138,7 @@ termgraph --calendar --start-dt 2017-07-01 data/cal.dat
 
 
 
-### Install
-
-Requires Python 3.9+, install from [PyPI project](https://pypi.org/project/termgraph/)
-
-```
-python3 -m pip install termgraph
-```
-
-Note: Be sure your PATH includes the pypi install directory, for me it is `~/.local/bin/`
-
-### Usage
+## Usage
 
 #### Command Line Interface
 
@@ -105,38 +149,7 @@ Note: Be sure your PATH includes the pypi install directory, for me it is `~/.lo
 
 * Help: termgraph -h
 
-#### Programmatic API
-
-Termgraph can also be used as a Python library for creating charts programmatically:
-
-```python
-from termgraph import Data, Args, BarChart
-
-# Create data
-data = Data([[10], [25], [50], [40]], ["Q1", "Q2", "Q3", "Q4"])
-
-# Configure chart options  
-args = Args(
-    title="Quarterly Sales",
-    width=50,
-    format="{:.0f}",
-    suffix="K"
-)
-
-# Create and display chart
-chart = BarChart(data, args)
-chart.draw()
-```
-
-This produces:
-```
-# Quarterly Sales
-
-Q1: ▇▇▇▇▇▇▇▇▇▇ 10K
-Q2: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 25K  
-Q3: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 50K
-Q4: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 40K
-```
+#### Command Line Arguments
 
 ```
 usage: termgraph [-h] [options] [filename]
@@ -173,8 +186,39 @@ options:
   --version             Display version and exit
 ```
 
+### Python API
 
-### Background
+All chart types are available as classes:
+
+```python
+from termgraph import (
+    Data, Args, 
+    BarChart, StackedChart, VerticalChart, HistogramChart
+)
+
+# Basic setup
+data = Data([[10], [20]], ["A", "B"])  
+args = Args(title="My Chart")
+
+# Choose your chart type
+chart = BarChart(data, args)        # Horizontal bars
+# chart = StackedChart(data, args)  # Stacked bars  
+# chart = VerticalChart(data, args) # Vertical bars
+# chart = HistogramChart(data, args) # Histogram
+
+chart.draw()
+```
+
+Available Args options:
+- `title`: Chart title
+- `width`: Width in characters (default: 50)  
+- `format`: Number format string (default: "{:<5.2f}")
+- `suffix`: Add suffix to all values
+- `no_labels`: Don't show labels
+- `no_values`: Don't show values
+- `colors`: List of color names
+
+## Background
 
 I wanted a quick way to visualize data stored in a simple text file. I initially created some scripts in R that generated graphs but this was a two step process of creating the graph and then opening the generated graph.
 
