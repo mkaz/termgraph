@@ -119,6 +119,34 @@ class Data:
 
         return "\n".join(output)
 
+    def normalize(self, width: int) -> list:
+        """Normalize the data and return it."""
+        # We offset by the minimum if there's a negative.
+        data_offset = []
+        min_datum = min(value for sublist in self.data for value in sublist)
+        if min_datum < 0:
+            min_datum = abs(min_datum)
+            for datum in self.data:
+                data_offset.append([d + min_datum for d in datum])
+        else:
+            data_offset = self.data
+        min_datum = min(value for sublist in data_offset for value in sublist)
+        max_datum = max(value for sublist in data_offset for value in sublist)
+
+        if min_datum == max_datum:
+            return data_offset
+
+        # max_dat / width is the value for a single tick. norm_factor is the
+        # inverse of this value
+        # If you divide a number to the value of single tick, you will find how
+        # many ticks it does contain basically.
+        norm_factor = width / float(max_datum)
+        normal_data = []
+        for datum in data_offset:
+            normal_data.append([v * norm_factor for v in datum])
+
+        return normal_data
+
     def __repr__(self):
         return f"Data(data={self.data if len(str(self.data)) < 25 else str(self.data)[:25] + '...'}, labels={self.labels}, categories={self.categories})"
 

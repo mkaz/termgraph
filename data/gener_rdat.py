@@ -13,7 +13,7 @@ for offset in range(YEARS):
     date = BASE + offset
     value = random.randint(-500, 500)
 
-    f.write('{} {}\n'.format(date, int(value)))
+    f.write(f'{date} {int(value)}\n')
 f.close()
 
 

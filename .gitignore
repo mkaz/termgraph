@@ -1,15 +1,22 @@
+
+# OS
+.DS_Store
+
+# Python
 *.pyc
 venv/
-.vim/
-.vscode/
 .coverage
 htmlcov/
-dist/
-build/
+uv.lock
 termgraph.egg-info/
-.coverage
-htmlcov/
 .python-version
-.vimrc
+.ropeproject/
 
+# Editors
+.vim/
+.vimrc
+.vscode/
+.claude/
+.gemini/
 CLAUDE.md
+

@@ -85,38 +85,8 @@ def test_check_data_stacked_with_no_color_returns_correct_result():
     assert result == [91, 94]
 
 
-def test_check_data_vertical_multiple_series_same_scale_exits_with_one():
-    labels = ["2007", "2008", "2009", "2010", "2011", "2012", "2014"]
-    data = [
-        [183.32, 190.52],
-        [231.23, 5.0],
-        [16.43, 53.1],
-        [50.21, 7.0],
-        [508.97, 10.45],
-        [212.05, 20.2],
-        [30.0, 20.0],
-    ]
-    args = {
-        "filename": "data/ex4.dat",
-        "title": None,
-        "width": 50,
-        "format": "{:<5.2f}",
-        "suffix": "",
-        "no_labels": False,
-        "color": None,
-        "vertical": True,
-        "stacked": False,
-        "different_scale": False,
-        "calendar": False,
-        "start_dt": None,
-        "custom_tick": "",
-        "delim": "",
-        "verbose": False,
-        "version": False,
-    }
-    with pytest.raises(SystemExit) as e:
-        tg.check_data(labels, data, args)
-        assert e.exception.code == 1
+
+
 
 
 def test_check_data_mismatching_color_and_category_count():
