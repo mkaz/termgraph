@@ -183,7 +183,15 @@ chart = BarChart(data, args)        # Horizontal bars
 chart.draw()
 ```
 
-Available Args options:
+**📚 [Complete Python API Documentation](docs/)**
+
+For comprehensive examples, detailed API reference, and advanced usage patterns, see the complete documentation:
+- **[Getting Started Guide](docs/README.md)** - Examples and best practices
+- **[Data Class API](docs/data-class.md)** - Data preparation and validation
+- **[Chart Classes API](docs/chart-classes.md)** - All chart types with examples
+- **[Args Configuration](docs/args-class.md)** - Complete configuration options
+
+Quick Args options:
 - `title`: Chart title
 - `width`: Width in characters (default: 50)
 - `format`: Number format string (default: "{:<5.2f}")
