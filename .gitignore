@@ -3,20 +3,21 @@
 .DS_Store
 
 # Python
-*.pyc
-venv/
 .coverage
+dist/
 htmlcov/
-uv.lock
-termgraph.egg-info/
+*.pyc
 .python-version
 .ropeproject/
+termgraph.egg-info/
+uv.lock
+venv/
 
 # Editors
+.claude/
+CLAUDE.md
+.gemini/
 .vim/
 .vimrc
 .vscode/
-.claude/
-.gemini/
-CLAUDE.md
 

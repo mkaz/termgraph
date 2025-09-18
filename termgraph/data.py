@@ -1,7 +1,7 @@
 """Data class for termgraph - handles all data-related operations."""
 
 from __future__ import annotations
-from typing import Union
+from typing import Union, Optional
 
 
 class Data:
@@ -9,16 +9,24 @@ class Data:
 
     def __init__(
         self,
-        data: list,
-        labels: list[str],
+        data: Optional[list] = None,
+        labels: Optional[list[str]] = None,
         categories: Union[list[str], None] = None,
     ):
         """Initialize data
 
-        :labels: The labels of the data
         :data: The data to graph on the chart
+        :labels: The labels of the data
         :categories: The categories of the data
+
+        Can be called with positional or keyword arguments:
+        - Data([10, 20, 40, 26], ["Q1", "Q2", "Q3", "Q4"])
+        - Data(data=[10, 20, 40, 26], labels=["Q1", "Q2", "Q3", "Q4"])
+        - Data(labels=["Q1", "Q2", "Q3", "Q4"], data=[10, 20, 40, 26])
         """
+
+        if data is None or labels is None:
+            raise Exception("Both 'data' and 'labels' parameters are required")
 
         if len(data) != len(labels):
             raise Exception("The dimensions of the data and labels must be the same")
@@ -53,11 +61,23 @@ class Data:
 
     def find_min(self) -> Union[int, float]:
         """Return the minimum value in sublist of list."""
-        return min(value for sublist in self.data for value in sublist)
+        # Check if data is flat (list of numbers) or nested (list of lists)
+        is_flat = all(not isinstance(item, list) for item in self.data)
+
+        if is_flat:
+            return min(self.data)
+        else:
+            return min(value for sublist in self.data for value in sublist)
 
     def find_max(self) -> Union[int, float]:
         """Return the maximum value in sublist of list."""
-        return max(value for sublist in self.data for value in sublist)
+        # Check if data is flat (list of numbers) or nested (list of lists)
+        is_flat = all(not isinstance(item, list) for item in self.data)
+
+        if is_flat:
+            return max(self.data)
+        else:
+            return max(value for sublist in self.data for value in sublist)
 
     def find_min_label_length(self) -> int:
         """Return the minimum length for the labels."""
@@ -121,33 +141,52 @@ class Data:
 
     def normalize(self, width: int) -> list:
         """Normalize the data and return it."""
-        # We offset by the minimum if there's a negative.
-        data_offset = []
-        min_datum = min(value for sublist in self.data for value in sublist)
-        if min_datum < 0:
-            min_datum = abs(min_datum)
-            for datum in self.data:
-                data_offset.append([d + min_datum for d in datum])
+        # Check if data is flat (list of numbers) or nested (list of lists)
+        is_flat = all(not isinstance(item, list) for item in self.data)
+
+        if is_flat:
+            # Handle flat list data
+            min_datum = min(self.data)
+            if min_datum < 0:
+                min_datum = abs(min_datum)
+                data_offset = [d + min_datum for d in self.data]
+            else:
+                data_offset = self.data
+
+            min_datum = min(data_offset)
+            max_datum = max(data_offset)
+
+            if min_datum == max_datum:
+                return data_offset
+
+            norm_factor = width / float(max_datum)
+            return [v * norm_factor for v in data_offset]
         else:
-            data_offset = self.data
-        min_datum = min(value for sublist in data_offset for value in sublist)
-        max_datum = max(value for sublist in data_offset for value in sublist)
+            # Handle nested list data (original logic)
+            data_offset = []
+            min_datum = min(value for sublist in self.data for value in sublist)
+            if min_datum < 0:
+                min_datum = abs(min_datum)
+                for datum in self.data:
+                    data_offset.append([d + min_datum for d in datum])
+            else:
+                data_offset = self.data
+            min_datum = min(value for sublist in data_offset for value in sublist)
+            max_datum = max(value for sublist in data_offset for value in sublist)
 
-        if min_datum == max_datum:
-            return data_offset
+            if min_datum == max_datum:
+                return data_offset
 
-        # max_dat / width is the value for a single tick. norm_factor is the
-        # inverse of this value
-        # If you divide a number to the value of single tick, you will find how
-        # many ticks it does contain basically.
-        norm_factor = width / float(max_datum)
-        normal_data = []
-        for datum in data_offset:
-            normal_data.append([v * norm_factor for v in datum])
+            # max_dat / width is the value for a single tick. norm_factor is the
+            # inverse of this value
+            # If you divide a number to the value of single tick, you will find how
+            # many ticks it does contain basically.
+            norm_factor = width / float(max_datum)
+            normal_data = []
+            for datum in data_offset:
+                normal_data.append([v * norm_factor for v in datum])
 
-        return normal_data
+            return normal_data
 
     def __repr__(self):
         return f"Data(data={self.data if len(str(self.data)) < 25 else str(self.data)[:25] + '...'}, labels={self.labels}, categories={self.categories})"
-
-

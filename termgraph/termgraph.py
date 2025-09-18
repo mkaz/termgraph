@@ -17,8 +17,12 @@ __version__ = importlib.metadata.version("termgraph")
 init()
 
 
+# DEPRECATED: Use Data.normalize() directly instead
 def normalize(data: list, width: int) -> list:
-    """Normalize the data and return it."""
+    """Normalize the data and return it.
+
+    DEPRECATED: This function is deprecated. Use Data(data, labels).normalize(width) directly.
+    """
     # Create a temporary Data object and use its normalize method
     temp_data = Data(data, [f"label_{i}" for i in range(len(data))])
     return temp_data.normalize(width)
@@ -133,16 +137,16 @@ def chart(colors: list, data: list, args: dict, labels: list) -> None:
     chart_args_dict = dict(args)
     if "color" in chart_args_dict:
         chart_args_dict["colors"] = chart_args_dict.pop("color")
-    
+
     # Remove CLI-specific args that don't belong in chart Args
     cli_only_args = ["filename", "delim", "verbose", "version"]
     for cli_arg in cli_only_args:
         chart_args_dict.pop(cli_arg, None)
-    
+
     chart_args = Args(**chart_args_dict)
     if colors:
         chart_args.update_args(colors=colors)
-    
+
     # Create Data object
     data_obj = Data(data, labels)
 
@@ -156,7 +160,7 @@ def chart(colors: list, data: list, args: dict, labels: list) -> None:
         chart_obj = VerticalChart(data_obj, chart_args)
     else:
         chart_obj = BarChart(data_obj, chart_args)
-        
+
     chart_obj.draw()
 
 
@@ -246,7 +250,7 @@ def read_data(args: dict) -> tuple[list, list, list, list]:
     Data are inserted to a list of lists due to the categories.
 
     i.e.
-    labels = ['2001', '2002', '2003', ...] 
+    labels = ['2001', '2002', '2003', ...]
     categories = ['boys', 'girls']
     data = [ [20.4, 40.5], [30.7, 100.0], ...]"""
 
@@ -331,7 +335,7 @@ def _label_row(row: list[str], delim: str) -> _LabeledRow:
             data.append(datum)
             labelling = False
         else:
-            raise ValueError("Multiple labels not allowed: {labels}, {text}")
+            raise ValueError(f"Multiple labels not allowed: {labels}, {text}")
 
     if labels:
         label = delim.join(labels)

@@ -223,6 +223,15 @@ class BarChart(HorizontalChart):
             values = self.data.data[i]
             num_blocks = self.normal_data[i]
 
+            # Handle both flat data (numbers) and nested data (lists)
+            if not isinstance(values, list):
+                # Flat data: convert single value to list
+                values = [values]
+                if isinstance(num_blocks, list):
+                    num_blocks = num_blocks
+                else:
+                    num_blocks = [num_blocks]
+
             if self.args.get_arg("space_between") and i != 0:
                 print()
 
