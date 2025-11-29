@@ -189,7 +189,7 @@ class BarChart(HorizontalChart):
             if self.data.dims and len(self.data.dims) > 1:
                 for i in range(self.data.dims[1]):
                     cat_data = [[dat[i]] for dat in self.data.data]
-                    
+
                     # Create temporary Data object for category data
                     from .data import Data
                     temp_data = Data(cat_data, [f"cat_{j}" for j in range(len(cat_data))])
@@ -508,6 +508,11 @@ class HistogramChart(Chart):
                         count += 1
 
             count_list.append([count])
+
+        # Handle the case where the maximum value is exactly equal to the upper border
+        # Calculate total number of max values and add them to the last bin
+        count = sum(1 for row in self.data.data for v in row if v == class_max)
+        count_list[-1][0] += count
 
         width_arg = self.args.get_arg("width")
         if isinstance(width_arg, int):
