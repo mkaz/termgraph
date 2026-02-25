@@ -15,35 +15,52 @@ from .args import Args
 just_fix_windows_console()
 
 def format_value(
-    value: Union[int, float], format_str_arg, percentage_arg, suffix_arg
+    value: Union[int, float], args
 ) -> str:
     """Format a value consistently across chart types."""
     # Handle type conversions and defaults
+    format_str_arg = args.get_arg("format")
     if format_str_arg is None or not isinstance(format_str_arg, str):
         format_str = "{:<5.2f}"
     else:
         format_str = format_str_arg
 
+    percentage_arg = args.get_arg("percentage")
     if percentage_arg is None or not isinstance(percentage_arg, bool):
         percentage = False
     else:
         percentage = percentage_arg
 
+    suffix_arg = args.get_arg("suffix")
     if suffix_arg is None or not isinstance(suffix_arg, str):
         suffix = ""
     else:
         suffix = suffix_arg
 
+    no_values_arg = args.get_arg("no_values")
+    if no_values_arg is None or not isinstance(no_values_arg, bool):
+        no_values = False
+    else:
+        no_values = no_values_arg
+
+    # Initial format
     formatted_val = format_str.format(value)
 
-    if percentage and "%" not in formatted_val:
+    if no_values is True:
+        return ""
+    elif percentage and "%" not in formatted_val:
+        return ""
+    elif args.get_arg("percentage") and "%" not in formatted_val:
         try:
             # Convert to percentage
-            numeric_value = float(formatted_val)
-            formatted_val = f"{numeric_value * 100:.0f}%"
+            numeric_value = float(value)
+            formatted_val = format_str.format(numeric_value * 100) + "%"
         except ValueError:
             # If conversion fails, just add % suffix
             formatted_val += "%"
+    else:
+        val, deg = cvt_to_readable(value)
+        formatted_val = f"{format_str.format(val)}{deg}"
 
     return f" {formatted_val}{suffix}"
 
@@ -250,29 +267,14 @@ class BarChart(HorizontalChart):
                     len_label = len(label)
                     label = " " * len_label
 
+                tail = format_value(
+                    values[j],
+                    self.args
+                )
+
                 if self.args.get_arg("label_before"):
-                    fmt = "{}{}{}"
-
-                else:
-                    fmt = " {}{}{}"
-
-                if self.args.get_arg("no_values"):
-                    tail = self.args.get_arg("suffix")
-
-                else:
-                    val, deg = cvt_to_readable(
-                        values[j], self.args.get_arg("percentage")
-                    )
-                    format_str = self.args.get_arg("format")
-                    if isinstance(format_str, str):
-                        formatted_val = format_str.format(val)
-                    else:
-                        formatted_val = f"{val:<5.2f}"  # Default format
-                    tail = fmt.format(
-                        formatted_val,
-                        deg,
-                        self.args.get_arg("suffix"),
-                    )
+                    # remove leading " " from format_value
+                    tail = tail.lstrip()
 
                 if colors and isinstance(colors, list) and j < len(colors):
                     color = colors[j]
@@ -354,15 +356,9 @@ class StackedChart(HorizontalChart):
                     tick=tick,
                 )
 
-            if self.args.get_arg("no_values"):
-                # Hide the values.
-                tail = ""
-            else:
                 tail = format_value(
                     sum(values),
-                    self.args.get_arg("format"),
-                    self.args.get_arg("percentage"),
-                    self.args.get_arg("suffix"),
+                    self.args
                 )
 
             print(tail)
@@ -381,7 +377,7 @@ class VerticalChart(Chart):
 
     def _prepare_vertical(self, value: float, num_blocks: int):
         """Prepare the vertical graph data."""
-        self.value_list.append(str(value))
+        self.value_list.append(format_value(value, self.args))
 
         if self.maxi < num_blocks:
             self.maxi = num_blocks
@@ -549,13 +545,8 @@ class HistogramChart(Chart):
                 tick=tick,
             )
 
-            if self.args.get_arg("no_values"):
-                tail = ""
-            else:
-                tail = format_value(
-                    count_list[i][0],
-                    self.args.get_arg("format"),
-                    self.args.get_arg("percentage"),
-                    self.args.get_arg("suffix"),
-                )
+            tail = format_value(
+                count_list[i][0],
+                self.args
+            )
             print(tail)

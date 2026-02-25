@@ -6,7 +6,7 @@ import sys
 from .constants import UNITS, TICK, SM_TICK
 
 
-def cvt_to_readable(num, percentage=False):
+def cvt_to_readable(num):
     """Return the number in a human readable format.
 
     Examples:
@@ -14,10 +14,6 @@ def cvt_to_readable(num, percentage=False):
         12550 -> (12.55, 'K')
         19561100 -> (19.561, 'M')
     """
-
-    if percentage:
-        return (num * 100, '%')
-
     if num >= 1 or num <= -1:
         neg = num < 0
         num = abs(num)
