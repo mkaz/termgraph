@@ -1,6 +1,6 @@
 from termgraph.data import Data
 from termgraph.args import Args
-from termgraph.chart import BarChart, StackedChart, VerticalChart
+from termgraph.chart import BarChart, StackedChart, VerticalChart, HistogramChart
 
 def test_barchart_draws_correctly():
     labels = ["2007", "2008", "2009", "2010", "2011", "2012", "2014"]
@@ -56,22 +56,30 @@ def test_custom_tick_appears_in_output():
     data = Data(data_values, labels)
     args = Args(custom_tick="😀")
 
-    chart = BarChart(data, args)
+    def test(ChartType):
+        chart = ChartType(data, args)
 
-    import io
-    from contextlib import redirect_stdout
+        import io
+        from contextlib import redirect_stdout
 
-    f = io.StringIO()
-    with redirect_stdout(f):
-        chart.draw()
-    output = f.getvalue()
+        f = io.StringIO()
+        with redirect_stdout(f):
+            chart.draw()
+        output = f.getvalue()
 
-    # Assert that the custom tick appears in the output
-    assert "😀" in output
+        # Assert that the custom tick appears in the output
+        assert "😀" in output
 
-def run_for_all_charts(func):
+    run_for_all_charts(test, with_histo=True)
+
+def run_for_all_charts(func, with_histo=False):
     """ Runs a test function with all chart types, HistogramChart is optional as data format works differently there"""
-    for chart in [BarChart, StackedChart, VerticalChart]:
+    charts = [BarChart, StackedChart, VerticalChart]
+
+    if with_histo:
+        charts.append(HistogramChart)
+
+    for chart in charts:
         print(f"running {func.__name__} for {chart.__name__}")
         func(chart)
 
