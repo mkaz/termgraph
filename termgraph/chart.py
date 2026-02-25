@@ -37,6 +37,12 @@ def format_value(
     else:
         suffix = suffix_arg
 
+    no_readable_arg = args.get_arg("no_readable")
+    if no_readable_arg is None or not isinstance(no_readable_arg, bool):
+        no_readable = False
+    else:
+        no_readable = no_readable_arg
+
     no_values_arg = args.get_arg("no_values")
     if no_values_arg is None or not isinstance(no_values_arg, bool):
         no_values = False
@@ -58,7 +64,7 @@ def format_value(
         except ValueError:
             # If conversion fails, just add % suffix
             formatted_val += "%"
-    else:
+    elif no_readable is False:
         val, deg = cvt_to_readable(value)
         formatted_val = f"{format_str.format(val)}{deg}"
 
