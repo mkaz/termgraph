@@ -18,43 +18,12 @@ def format_value(
     value: Union[int, float], args
 ) -> str:
     """Format a value consistently across chart types."""
-    # Handle type conversions and defaults
-    format_str_arg = args.get_arg("format")
-    if format_str_arg is None or not isinstance(format_str_arg, str):
-        format_str = "{:<5.2f}"
-    else:
-        format_str = format_str_arg
-
-    percentage_arg = args.get_arg("percentage")
-    if percentage_arg is None or not isinstance(percentage_arg, bool):
-        percentage = False
-    else:
-        percentage = percentage_arg
-
-    suffix_arg = args.get_arg("suffix")
-    if suffix_arg is None or not isinstance(suffix_arg, str):
-        suffix = ""
-    else:
-        suffix = suffix_arg
-
-    no_readable_arg = args.get_arg("no_readable")
-    if no_readable_arg is None or not isinstance(no_readable_arg, bool):
-        no_readable = False
-    else:
-        no_readable = no_readable_arg
-
-    no_values_arg = args.get_arg("no_values")
-    if no_values_arg is None or not isinstance(no_values_arg, bool):
-        no_values = False
-    else:
-        no_values = no_values_arg
+    format_str = args.get_arg("format")
 
     # Initial format
     formatted_val = format_str.format(value)
 
-    if no_values is True:
-        return ""
-    elif percentage and "%" not in formatted_val:
+    if args.get_arg("no_values") is True:
         return ""
     elif args.get_arg("percentage") and "%" not in formatted_val:
         try:
@@ -64,10 +33,11 @@ def format_value(
         except ValueError:
             # If conversion fails, just add % suffix
             formatted_val += "%"
-    elif no_readable is False:
+    elif args.get_arg("no_readable") is False:
         val, deg = cvt_to_readable(value)
         formatted_val = f"{format_str.format(val)}{deg}"
 
+    suffix = args.get_arg("suffix")
     return f" {formatted_val}{suffix}"
 
 
