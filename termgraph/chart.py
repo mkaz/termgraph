@@ -15,36 +15,29 @@ from .args import Args
 just_fix_windows_console()
 
 def format_value(
-    value: Union[int, float], format_str_arg, percentage_arg, suffix_arg
+    value: Union[int, float], args
 ) -> str:
     """Format a value consistently across chart types."""
-    # Handle type conversions and defaults
-    if format_str_arg is None or not isinstance(format_str_arg, str):
-        format_str = "{:<5.2f}"
-    else:
-        format_str = format_str_arg
+    format_str = args.get_arg("format")
 
-    if percentage_arg is None or not isinstance(percentage_arg, bool):
-        percentage = False
-    else:
-        percentage = percentage_arg
-
-    if suffix_arg is None or not isinstance(suffix_arg, str):
-        suffix = ""
-    else:
-        suffix = suffix_arg
-
+    # Initial format
     formatted_val = format_str.format(value)
 
-    if percentage and "%" not in formatted_val:
+    if args.get_arg("no_values") is True:
+        return ""
+    elif args.get_arg("percentage") and "%" not in formatted_val:
         try:
             # Convert to percentage
-            numeric_value = float(formatted_val)
-            formatted_val = f"{numeric_value * 100:.0f}%"
+            numeric_value = float(value)
+            formatted_val = format_str.format(numeric_value * 100) + "%"
         except ValueError:
             # If conversion fails, just add % suffix
             formatted_val += "%"
+    elif args.get_arg("no_readable") is False:
+        val, deg = cvt_to_readable(value)
+        formatted_val = f"{format_str.format(val)}{deg}"
 
+    suffix = args.get_arg("suffix")
     return f" {formatted_val}{suffix}"
 
 
@@ -75,6 +68,10 @@ class Chart:
         self.args = args
         self.normal_data = self._normalize()
 
+        # Get custom tick if set, otherwise use default TICK
+        custom_tick = self.args.get_arg("custom_tick")
+        self.tick = custom_tick if isinstance(custom_tick, str) and custom_tick else TICK
+
     def draw(self) -> None:
         """Draw the chart with the given data"""
 
@@ -82,9 +79,6 @@ class Chart:
 
     def _print_header(self) -> None:
         title = self.args.get_arg("title")
-
-        custom_tick = self.args.get_arg("custom_tick")
-        tick = custom_tick if isinstance(custom_tick, str) and custom_tick else TICK
 
         if title is not None:
             print("")
@@ -98,7 +92,7 @@ class Chart:
                 if colors is not None and isinstance(colors, list):
                     sys.stdout.write(f"\033[{colors[i]}m")  # Start to write colorized.
 
-                sys.stdout.write(f"{tick} {self.data.categories[i]} ")
+                sys.stdout.write(f"{self.tick} {self.data.categories[i]} ")
                 if colors:
                     sys.stdout.write("\033[0m")  # Back to original.
 
@@ -147,9 +141,6 @@ class HorizontalChart(Chart):
         if doprint:
             print(label, tail, " ", end="")
 
-        # Get custom tick if set, otherwise use default TICK
-        custom_tick = self.args.get_arg("custom_tick")
-        tick = custom_tick if isinstance(custom_tick, str) and custom_tick else TICK
 
         print_row_core(
             value=float(value),
@@ -157,7 +148,7 @@ class HorizontalChart(Chart):
             val_min=float(val_min),
             color=color,
             zero_as_small_tick=bool(self.args.get_arg("label_before")),
-            tick=tick,
+            tick=self.tick,
         )
 
         if doprint:
@@ -250,29 +241,14 @@ class BarChart(HorizontalChart):
                     len_label = len(label)
                     label = " " * len_label
 
+                tail = format_value(
+                    values[j],
+                    self.args
+                )
+
                 if self.args.get_arg("label_before"):
-                    fmt = "{}{}{}"
-
-                else:
-                    fmt = " {}{}{}"
-
-                if self.args.get_arg("no_values"):
-                    tail = self.args.get_arg("suffix")
-
-                else:
-                    val, deg = cvt_to_readable(
-                        values[j], self.args.get_arg("percentage")
-                    )
-                    format_str = self.args.get_arg("format")
-                    if isinstance(format_str, str):
-                        formatted_val = format_str.format(val)
-                    else:
-                        formatted_val = f"{val:<5.2f}"  # Default format
-                    tail = fmt.format(
-                        formatted_val,
-                        deg,
-                        self.args.get_arg("suffix"),
-                    )
+                    # remove leading " " from format_value
+                    tail = tail.lstrip()
 
                 if colors and isinstance(colors, list) and j < len(colors):
                     color = colors[j]
@@ -325,10 +301,6 @@ class StackedChart(HorizontalChart):
         val_min = self.data.find_min()
         normal_data = self._normalize()
 
-        # Get custom tick if set, otherwise use default TICK
-        custom_tick = self.args.get_arg("custom_tick")
-        tick = custom_tick if isinstance(custom_tick, str) and custom_tick else TICK
-
         for i in range(len(self.data.labels)):
             if self.args.get_arg("no_labels"):
                 # Hide the labels.
@@ -351,18 +323,12 @@ class StackedChart(HorizontalChart):
                     val_min=val_min,
                     color=colors[j] if j < len(colors) else None,
                     zero_as_small_tick=False,
-                    tick=tick,
+                    tick=self.tick,
                 )
 
-            if self.args.get_arg("no_values"):
-                # Hide the values.
-                tail = ""
-            else:
                 tail = format_value(
                     sum(values),
-                    self.args.get_arg("format"),
-                    self.args.get_arg("percentage"),
-                    self.args.get_arg("suffix"),
+                    self.args
                 )
 
             print(tail)
@@ -381,13 +347,13 @@ class VerticalChart(Chart):
 
     def _prepare_vertical(self, value: float, num_blocks: int):
         """Prepare the vertical graph data."""
-        self.value_list.append(str(value))
+        self.value_list.append(format_value(value, self.args))
 
         if self.maxi < num_blocks:
             self.maxi = num_blocks
 
         if num_blocks > 0:
-            self.vertical_list.append((TICK * num_blocks))
+            self.vertical_list.append((self.tick * num_blocks))
         else:
             self.vertical_list.append(SM_TICK)
 
@@ -525,10 +491,6 @@ class HistogramChart(Chart):
         temp_data = Data(count_list, [f"bin_{i}" for i in range(len(count_list))])
         normal_counts = temp_data.normalize(width)
 
-        # Get custom tick if set, otherwise use default TICK
-        custom_tick = self.args.get_arg("custom_tick")
-        tick = custom_tick if isinstance(custom_tick, str) and custom_tick else TICK
-
         for i, (start_border, end_border) in enumerate(zip(borders[:-1], borders[1:])):
             if colors and colors[0]:
                 color = colors[0]
@@ -546,16 +508,11 @@ class HistogramChart(Chart):
                 val_min=0,  # Histogram always starts from 0
                 color=color,
                 zero_as_small_tick=False,
-                tick=tick,
+                tick=self.tick,
             )
 
-            if self.args.get_arg("no_values"):
-                tail = ""
-            else:
-                tail = format_value(
-                    count_list[i][0],
-                    self.args.get_arg("format"),
-                    self.args.get_arg("percentage"),
-                    self.args.get_arg("suffix"),
-                )
+            tail = format_value(
+                count_list[i][0],
+                self.args
+            )
             print(tail)
