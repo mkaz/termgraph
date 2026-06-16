@@ -65,7 +65,7 @@ def print_row_core(
         sys.stdout.write(SM_TICK)
     else:
         if color:
-            sys.stdout.write(f"\033[{color}m")  # Start to write colorized.
+            sys.stdout.write(f"\033[38;5;{color}m")  # Start to write colorized.
         for _ in range(num_blocks):
             sys.stdout.write(tick)
 
