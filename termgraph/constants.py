@@ -15,13 +15,13 @@ DELIM = ","
 TICK = "▇"
 SM_TICK = "▏"
 
-# ANSI escape SGR Parameters color codes
+# ANSI color codes for 256-color mode
 AVAILABLE_COLORS = {
-    "red": 91,
-    "blue": 94,
-    "green": 92,
-    "magenta": 95,
-    "yellow": 93,
-    "black": 90,
-    "cyan": 96,
+    "red": 9,
+    "blue": 12,
+    "green": 10,
+    "magenta": 13,
+    "yellow": 11,
+    "black": 0,
+    "cyan": 14,
 }

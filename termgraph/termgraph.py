@@ -3,9 +3,8 @@ import argparse
 import sys
 from datetime import datetime, timedelta
 from colorama import just_fix_windows_console
-import os
-import re
 import importlib.metadata
+from typing import NoReturn
 
 from .constants import AVAILABLE_COLORS, DAYS
 from .data import Data
@@ -146,7 +145,7 @@ def chart(data_obj: Data, args: dict, colors: list) -> None:
     chart_obj.draw()
 
 
-def _extract_colors(data_obj: Data, args: dict) -> list:
+def _extract_colors(data_obj: Data, args: dict) -> list[int]:
     """Extract and validate colors from args based on data dimensions.
 
     Args:
@@ -156,7 +155,7 @@ def _extract_colors(data_obj: Data, args: dict) -> list:
     Returns:
         List of color codes for each category
     """
-    colors = []
+    colors: list[int] = []
 
     # Determine number of categories from data dimensions
     if data_obj.dims and len(data_obj.dims) > 1:
@@ -165,34 +164,12 @@ def _extract_colors(data_obj: Data, args: dict) -> list:
         len_categories = 1
 
     # If user inserts colors, they should be as many as the categories.
-    if args.get("color") is not None:
-        # Decompose arguments for Windows
-        if os.name == "nt":
-            colorargs = re.findall(r"[a-z]+", args["color"][0])
-            if len(colorargs) != len_categories:
-                print(">> Error: Color and category array sizes don't match")
-            for color in colorargs:
-                if color not in AVAILABLE_COLORS:
-                    print(
-                        ">> Error: invalid color. choose from 'red', 'blue', 'green', 'magenta', 'yellow', 'black', 'cyan'"
-                    )
-                    sys.exit(2)
-        else:
-            if len(args["color"]) != len_categories:
-                print(">> Error: Color and category array sizes don't match")
-            for color in args["color"]:
-                if color not in AVAILABLE_COLORS:
-                    print(
-                        ">> Error: invalid color. choose from 'red', 'blue', 'green', 'magenta', 'yellow', 'black', 'cyan'"
-                    )
-                    sys.exit(2)
+    raw_colors = args.get("color")
+    if raw_colors is not None:
+        if len(raw_colors) != len_categories:
+            print(">> Error: Color and category array sizes don't match")
 
-        if os.name == "nt":
-            for color in colorargs:
-                colors.append(AVAILABLE_COLORS.get(color))
-        else:
-            for color in args["color"]:
-                colors.append(AVAILABLE_COLORS.get(color))
+        colors = [_validate_color(color) for color in raw_colors]
 
     # If user hasn't inserted colors, pick the first n colors
     # from the dict (n = number of categories).
@@ -200,6 +177,37 @@ def _extract_colors(data_obj: Data, args: dict) -> list:
         colors = [v for v in list(AVAILABLE_COLORS.values())[:len_categories]]
 
     return colors
+
+
+def _invalid_color_error() -> NoReturn:
+    """Print the standard invalid-color message and exit."""
+    print(
+        ">> Error:  invalid color. choose from 'red', 'blue', 'green', 'magenta', 'yellow', 'black', 'cyan', or a 256-color ANSI code (0-255)"
+    )
+    sys.exit(2)
+
+
+def _validate_color(color: str) -> int:
+    """Validate a single color value and return its ANSI code.
+
+    A color is valid if it is either a name found in AVAILABLE_COLORS
+    (e.g. "red") or a 256-color ANSI code in the range 0-255 (passed as
+    a string). Anything else exits the program with
+    error 2.
+    """
+    if color in AVAILABLE_COLORS:
+        return AVAILABLE_COLORS[color]
+
+    try:
+        code = int(color)
+    except Exception:
+        _invalid_color_error()
+
+    if 0 <= code <= 255:
+        return code
+
+    _invalid_color_error()
+
 
 def read_data(args: dict) -> tuple[list, list, list, list]:
     """Read data from a file or stdin and returns it.
@@ -224,10 +232,7 @@ def read_data(args: dict) -> tuple[list, list, list, list]:
 
 def calendar_heatmap(data: dict, labels: list, args: dict) -> None:
     """Print a calendar heatmap."""
-    if args["color"]:
-        colornum = AVAILABLE_COLORS.get(args["color"][0])
-    else:
-        colornum = AVAILABLE_COLORS.get("blue")
+    colornum = _validate_color(args["color"][0]) if args["color"] else AVAILABLE_COLORS["blue"]
 
     dt_dict = {}
     for i in range(len(labels)):

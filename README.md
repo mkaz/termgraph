@@ -198,7 +198,7 @@ Quick Args options:
 - `suffix`: Add suffix to all values
 - `no_labels`: Don't show labels
 - `no_values`: Don't show values
-- `colors`: List of color names
+- `colors`: List of color names or ANSI color codes
 
 ## Background
 

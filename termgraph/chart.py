@@ -90,7 +90,7 @@ class Chart:
             # Print categories' names above the graph.
             for i in range(len(self.data.categories)):
                 if colors is not None and isinstance(colors, list):
-                    sys.stdout.write(f"\033[{colors[i]}m")  # Start to write colorized.
+                    sys.stdout.write(f"\033[38;5;{colors[i]}m")  # Start to write colorized.
 
                 sys.stdout.write(f"{self.tick} {self.data.categories[i]} ")
                 if colors:
@@ -396,7 +396,7 @@ class VerticalChart(Chart):
                         break
 
         if color:
-            sys.stdout.write(f"\033[{color}m")
+            sys.stdout.write(f"\033[38;5;{color}m")
 
         for row in result_list:
             print(*row)
