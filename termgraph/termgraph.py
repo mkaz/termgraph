@@ -200,7 +200,7 @@ def _validate_color(color: str) -> int:
 
     try:
         code = int(color)
-    except ValueError:
+    except Exception:
         _invalid_color_error()
 
     if 0 <= code <= 255:
