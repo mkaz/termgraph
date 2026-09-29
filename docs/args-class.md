@@ -35,6 +35,21 @@ args = Args(width=80)  # Wide chart
 args = Args(width=30)  # Narrow chart
 ```
 
+#### `scale` (float, default: None)
+Fixed units represented by one tick in horizontal, stacked, and vertical bar
+charts. Unlike automatic scaling, this does not depend on the dataset maximum.
+It overrides `width` without clipping bars, rounds positive values up to whole
+ticks, and leaves zero as zero. Stacked segments round independently.
+
+```python
+args = Args(scale=4)  # 6 -> 2 ticks, 12 -> 3 ticks
+```
+
+The scale must be positive and finite. The data must be finite and non-negative;
+negative values are not offset because that would change the baseline between
+runs. `different_scale`, histograms, and calendar heatmaps are not supported
+with a fixed scale. Omitting `scale` preserves automatic scaling.
+
 ### Chart Appearance
 
 #### `title` (str, default: None)
@@ -209,7 +224,7 @@ args = Args(verbose=True)  # Show debug information
 
 ## Methods
 
-### `get_arg(arg: str) -> Union[int, str, bool, None]`
+### `get_arg(arg: str) -> Union[int, float, str, bool, None]`
 Get the value of a specific argument.
 
 ```python
@@ -359,6 +374,7 @@ default_args = {
     "filename": "-",
     "title": None,
     "width": 50,
+    "scale": None,
     "format": "{:<5.2f}",
     "suffix": "",
     "no_labels": False,
