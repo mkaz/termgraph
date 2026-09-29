@@ -63,6 +63,30 @@ Q4: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇�
 
 ## More Examples
 
+### Fixed Scale
+
+Use `--scale` to compare charts across multiple runs without changing the
+number of units represented by each tick:
+
+```bash
+printf 'A 6\nB 12\n' | termgraph --scale 4 --format '{:g}'
+```
+
+```text
+A: ▇▇ 6
+B: ▇▇▇ 12
+```
+
+Each tick represents up to four units. Positive values round up to a whole
+tick and zero draws no bar. The scale must be positive and finite, and the
+data must be finite and non-negative. `--scale` overrides `--width` without
+clipping bars. It supports horizontal, stacked, and vertical bar charts;
+stacked segments round independently. It cannot be combined with
+`--different-scale`, `--histogram`, or `--calendar`.
+
+The same option is available in Python: `BarChart(data, Args(scale=4)).draw()`.
+Omitting it keeps the existing automatic scaling.
+
 ### Custom Tick Marks
 
 An example using emoji as custom tick:
@@ -137,6 +161,7 @@ options:
   -h, --help            show this help message and exit
   --title TITLE         Title of graph
   --width WIDTH         width of graph in characters default:50
+  --scale SCALE         fixed units per tick for non-negative bar charts; overrides --width
   --format FORMAT       format specifier to use.
   --suffix SUFFIX       string to add as a suffix to all data points.
   --no-labels           Do not print the label column
@@ -194,6 +219,7 @@ For comprehensive examples, detailed API reference, and advanced usage patterns,
 Quick Args options:
 - `title`: Chart title
 - `width`: Width in characters (default: 50)
+- `scale`: Fixed units per tick for non-negative bar charts (default: None)
 - `format`: Number format string (default: "{:<5.2f}")
 - `suffix`: Add suffix to all values
 - `no_labels`: Don't show labels

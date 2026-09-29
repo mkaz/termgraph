@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import importlib.metadata
+import math
 import os
 import re
 import sys
@@ -20,6 +21,17 @@ __version__ = importlib.metadata.version("termgraph")
 just_fix_windows_console()
 
 
+def _positive_scale(value: str) -> float:
+    """Parse the fixed number of units represented by one tick."""
+    try:
+        scale = float(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError("scale must be a positive finite number") from None
+    if not math.isfinite(scale) or scale <= 0:
+        raise argparse.ArgumentTypeError("scale must be a positive finite number")
+    return scale
+
+
 def init_args() -> dict:
     """Parse and return the arguments."""
     parser = argparse.ArgumentParser(description="draw basic graphs on terminal")
@@ -32,6 +44,10 @@ def init_args() -> dict:
     parser.add_argument("--title", help="Title of graph")
     parser.add_argument(
         "--width", type=int, default=50, help="width of graph in characters default:50"
+    )
+    parser.add_argument(
+        "--scale", type=_positive_scale,
+        help="fixed units per tick for non-negative bar charts; overrides --width",
     )
     parser.add_argument("--format", default="{:<5.2f}", help="format specifier to use.")
     parser.add_argument(
@@ -93,6 +109,11 @@ def init_args() -> dict:
 
     args = vars(parser.parse_args())
 
+    if args["scale"] is not None:
+        for option in ("different_scale", "histogram", "calendar"):
+            if args[option]:
+                parser.error(f"--scale cannot be used with --{option.replace('_', '-')}")
+
     return args
 
 
@@ -124,11 +145,17 @@ def _run():
     data_obj = Data.from_file(args["filename"], args)
     colors = _extract_colors(data_obj, args)
 
-    if args["calendar"]:
-        # calendar_heatmap still uses old interface
-        calendar_heatmap(data_obj.data, data_obj.labels, args)
-    else:
-        chart(data_obj, args, colors)
+    try:
+        if args["calendar"]:
+            # calendar_heatmap still uses old interface
+            calendar_heatmap(data_obj.data, data_obj.labels, args)
+        else:
+            chart(data_obj, args, colors)
+    except ValueError as exc:
+        if args.get("scale") is None:
+            raise
+        print(f">> Error: {exc}", file=sys.stderr)
+        sys.exit(2)
 
 
 def chart(data_obj: Data, args: dict, colors: list) -> None:
