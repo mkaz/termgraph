@@ -60,6 +60,10 @@ build-backend = "hatchling.build"
 [tool.ruff]
 target-version = "py39"
 
+[tool.ruff.lint]
+# Preserve the rule set used before Ruff expanded its defaults.
+select = ["E4", "E7", "E9", "F"]
+
 # Pytest configuration
 [tool.pytest.ini_options]
 minversion = "8.4"
@@ -72,4 +76,3 @@ markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
 ]
-

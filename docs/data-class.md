@@ -83,8 +83,9 @@ print(data.find_max_label_length())  # Output: 3
 
 ### Data Normalization
 
-#### `normalize(width: int) -> list`
-Normalizes data values to fit within the specified width for chart rendering.
+#### `normalize(width: int, scale: float | None = None) -> list`
+Normalizes data values to fit within the specified width for chart rendering,
+or uses a fixed number of units per tick when `scale` is provided.
 
 ```python
 # Flat data normalization
@@ -99,10 +100,19 @@ print(normalized)  # [[11.43, 17.14], [22.86, 28.57], [34.29, 40.0]]
 ```
 
 The normalize method:
-- Handles negative values by offsetting all data
-- Scales values proportionally to the target width
+- Without a fixed scale, handles negative values by offsetting all data
+- Without a fixed scale, scales values proportionally to the target width
 - Preserves relative relationships between data points
 - Works with both flat and nested data structures
+
+For fixed scaling, `width` is ignored and positive values round up to whole
+ticks. `scale` must be a positive finite number; data must be finite and
+non-negative. Neither mode mutates the input data.
+
+```python
+data = Data([[6], [12]], ["A", "B"])
+print(data.normalize(50, scale=4))  # [[2], [3]]
+```
 
 ## Properties
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 from typing import Union
 import sys
+import math
 from .constants import DELIM
 
 
@@ -218,10 +219,38 @@ class Data:
 
         return "\n".join(output)
 
-    def normalize(self, width: int) -> list:
-        """Normalize the data and return it."""
+    def normalize(self, width: int, scale: float | None = None) -> list:
+        """Normalize data to width, or to a fixed number of units per tick.
+
+        A fixed scale ignores width and rounds positive values up to a whole
+        tick. It requires finite, non-negative data and does not offset values.
+        """
         # Check if data is flat (list of numbers) or nested (list of lists)
         is_flat = all(not isinstance(item, list) for item in self.data)
+
+        if scale is not None:
+            if (
+                isinstance(scale, bool)
+                or not isinstance(scale, (int, float))
+                or (isinstance(scale, float) and not math.isfinite(scale))
+                or scale <= 0
+            ):
+                raise ValueError("scale must be a positive finite number")
+
+            def scaled_value(value: float) -> int:
+                if (isinstance(value, float) and not math.isfinite(value)) or value < 0:
+                    raise ValueError("scale requires finite non-negative data")
+                try:
+                    blocks = value / scale
+                except OverflowError:
+                    raise ValueError("scaled value is too large") from None
+                if not math.isfinite(blocks):
+                    raise ValueError("scaled value is too large")
+                return max(1, math.ceil(blocks)) if value > 0 else 0
+
+            if is_flat:
+                return [scaled_value(value) for value in self.data]
+            return [[scaled_value(value) for value in row] for row in self.data]
 
         if is_flat:
             # Handle flat list data

@@ -11,6 +11,7 @@ class Args:
         "filename": "-",
         "title": None,
         "width": 50,
+        "scale": None,
         "format": "{:<5.2f}",
         "suffix": "",
         "no_labels": False,
@@ -43,7 +44,7 @@ class Args:
             else:
                 raise Exception(f"Invalid Argument: {arg}")
 
-    def get_arg(self, arg: str) -> Union[int, str, bool, None]:
+    def get_arg(self, arg: str) -> Union[int, float, str, bool, None]:
         """Returns the value for the argument given.
 
         :arg: The name of the argument.
