@@ -359,6 +359,10 @@ class VerticalChart(Chart):
 
     def draw(self) -> None:
         """Draws the vertical chart"""
+        self.value_list.clear()
+        self.zipped_list.clear()
+        self.vertical_list.clear()
+        self.maxi = 0
         self._print_header()
 
         colors = self.args.get_arg("colors")
