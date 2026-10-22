@@ -6,8 +6,17 @@ from termgraph import termgraph as tg
 def test_init_args():
     tg.init_args()
 
-@pytest.mark.parametrize("rows,width", [(1, 10), (300, 1000)])
-def test_cli_closed_stdout_pipe(tmp_path, rows, width):
+
+@pytest.mark.parametrize(
+    "rows,options",
+    [
+        (1, ["--width", "10"]),
+        (300, ["--width", "1000"]),
+        (1, ["--version"]),
+        (1, ["--help"]),
+    ],
+)
+def test_cli_closed_stdout_pipe(tmp_path, rows, options):
     """Exercise interpreter shutdown too, not only errors raised inside draw."""
     import os
     import subprocess
@@ -20,8 +29,7 @@ def test_cli_closed_stdout_pipe(tmp_path, rows, width):
     os.close(read_fd)
     try:
         result = subprocess.run(
-            [sys.executable, "-m", "termgraph.termgraph", str(data_file),
-             "--width", str(width)],
+            [sys.executable, "-m", "termgraph.termgraph", str(data_file), *options],
             check=False,
             stdout=write_fd,
             stderr=subprocess.PIPE,
