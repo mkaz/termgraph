@@ -112,8 +112,16 @@ def main():
             calendar_heatmap(data_obj.data, data_obj.labels, args)
         else:
             chart(data_obj, args, colors)
+        # Buffered output can fail only at shutdown unless it is flushed here.
+        sys.stdout.flush()
     except BrokenPipeError:
-        pass
+        # Avoid another failed flush during interpreter shutdown.
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        try:
+            os.dup2(devnull, sys.stdout.fileno())
+        finally:
+            os.close(devnull)
+        raise SystemExit(1) from None
 
 
 def chart(data_obj: Data, args: dict, colors: list) -> None:
