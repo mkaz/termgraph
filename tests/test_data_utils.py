@@ -1,4 +1,5 @@
 import pytest
+
 from termgraph.data import Data
 
 
@@ -35,7 +36,7 @@ def test_data_empty_labels_raises_exception():
     """Test that Data raises exception when labels list is empty"""
     labels = []
     data = [[183.32], [231.23]]
-    with pytest.raises(Exception, match="No labels provided"):
+    with pytest.raises(ValueError, match="No labels provided"):
         Data(data, labels)
 
 
@@ -43,7 +44,7 @@ def test_data_empty_data_raises_exception():
     """Test that Data raises exception when data list is empty"""
     labels = ["2007", "2008"]
     data = []
-    with pytest.raises(Exception, match="No data provided"):
+    with pytest.raises(ValueError, match="No data provided"):
         Data(data, labels)
 
 
@@ -51,7 +52,7 @@ def test_data_mismatching_data_and_labels_count_raises_exception():
     """Test that Data raises exception when data and labels have different lengths"""
     labels = ["2007", "2008", "2009", "2010", "2011", "2012", "2014"]
     data = [[183.32], [231.23], [16.43], [50.21], [508.97], [212.05]]
-    with pytest.raises(Exception, match="dimensions of the data and labels must be the same"):
+    with pytest.raises(ValueError, match="dimensions of the data and labels must be the same"):
         Data(data, labels)
 
 
@@ -67,5 +68,5 @@ def test_data_missing_values_for_categories_raises_exception():
         [212.05],  # Missing second category
         [30.0, 20.0],
     ]
-    with pytest.raises(Exception, match="inner dimensions of the data are different"):
+    with pytest.raises(ValueError, match="inner dimensions of the data are different"):
         Data(data, labels)

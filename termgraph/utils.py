@@ -1,9 +1,11 @@
 """Shared utility functions for termgraph."""
 
 from __future__ import annotations
+
 import math
 import sys
-from .constants import UNITS, TICK, SM_TICK
+
+from .constants import SM_TICK, TICK, UNITS
 
 
 def cvt_to_readable(num):

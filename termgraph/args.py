@@ -1,13 +1,14 @@
 """Args class for termgraph - handles chart configuration options."""
 
 from __future__ import annotations
-from typing import Union
+
+from typing import ClassVar
 
 
 class Args:
     """Class representing the arguments to modify the graph."""
 
-    default = {
+    default: ClassVar[dict[str, int | str | bool | None]] = {
         "filename": "-",
         "title": None,
         "width": 50,
@@ -32,7 +33,7 @@ class Args:
         "no_readable": False,
     }
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         """Initialize the Args object."""
 
         self.args = dict(self.default)
@@ -41,9 +42,9 @@ class Args:
             if arg in self.args:
                 self.args[arg] = value
             else:
-                raise Exception(f"Invalid Argument: {arg}")
+                raise ValueError(f"Invalid Argument: {arg}")
 
-    def get_arg(self, arg: str) -> Union[int, str, bool, None]:
+    def get_arg(self, arg: str) -> int | str | bool | None:
         """Returns the value for the argument given.
 
         :arg: The name of the argument.
@@ -54,7 +55,7 @@ class Args:
         if arg in self.args:
             return self.args[arg]
         else:
-            raise Exception(f"Invalid Argument: {arg}")
+            raise ValueError(f"Invalid Argument: {arg}")
 
     def update_args(self, **kwargs) -> None:
         """Updates the arguments"""
@@ -63,4 +64,4 @@ class Args:
             if arg in self.args:
                 self.args[arg] = value
             else:
-                raise Exception(f"Invalid Argument: {arg}")
+                raise ValueError(f"Invalid Argument: {arg}")

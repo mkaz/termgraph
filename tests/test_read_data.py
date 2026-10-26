@@ -1,6 +1,7 @@
 import tempfile
-from unittest.mock import patch
 from io import StringIO
+from unittest.mock import patch
+
 from termgraph import termgraph as tg
 
 
@@ -66,7 +67,7 @@ label three 9 10 11
         """
         )
         tmp.seek(0)
-        categories, labels, data, colors = tg.read_data(args)
+        _categories, labels, data, _colors = tg.read_data(args)
         assert labels == ["label one", "label two", "label three"]
         assert data == [[1.0, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]]
 
@@ -100,7 +101,7 @@ def test_labels_at_end_of_row():
         """
         )
         tmp.seek(0)
-        categories, labels, data, colors = tg.read_data(args)
+        _categories, labels, data, _colors = tg.read_data(args)
         assert labels == ["A", "B", "C"]
         assert data == [[1.0, 2.0, 3.0], [5.0, 6.0, 7.0], [9.0, 10.0, 11.0]]
 

@@ -1,6 +1,39 @@
-from termgraph.data import Data
+import pytest
+
 from termgraph.args import Args
-from termgraph.chart import BarChart, StackedChart, VerticalChart, HistogramChart
+from termgraph.chart import (
+    BarChart,
+    Chart,
+    HistogramChart,
+    HorizontalChart,
+    StackedChart,
+    VerticalChart,
+)
+from termgraph.data import Data
+
+
+@pytest.mark.parametrize(
+    "chart_type", [HorizontalChart, BarChart, StackedChart, VerticalChart, HistogramChart]
+)
+def test_default_chart_args_are_independent(chart_type: type[Chart]) -> None:
+    data = Data([[1], [2]], ["A", "B"])
+    first = chart_type(data)
+    second = chart_type(data)
+
+    first.args.update_args(no_values=True)
+
+    assert second.args.get_arg("no_values") is False
+    assert first.args is not second.args
+
+
+@pytest.mark.parametrize(
+    "chart_type", [HorizontalChart, BarChart, StackedChart, VerticalChart, HistogramChart]
+)
+def test_chart_preserves_explicit_args(chart_type: type[Chart]) -> None:
+    args = Args(width=10)
+    chart = chart_type(Data([[1], [2]], ["A", "B"]), args)
+
+    assert chart.args is args
 
 def test_barchart_draws_correctly():
     labels = ["2007", "2008", "2009", "2010", "2011", "2012", "2014"]

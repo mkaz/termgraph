@@ -1,6 +1,6 @@
-from termgraph.data import Data
 from termgraph.args import Args
-from termgraph.chart import BarChart, HistogramChart, Colors
+from termgraph.chart import BarChart, Colors, HistogramChart
+from termgraph.data import Data
 
 # Original Bar Chart
 print("--- Simple Bar Chart ---")

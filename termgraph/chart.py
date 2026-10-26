@@ -1,24 +1,27 @@
 """Chart classes for termgraph - handles chart rendering and display."""
 
 from __future__ import annotations
+
 import math
 import sys
-from typing import Union, List, Tuple
 from itertools import zip_longest
+from typing import cast
+
 from colorama import just_fix_windows_console
-from .constants import TICK, SM_TICK, AVAILABLE_COLORS
-from .utils import cvt_to_readable, print_row_core
-from .data import Data
+
 from .args import Args
+from .constants import AVAILABLE_COLORS, SM_TICK, TICK
+from .data import Data
+from .utils import cvt_to_readable, print_row_core
 
 # colorama
 just_fix_windows_console()
 
 def format_value(
-    value: Union[int, float], args
+    value: float, args: Args
 ) -> str:
     """Format a value consistently across chart types."""
-    format_str = args.get_arg("format")
+    format_str = cast(str, args.get_arg("format"))
 
     # Initial format
     formatted_val = format_str.format(value)
@@ -56,7 +59,7 @@ class Colors:
 class Chart:
     """Class representing a chart"""
 
-    def __init__(self, data: Data, args: Args):
+    def __init__(self, data: Data, args: Args | None) -> None:
         """Initialize the chart
 
         :data: The data to be displayed on the chart
@@ -65,7 +68,7 @@ class Chart:
         """
 
         self.data = data
-        self.args = args
+        self.args = args if args is not None else Args()
         self.normal_data = self._normalize()
 
         # Get custom tick if set, otherwise use default TICK
@@ -81,7 +84,7 @@ class Chart:
         title = self.args.get_arg("title")
 
         if title is not None:
-            print("")
+            print()
             print(f"# {title}\n")
 
         if len(self.data.categories) > 0:
@@ -109,7 +112,7 @@ class Chart:
 class HorizontalChart(Chart):
     """Class representing a horizontal chart"""
 
-    def __init__(self, data: Data, args: Args = Args()):
+    def __init__(self, data: Data, args: Args | None = None) -> None:
         """Initialize the chart
 
         :data: The data to be displayed on the chart
@@ -121,10 +124,10 @@ class HorizontalChart(Chart):
 
     def print_row(
         self,
-        value: Union[int, float],
-        num_blocks: Union[int, float],
-        val_min: Union[int, float],
-        color: Union[int, None],
+        value: float,
+        num_blocks: float,
+        val_min: float,
+        color: int | None,
         label: str = "",
         tail: str = "",
     ) -> None:
@@ -158,7 +161,7 @@ class HorizontalChart(Chart):
 class BarChart(HorizontalChart):
     """Class representing a bar chart"""
 
-    def __init__(self, data: Data, args: Args = Args()):
+    def __init__(self, data: Data, args: Args | None = None) -> None:
         """Initialize the bar chart
 
         :data: The data to be displayed on the chart
@@ -172,7 +175,7 @@ class BarChart(HorizontalChart):
         """Normalize the data and return it."""
         if self.args.get_arg("different_scale"):
             # Normalization per category
-            normal_data: List[List[float]] = [[] for _ in range(len(self.data.data))]
+            normal_data: list[list[float]] = [[] for _ in range(len(self.data.data))]
             width = self.args.get_arg("width")
             if not isinstance(width, int):
                 width = 50  # Default width
@@ -226,9 +229,7 @@ class BarChart(HorizontalChart):
             if not isinstance(values, list):
                 # Flat data: convert single value to list
                 values = [values]
-                if isinstance(num_blocks, list):
-                    num_blocks = num_blocks
-                else:
+                if not isinstance(num_blocks, list):
                     num_blocks = [num_blocks]
 
             if self.args.get_arg("space_between") and i != 0:
@@ -278,7 +279,7 @@ class BarChart(HorizontalChart):
 class StackedChart(HorizontalChart):
     """Class representing a stacked bar chart"""
 
-    def __init__(self, data: Data, args: Args = Args()):
+    def __init__(self, data: Data, args: Args | None = None) -> None:
         """Initialize the stacked chart
 
         :data: The data to be displayed on the chart
@@ -337,7 +338,7 @@ class StackedChart(HorizontalChart):
 class VerticalChart(Chart):
     """Class representing a vertical chart"""
 
-    def __init__(self, data: Data, args: Args = Args()):
+    def __init__(self, data: Data, args: Args | None = None) -> None:
         """Initialize the vertical chart"""
         super().__init__(data, args)
         self.value_list: list[str] = []
@@ -345,15 +346,14 @@ class VerticalChart(Chart):
         self.vertical_list: list[str] = []
         self.maxi = 0
 
-    def _prepare_vertical(self, value: float, num_blocks: int):
+    def _prepare_vertical(self, value: float, num_blocks: int) -> None:
         """Prepare the vertical graph data."""
         self.value_list.append(format_value(value, self.args))
 
-        if self.maxi < num_blocks:
-            self.maxi = num_blocks
+        self.maxi = max(self.maxi, num_blocks)
 
         if num_blocks > 0:
-            self.vertical_list.append((self.tick * num_blocks))
+            self.vertical_list.append(self.tick * num_blocks)
         else:
             self.vertical_list.append(SM_TICK)
 
@@ -374,19 +374,17 @@ class VerticalChart(Chart):
         for row in zip_longest(*self.vertical_list, fillvalue=" "):
             self.zipped_list.append(row)
 
-        result_list: List[Tuple[str, ...]] = []
+        result_list: list[tuple[str, ...]] = []
 
         if self.zipped_list:
-            counter = 0
             width = self.args.get_arg("width")
             if not isinstance(width, int):
                 width = 50  # Default width
 
             # Combined with the maxi variable, escapes the appending method at
             # the correct point or the default one (width).
-            for row in reversed(self.zipped_list):
+            for counter, row in enumerate(reversed(self.zipped_list), start=1):
                 result_list.append(row)
-                counter += 1
 
                 if self.maxi == width:
                     if counter == width:
@@ -418,7 +416,7 @@ class VerticalChart(Chart):
 class HistogramChart(Chart):
     """Class representing a histogram chart"""
 
-    def __init__(self, data: Data, args: Args = Args()):
+    def __init__(self, data: Data, args: Args | None = None) -> None:
         """Initialize the histogram chart
 
         :data: The data to be displayed on the chart
@@ -457,8 +455,7 @@ class HistogramChart(Chart):
         for b in range(bins_count + 1):
             borders.append(border)
             len_border = len(str(border))
-            if len_border > max_len:
-                max_len = len_border
+            max_len = max(max_len, len_border)
             border += class_width
             border = round(border, 1)
 

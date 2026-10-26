@@ -1,4 +1,4 @@
-from termgraph import Data, Args, BarChart
+from termgraph import Args, BarChart, Data
 
 # Create data
 data = Data(

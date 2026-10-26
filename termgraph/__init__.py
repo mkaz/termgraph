@@ -1,4 +1,4 @@
-__all__ = ["main", "Data", "Args", "Colors", "Chart", "HorizontalChart", "BarChart", "StackedChart", "VerticalChart", "HistogramChart"]
+__all__ = ["Args", "BarChart", "Chart", "Colors", "Data", "HistogramChart", "HorizontalChart", "StackedChart", "VerticalChart", "main"]
 
 def __getattr__(name):
     if name == "main":
@@ -13,6 +13,14 @@ def __getattr__(name):
             from .args import Args
             return Args
         elif name in ["Colors", "Chart", "HorizontalChart", "BarChart", "StackedChart", "VerticalChart", "HistogramChart"]:
-            from .chart import Colors, Chart, HorizontalChart, BarChart, StackedChart, VerticalChart, HistogramChart
+            from .chart import (
+                BarChart,
+                Chart,
+                Colors,
+                HistogramChart,
+                HorizontalChart,
+                StackedChart,
+                VerticalChart,
+            )
             return {"Colors": Colors, "Chart": Chart, "HorizontalChart": HorizontalChart, "BarChart": BarChart, "StackedChart": StackedChart, "VerticalChart": VerticalChart, "HistogramChart": HistogramChart}[name]
     raise AttributeError(f"module '{__name__}' has no attribute '{name}'")

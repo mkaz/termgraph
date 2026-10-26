@@ -1,8 +1,10 @@
 """Data class for termgraph - handles all data-related operations."""
 
 from __future__ import annotations
-from typing import Union
+
 import sys
+from pathlib import Path
+
 from .constants import DELIM
 
 
@@ -13,7 +15,7 @@ class Data:
         self,
         data: list,
         labels: list[str],
-        categories: Union[list[str], None] = None,
+        categories: list[str] | None = None,
     ):
         """Initialize data
 
@@ -28,16 +30,16 @@ class Data:
         """
 
         if data is None or labels is None:
-            raise Exception("Both 'data' and 'labels' parameters are required")
+            raise ValueError("Both 'data' and 'labels' parameters are required")
 
         if not labels:
-            raise Exception("No labels provided")
+            raise ValueError("No labels provided")
 
         if not data:
-            raise Exception("No data provided")
+            raise ValueError("No data provided")
 
         if len(data) != len(labels):
-            raise Exception("The dimensions of the data and labels must be the same")
+            raise ValueError("The dimensions of the data and labels must be the same")
 
         self.labels = labels
         self.data = data
@@ -78,14 +80,11 @@ class Data:
         labels: list[str] = []
         data: list = []
 
-        f = None
-
         try:
-            f = sys.stdin if stdin else open(filename, "r")
-            for line in f:
-                line = line.strip()
-                if line:
-                    if not line.startswith("#"):
+            with (sys.stdin if stdin else Path(filename).open()) as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#"):
                         # Line contains categories.
                         if line.startswith("@"):
                             cols = line.split(delim)
@@ -106,26 +105,23 @@ class Data:
         except FileNotFoundError:
             print(f">> Error: The specified file [{filename}] does not exist.")
             sys.exit()
-        except IOError:
+        except OSError:
             print("An IOError has occurred!")
             sys.exit()
-        finally:
-            if f is not None:
-                f.close()
 
         return cls(data, labels, categories)
 
-    def _find_dims(self, data, labels, dims=None) -> Union[tuple[int], None]:
+    def _find_dims(self, data, labels, dims=None) -> tuple[int] | None:
         if dims is None:
             dims = []
-        if all([isinstance(data[i], list) for i in range(len(data))]):
+        if all(isinstance(data[i], list) for i in range(len(data))):
             last = None
 
             for i in range(len(data)):
                 curr = self._find_dims(data[i], labels[i], dims + [len(data)])
 
                 if i != 0 and last != curr:
-                    raise Exception(
+                    raise ValueError(
                         f"The inner dimensions of the data are different\nThe dimensions of {data[i - 1]} is different than the dimensions of {data[i]}"
                     )
 
@@ -138,7 +134,7 @@ class Data:
 
         return tuple(dims)
 
-    def find_min(self) -> Union[int, float]:
+    def find_min(self) -> int | float:
         """Return the minimum value in sublist of list."""
         # Check if data is flat (list of numbers) or nested (list of lists)
         is_flat = all(not isinstance(item, list) for item in self.data)
@@ -148,7 +144,7 @@ class Data:
         else:
             return min(value for sublist in self.data for value in sublist)
 
-    def find_max(self) -> Union[int, float]:
+    def find_max(self) -> int | float:
         """Return the maximum value in sublist of list."""
         # Check if data is flat (list of numbers) or nested (list of lists)
         is_flat = all(not isinstance(item, list) for item in self.data)

@@ -1,16 +1,18 @@
 from __future__ import annotations
+
 import argparse
-import sys
-from datetime import datetime, timedelta
-from colorama import just_fix_windows_console
+import importlib.metadata
 import os
 import re
-import importlib.metadata
+import sys
+from datetime import datetime, timedelta
 
+from colorama import just_fix_windows_console
+
+from .args import Args
+from .chart import BarChart, Chart, HistogramChart, StackedChart, VerticalChart
 from .constants import AVAILABLE_COLORS, DAYS
 from .data import Data
-from .args import Args
-from .chart import Chart, BarChart, StackedChart, HistogramChart, VerticalChart
 
 __version__ = importlib.metadata.version("termgraph")
 
@@ -85,10 +87,9 @@ def init_args() -> dict:
         "--percentage", action="store_true", help="Display the number in percentage"
     )
 
-    if len(sys.argv) == 1:
-        if sys.stdin.isatty():
-            parser.print_usage()
-            sys.exit(2)
+    if len(sys.argv) == 1 and sys.stdin.isatty():
+        parser.print_usage()
+        sys.exit(2)
 
     args = vars(parser.parse_args())
 
