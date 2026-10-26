@@ -97,6 +97,23 @@ def init_args() -> dict:
 
 def main():
     """Main function."""
+    try:
+        try:
+            _run()
+        finally:
+            # Flush even when argument parsing exits for --help or --version.
+            sys.stdout.flush()
+    except BrokenPipeError:
+        # Avoid another failed flush during interpreter shutdown.
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        try:
+            os.dup2(devnull, sys.stdout.fileno())
+        finally:
+            os.close(devnull)
+        raise SystemExit(1) from None
+
+
+def _run():
     args = init_args()
 
     if args["version"]:
@@ -106,14 +123,11 @@ def main():
     data_obj = Data.from_file(args["filename"], args)
     colors = _extract_colors(data_obj, args)
 
-    try:
-        if args["calendar"]:
-            # calendar_heatmap still uses old interface
-            calendar_heatmap(data_obj.data, data_obj.labels, args)
-        else:
-            chart(data_obj, args, colors)
-    except BrokenPipeError:
-        pass
+    if args["calendar"]:
+        # calendar_heatmap still uses old interface
+        calendar_heatmap(data_obj.data, data_obj.labels, args)
+    else:
+        chart(data_obj, args, colors)
 
 
 def chart(data_obj: Data, args: dict, colors: list) -> None:
