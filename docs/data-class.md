@@ -35,6 +35,37 @@ The constructor validates that:
 
 ## Methods
 
+### File and standard-input parsing
+
+`Data.from_file(filename, args)` reads a file, or standard input when `filename`
+is `"-"`. The CLI uses the same parser. For example:
+
+```python
+data = Data.from_file("counts.dat", {"delim": ","})
+```
+
+By default, a row containing commas is split on commas; otherwise it is split on
+whitespace. The CLI's `--delim` option, or the `delim` entry in `args`, selects a
+different delimiter. Leading and trailing whitespace around fields is stripped.
+
+A text label can appear before or after its numeric values. These two rows both
+describe `update settings` with a value of `2`:
+
+```text
+update settings,2
+2,update settings
+```
+
+Whitespace-separated `2 update settings` also works: consecutive non-numeric
+fields form the label. This supports piping `sort | uniq -c` output directly to
+`termgraph`, without a `--values-first` flag.
+
+Fields that can be converted to a number are treated as values, so `2 HTTP 404`
+would describe `HTTP` with two values, `2` and `404`. Use `2,HTTP 404` to keep the
+text and number together as a single label field. If every field is numeric, the
+first field is used as the label and the remaining fields are values: `404,2`
+means label `404`, value `2`, not the reverse.
+
 ### Data Statistics
 
 #### `find_min() -> Union[int, float]`

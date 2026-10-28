@@ -100,6 +100,25 @@ termgraph data/ex7.dat --color {green,magenta} --stacked
 
 ![Stacked Bar Chart](/docs/assets/barchart-stacked.svg)
 
+### Count-first input
+
+Termgraph accepts counts before text labels, so you can pipe the output of
+`sort | uniq -c` directly into it:
+
+```bash
+printf '%s\n' 'update settings' 'create' 'update settings' | sort | uniq -c | termgraph
+```
+
+No extra flag or column-swapping command is needed. For example, `2 update settings`
+is read as the label `update settings` with the value `2`.
+
+With whitespace-separated input, numeric words inside a label are also read as
+values. For labels such as `HTTP 404`, use a delimiter to keep the entire label in
+one field, for example `2,HTTP 404`. A label that is entirely numeric is ambiguous
+in count-first input; use the usual label-first order for those rows, such as
+`404,2`. See [file and standard-input parsing](docs/data-class.md#file-and-standard-input-parsing)
+for details.
+
 ### Calendar Heatmap
 
 Calendar Heatmap, expects first column to be date in yyyy-mm-dd
@@ -116,8 +135,10 @@ $ termgraph --calendar --start-dt 2017-07-01 data/cal.dat
 
 #### Command Line Interface
 
-* Create data file with two columns either comma or space separated.
-  The first column is your labels, the second column is a numeric data
+* Create a data file with labels and numeric values, separated by commas or
+  whitespace. Text labels can come before or after the values. If every field is
+  numeric, the first field is treated as the label. See the
+  [`sort | uniq -c` example](#count-first-input) for count-first input.
 
 * termgraph [datafile]
 
