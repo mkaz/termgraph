@@ -8,10 +8,11 @@ from typing import ClassVar
 class Args:
     """Class representing the arguments to modify the graph."""
 
-    default: ClassVar[dict[str, int | str | bool | None]] = {
+    default: ClassVar[dict[str, int | float | str | bool | None]] = {
         "filename": "-",
         "title": None,
         "width": 50,
+        "scale": None,
         "format": "{:<5.2f}",
         "suffix": "",
         "no_labels": False,
@@ -44,7 +45,7 @@ class Args:
             else:
                 raise ValueError(f"Invalid Argument: {arg}")
 
-    def get_arg(self, arg: str) -> int | str | bool | None:
+    def get_arg(self, arg: str) -> int | float | str | bool | None:
         """Returns the value for the argument given.
 
         :arg: The name of the argument.

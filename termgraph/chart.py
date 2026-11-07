@@ -106,7 +106,12 @@ class Chart:
         width = self.args.get_arg("width")
         if not isinstance(width, int):
             width = 50  # Default width
-        return self.data.normalize(width)
+        scale = self.args.get_arg("scale")
+        if scale is None:
+            return self.data.normalize(width)
+        if self.args.get_arg("different_scale"):
+            raise ValueError("scale cannot be used with different_scale")
+        return self.data.normalize(width, scale=cast(float, scale))
 
 
 class HorizontalChart(Chart):
@@ -173,6 +178,8 @@ class BarChart(HorizontalChart):
 
     def _normalize(self) -> list[list[float]]:
         """Normalize the data and return it."""
+        if self.args.get_arg("scale") is not None:
+            return super()._normalize()
         if self.args.get_arg("different_scale"):
             # Normalization per category
             normal_data: list[list[float]] = [[] for _ in range(len(self.data.data))]
@@ -423,6 +430,11 @@ class HistogramChart(Chart):
         :args: The arguments for the chart
         """
         super().__init__(data, args)
+
+    def _normalize(self) -> list[list[float]]:
+        if self.args.get_arg("scale") is not None:
+            raise ValueError("scale cannot be used with histogram")
+        return super()._normalize()
 
     def draw(self) -> None:
         """Draws the histogram chart"""
