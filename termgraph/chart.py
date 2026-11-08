@@ -294,6 +294,38 @@ class StackedChart(HorizontalChart):
         """
         super().__init__(data, args)
 
+    def _normalize(self) -> list[list[float]]:
+        """Normalize the data so that the longest stacked bar fits the width."""
+        normal_data = super()._normalize()
+        if self.args.get_arg("scale") is not None:
+            return normal_data
+
+        width = self.args.get_arg("width")
+        if not isinstance(width, int):
+            width = 50  # Default width
+
+        # Data.normalize() fits the largest single value to the width, but a
+        # stacked bar is as long as the sum of its segments.
+        max_total = max((sum(row) for row in normal_data), default=0)
+        if max_total <= 0:
+            return normal_data
+        factor = width / max_total
+
+        # Round the running total rather than each segment, so that a bar's
+        # length follows its total instead of losing a block per segment.
+        scaled_data = []
+        for row in normal_data:
+            scaled_row = []
+            previous = 0
+            running_total = 0.0
+            for value in row:
+                running_total += value * factor
+                current = round(running_total)
+                scaled_row.append(float(current - previous))
+                previous = current
+            scaled_data.append(scaled_row)
+        return scaled_data
+
     def draw(self) -> None:
         """Draws the stacked chart"""
         self._print_header()
