@@ -279,3 +279,38 @@ def test_no_values_with_suffix():
         assert "20" not in output
 
     run_for_all_charts(test)
+
+def _stacked_bar_lengths(data_values, width):
+    import io
+    import re
+    from contextlib import redirect_stdout
+
+    labels = [f"row{i}" for i in range(len(data_values))]
+    chart = StackedChart(
+        Data(data_values, labels),
+        Args(width=width, custom_tick="X", no_values=True),
+    )
+    f = io.StringIO()
+    with redirect_stdout(f):
+        chart.draw()
+    lines = re.sub(r"\x1b\[[0-9;]*m", "", f.getvalue()).splitlines()
+    return [line.count("X") for line in lines if line.startswith("row")]
+
+
+def test_stackedchart_longest_bar_fits_width():
+    # The full stacked bar, not its largest segment, is scaled to the width.
+    data_values = [
+        [10, 20, 40, 40, 40],
+        [10, 20, 40, 40, 10],
+        [10, 10, 10, 10, 10],
+    ]
+
+    lengths = _stacked_bar_lengths(data_values, width=10)
+
+    assert max(lengths) == 10
+    assert all(length <= 10 for length in lengths)
+
+
+def test_stackedchart_bar_lengths_follow_totals():
+    assert _stacked_bar_lengths([[1, 1], [2, 2]], width=20) == [10, 20]
+    assert _stacked_bar_lengths([[30, 10], [10, 30]], width=8) == [8, 8]
