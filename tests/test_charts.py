@@ -314,3 +314,18 @@ def test_stackedchart_longest_bar_fits_width():
 def test_stackedchart_bar_lengths_follow_totals():
     assert _stacked_bar_lengths([[1, 1], [2, 2]], width=20) == [10, 20]
     assert _stacked_bar_lengths([[30, 10], [10, 30]], width=8) == [8, 8]
+
+
+def test_stackedchart_draw_reuses_normal_data(monkeypatch, capsys):
+    chart = StackedChart(
+        Data([[10, 20], [20, 40]], ["A", "B"]),
+        Args(width=12, custom_tick="X", no_values=True),
+    )
+
+    def fail_normalize():
+        raise AssertionError("StackedChart.draw() should reuse self.normal_data")
+
+    monkeypatch.setattr(chart, "_normalize", fail_normalize)
+    chart.draw()
+    assert "X" in capsys.readouterr().out
+
