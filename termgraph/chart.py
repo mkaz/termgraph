@@ -339,7 +339,6 @@ class StackedChart(HorizontalChart):
             )
 
         val_min = self.data.find_min()
-        normal_data = self._normalize()
 
         for i in range(len(self.data.labels)):
             if self.args.get_arg("no_labels"):
@@ -354,7 +353,7 @@ class StackedChart(HorizontalChart):
             print(label, end="")
 
             values = self.data.data[i]
-            num_blocks = normal_data[i]
+            num_blocks = self.normal_data[i]
 
             for j in range(len(values)):
                 print_row_core(
